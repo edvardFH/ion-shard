@@ -1,3 +1,5 @@
+using Shard.Shared.Core;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

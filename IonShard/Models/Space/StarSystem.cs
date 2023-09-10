@@ -1,0 +1,23 @@
+﻿namespace IonShard.Models.Space
+{
+    public class StarSystem
+    {
+        private readonly Dictionary<string, Planet> _planets;
+
+        public Planet this[string name]
+        {
+            get => _planets[name];
+        }
+
+        public string Name { get; }
+
+
+        public StarSystem(string name, List<Planet> planets)
+        {
+            Name = name;
+            _planets = planets.ToDictionary(planet => planet.Name, planet => planet);
+        }
+
+        public List<Planet> GetAllPlanets() => _planets.Values.ToList();
+    }
+}
