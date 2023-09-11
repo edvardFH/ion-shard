@@ -4,6 +4,12 @@
     {
         private readonly Dictionary<string, Planet> _planets;
 
+
+        public List<Planet> Planets
+        {
+            get => _planets.Values.ToList();
+        }
+
         public Planet? this[string name]
         {
             get => _planets.ContainsKey(name) ? _planets[name] : null;
@@ -17,7 +23,5 @@
             Name = name;
             _planets = planets.ToDictionary(planet => planet.Name, planet => planet);
         }
-
-        public List<Planet> GetAllPlanets() => _planets.Values.ToList();
     }
 }

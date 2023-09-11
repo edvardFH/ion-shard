@@ -22,7 +22,7 @@ public class MapBuilderService
 
     public StarSystem? GetSystem(string systemName) => _universe[systemName];
 
-    public List<Planet>? GetPlanets(string systemName) => _universe[systemName]?.GetAllPlanets();
+    public List<Planet>? GetPlanets(string systemName) => _universe[systemName]?.Planets;
 
     public Planet? GetPlanet(string systemName, string planetName) => _universe[systemName]?[planetName];
 }

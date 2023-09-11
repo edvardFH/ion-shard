@@ -9,6 +9,7 @@ namespace IonShard.Controllers;
 
 [Route("[controller]")]
 [ApiController]
+[Produces("application/json")]
 public class SystemsController : ControllerBase
 {
     private MapBuilderService _mapBuilderService;

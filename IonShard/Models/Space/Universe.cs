@@ -4,6 +4,8 @@
     {
         private readonly Dictionary<string, StarSystem> _starSystems;
 
+
+
         public StarSystem? this[string name]
         {
             get => _starSystems.ContainsKey(name) ? _starSystems[name] : null;
