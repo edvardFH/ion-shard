@@ -2,9 +2,12 @@
 {
     public class Universe
     {
-        private readonly Dictionary<string, StarSystem> _starSystems;
+        private readonly IReadOnlyDictionary<string, StarSystem> _starSystems;
 
-
+        public IReadOnlyList<StarSystem> Systems
+        {
+            get => _starSystems.Values.ToList();
+        }
 
         public StarSystem? this[string name]
         {
@@ -16,8 +19,5 @@
         {
             _starSystems = starSystems.ToDictionary(system => system.Name, system => system);
         }
-
-
-        public List<StarSystem> GetAllSystems() => _starSystems.Values.ToList();
     }
 }

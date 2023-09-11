@@ -18,11 +18,11 @@ public class MapBuilderService
         _universe = new Universe(systems);
     }
 
-    public List<StarSystem> GetAllSystems() => _universe.GetAllSystems();
+    public IReadOnlyList<StarSystem> GetAllSystems() => _universe.Systems;
 
     public StarSystem? GetSystem(string systemName) => _universe[systemName];
 
-    public List<Planet>? GetPlanets(string systemName) => _universe[systemName]?.Planets;
+    public IReadOnlyList<Planet>? GetPlanets(string systemName) => _universe[systemName]?.Planets;
 
     public Planet? GetPlanet(string systemName, string planetName) => _universe[systemName]?[planetName];
 }

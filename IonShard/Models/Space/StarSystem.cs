@@ -2,10 +2,10 @@
 {
     public class StarSystem
     {
-        private readonly Dictionary<string, Planet> _planets;
+        private readonly IReadOnlyDictionary<string, Planet> _planets;
 
 
-        public List<Planet> Planets
+        public IReadOnlyList<Planet> Planets
         {
             get => _planets.Values.ToList();
         }

@@ -35,7 +35,7 @@ public class SystemsController : ControllerBase
     public ActionResult<IEnumerable<Planet>> GetPlanets(string systemName)
     {
         var planets = _mapBuilderService.GetPlanets(systemName);
-        return planets != null ? planets : NotFound();
+        return planets != null ? planets.ToList() : NotFound();
     }
     
     [HttpGet("{systemName}/planets/{planetName}")]
