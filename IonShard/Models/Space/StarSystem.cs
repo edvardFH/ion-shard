@@ -4,9 +4,9 @@
     {
         private readonly Dictionary<string, Planet> _planets;
 
-        public Planet this[string name]
+        public Planet? this[string name]
         {
-            get => _planets[name];
+            get => _planets.ContainsKey(name) ? _planets[name] : null;
         }
 
         public string Name { get; }
