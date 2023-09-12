@@ -5,6 +5,8 @@
         private readonly IReadOnlyDictionary<string, Planet> _planets;
 
 
+        public string Name { get; }
+
         public IReadOnlyList<Planet> Planets
         {
             get => _planets.Values.ToList();
@@ -14,8 +16,6 @@
         {
             get => _planets.ContainsKey(name) ? _planets[name] : null;
         }
-
-        public string Name { get; }
 
 
         public StarSystem(string name, List<Planet> planets)

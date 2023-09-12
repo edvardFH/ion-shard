@@ -10,19 +10,21 @@ public class MapBuilderService
     public MapBuilderService(MapGenerator mapGenerator)
     {
 
-        var systems = mapGenerator.Generate().Systems.ToList().ConvertAll(
+        List<StarSystem> systems = mapGenerator.Generate().Systems.ToList().ConvertAll(
             system => new StarSystem(system.Name, system.Planets.ToList().ConvertAll(
                 planet => new Planet(planet.Name, planet.Size))
             )
         );
+
         _universe = new Universe(systems);
     }
 
+
     public IReadOnlyList<StarSystem> GetAllSystems() => _universe.Systems;
 
-    public StarSystem? GetSystem(string systemName) => _universe[systemName];
+    public StarSystem? GetOneSystem(string systemName) => _universe[systemName];
 
-    public IReadOnlyList<Planet>? GetPlanets(string systemName) => _universe[systemName]?.Planets;
+    public IReadOnlyList<Planet>? GetAllPlanetsFromSystem(string systemName) => _universe[systemName]?.Planets;
 
-    public Planet? GetPlanet(string systemName, string planetName) => _universe[systemName]?[planetName];
+    public Planet? GetOnePlanet(string systemName, string planetName) => _universe[systemName]?[planetName];
 }

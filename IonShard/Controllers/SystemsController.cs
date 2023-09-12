@@ -1,7 +1,6 @@
 ﻿using IonShard.Models.Space;
 using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
-using Shard.Shared.Core;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,36 +11,54 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class SystemsController : ControllerBase
 {
-    private MapBuilderService _mapBuilderService;
+    private readonly MapBuilderService _mapBuilderService;
+
 
     public SystemsController(MapBuilderService mapBuilderService)
     {
         _mapBuilderService = mapBuilderService;
     }
 
+
     [HttpGet]
-    public IEnumerable<StarSystem> GetSystems() => _mapBuilderService.GetAllSystems();
+    public IEnumerable<StarSystem> GetAllSystems() => _mapBuilderService.GetAllSystems();
 
 
     [HttpGet("{systemName}")]
-    public ActionResult<StarSystem> GetSystem(string systemName)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<StarSystem> GetOneSystem(string systemName)
     {
-        var system = _mapBuilderService.GetSystem(systemName);
-        return system != null ? system : NotFound();
+        StarSystem? system = _mapBuilderService.GetOneSystem(systemName);
+
+        return system is not null
+            ? system
+            : NotFound();
     }
     
     
     [HttpGet("{systemName}/planets")]
-    public ActionResult<IEnumerable<Planet>> GetPlanets(string systemName)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<IEnumerable<Planet>> GetAllPlanetsFromSystem(string systemName)
     {
-        var planets = _mapBuilderService.GetPlanets(systemName);
-        return planets != null ? planets.ToList() : NotFound();
+        IReadOnlyList<Planet>? planets = _mapBuilderService.GetAllPlanetsFromSystem(systemName);
+
+        return planets is not null 
+            ? planets.ToList()
+            : NotFound();
     }
+
     
     [HttpGet("{systemName}/planets/{planetName}")]
-    public ActionResult<Planet> GetPlanet(string systemName, string planetName)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<Planet> GetOnePlanet(string systemName, string planetName)
     {
-        var planet = _mapBuilderService.GetPlanet(systemName, planetName);
-        return planet != null ? planet : NotFound();
+        Planet? planet = _mapBuilderService.GetOnePlanet(systemName, planetName);
+
+        return planet is not null
+            ? planet
+            : NotFound();
     }
 }
