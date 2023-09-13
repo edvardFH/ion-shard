@@ -11,11 +11,10 @@ public class MapRepository
         _universe = mapBuilder.Map;
     }
 
-    public IReadOnlyList<StarSystem> GetAllSystems() => _universe.Systems;
 
-    public StarSystem? GetOneSystem(string systemName) => _universe[systemName];
+    public IReadOnlyList<StarSystem> Systems => _universe.Systems;
 
-    public IReadOnlyList<Planet>? GetAllPlanetsFromSystem(string systemName) => _universe[systemName]?.Planets;
+    public StarSystem? this[string systemName] => _universe[systemName];
 
-    public Planet? GetOnePlanet(string systemName, string planetName) => _universe[systemName]?[planetName];
+    public Planet? this[string systemName, string planetName] => _universe[systemName]?[planetName];
 }

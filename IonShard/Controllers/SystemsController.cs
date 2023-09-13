@@ -11,17 +11,17 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class SystemsController : ControllerBase
 {
-    private readonly MapRepository _mapBuilderService;
+    private readonly MapRepository _map;
 
 
     public SystemsController(MapRepository mapBuilderService)
     {
-        _mapBuilderService = mapBuilderService;
+        _map = mapBuilderService;
     }
 
 
     [HttpGet]
-    public IEnumerable<StarSystem> GetAllSystems() => _mapBuilderService.GetAllSystems();
+    public IEnumerable<StarSystem> GetAllSystems() => _map.Systems;
 
 
     [HttpGet("{systemName}")]
@@ -29,7 +29,7 @@ public class SystemsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<StarSystem> GetOneSystem(string systemName)
     {
-        StarSystem? system = _mapBuilderService.GetOneSystem(systemName);
+        StarSystem? system = _map[systemName];
 
         return system is not null
             ? system
@@ -42,7 +42,7 @@ public class SystemsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<IEnumerable<Planet>> GetAllPlanetsFromSystem(string systemName)
     {
-        IReadOnlyList<Planet>? planets = _mapBuilderService.GetAllPlanetsFromSystem(systemName);
+        IReadOnlyList<Planet>? planets = _map[systemName]?.Planets;
 
         return planets is not null 
             ? planets.ToList()
@@ -55,7 +55,7 @@ public class SystemsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<Planet> GetOnePlanet(string systemName, string planetName)
     {
-        Planet? planet = _mapBuilderService.GetOnePlanet(systemName, planetName);
+        Planet? planet = _map[systemName, planetName];
 
         return planet is not null
             ? planet
