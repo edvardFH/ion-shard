@@ -1,4 +1,4 @@
-﻿namespace IonShard.Models.Space
+﻿namespace IonShard.Models.Map
 {
     public class StarSystem
     {

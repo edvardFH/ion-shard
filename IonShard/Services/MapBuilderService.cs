@@ -1,11 +1,11 @@
-﻿using IonShard.Models.Space;
+﻿using IonShard.Models.Map;
 using Shard.Shared.Core;
 
 namespace IonShard.Services;
 
 public class MapBuilderService
 {
-    private readonly Universe _universe;
+    public Universe Map { get; }
 
     public MapBuilderService(MapGenerator mapGenerator)
     {
@@ -16,15 +16,6 @@ public class MapBuilderService
             )
         );
 
-        _universe = new Universe(systems);
+        Map = new Universe(systems);
     }
-
-
-    public IReadOnlyList<StarSystem> GetAllSystems() => _universe.Systems;
-
-    public StarSystem? GetOneSystem(string systemName) => _universe[systemName];
-
-    public IReadOnlyList<Planet>? GetAllPlanetsFromSystem(string systemName) => _universe[systemName]?.Planets;
-
-    public Planet? GetOnePlanet(string systemName, string planetName) => _universe[systemName]?[planetName];
 }

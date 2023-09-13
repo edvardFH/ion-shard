@@ -8,14 +8,13 @@ IConfiguration configuration = new ConfigurationBuilder()
             .Build();
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<MapGenerator>();
-builder.Services.Configure<MapGeneratorOptions>(
-    configuration.GetSection("MapGeneratorOptions"));
+builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGeneratorOptions"));
 
 builder.Services.AddSingleton<MapBuilderService>();
+builder.Services.AddSingleton<MapRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

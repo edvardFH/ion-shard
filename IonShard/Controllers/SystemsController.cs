@@ -1,4 +1,4 @@
-﻿using IonShard.Models.Space;
+﻿using IonShard.Models.Map;
 using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +11,10 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class SystemsController : ControllerBase
 {
-    private readonly MapBuilderService _mapBuilderService;
+    private readonly MapRepository _mapBuilderService;
 
 
-    public SystemsController(MapBuilderService mapBuilderService)
+    public SystemsController(MapRepository mapBuilderService)
     {
         _mapBuilderService = mapBuilderService;
     }
