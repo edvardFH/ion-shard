@@ -10,12 +10,18 @@ public class MapBuilderService
     public MapBuilderService(MapGenerator mapGenerator)
     {
 
-        List<StarSystem> systems = mapGenerator.Generate().Systems.ToList().ConvertAll(
-            system => new StarSystem(system.Name, system.Planets.ToList().ConvertAll(
-                planet => new Planet(planet.Name, planet.Size))
-            )
-        );
+        IReadOnlyList<StarSystem> systems = mapGenerator.Generate()
+            .Systems
+            .ToList()
+            .ConvertAll(system => SystemSpecificationToStarSystem(system));
 
         Map = new Universe(systems);
     }
+
+
+    private StarSystem SystemSpecificationToStarSystem(SystemSpecification system) 
+        => new(system.Name,
+            system.Planets
+            .ToList()
+            .ConvertAll(planet => new Planet(planet.Name, planet.Size)));
 }

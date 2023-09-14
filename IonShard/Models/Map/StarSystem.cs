@@ -7,15 +7,9 @@
 
         public string Name { get; }
 
-        public IReadOnlyList<Planet> Planets
-        {
-            get => _planets.Values.ToList();
-        }
+        public IReadOnlyList<Planet> Planets => _planets.Values.ToList();
 
-        public Planet? this[string name]
-        {
-            get => _planets.ContainsKey(name) ? _planets[name] : null;
-        }
+        public Planet? this[string name] => _planets.ContainsKey(name) ? _planets[name] : null;
 
 
         public StarSystem(string name, List<Planet> planets)
