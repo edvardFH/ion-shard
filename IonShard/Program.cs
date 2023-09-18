@@ -1,4 +1,5 @@
 using IonShard.Services;
+using Microsoft.OpenApi.Models;
 using Shard.Shared.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,16 @@ builder.Services.AddSingleton<MapRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.EnableAnnotations();
+    c.SwaggerDoc(configuration.GetValue<string>("AppSettings:Version"), new OpenApiInfo 
+    {
+        Version = configuration.GetValue<string>("AppSettings:Version"),
+        Title = configuration.GetValue<string>("AppSettings:Title"),
+        Description = configuration.GetValue<string>("AppSettings:Description")
+    });
+});
 
 var app = builder.Build();
 

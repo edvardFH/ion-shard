@@ -1,6 +1,7 @@
 ﻿using IonShard.Models.Map;
 using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,12 +22,14 @@ public class SystemsController : ControllerBase
 
 
     [HttpGet]
+    [SwaggerOperation(Summary="Fetches all systems")]
     public IEnumerable<StarSystem> GetAllSystems() => _map.Systems;
 
 
     [HttpGet("{systemName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Fetches a specific system")]
     public ActionResult<StarSystem> GetOneSystem(string systemName)
     {
         StarSystem? system = _map[systemName];
@@ -40,6 +43,7 @@ public class SystemsController : ControllerBase
     [HttpGet("{systemName}/planets")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Fetches all planet for a specific system")]
     public ActionResult<IEnumerable<Planet>> GetAllPlanetsFromSystem(string systemName)
     {
         IReadOnlyList<Planet>? planets = _map[systemName]?.Planets;
@@ -53,6 +57,7 @@ public class SystemsController : ControllerBase
     [HttpGet("{systemName}/planets/{planetName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Fetches a single planet")]
     public ActionResult<Planet> GetOnePlanet(string systemName, string planetName)
     {
         Planet? planet = _map[systemName, planetName];
