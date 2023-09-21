@@ -8,4 +8,12 @@ public class UnitLocation
     public StarSystem System { get; }
     public Planet? Planet { get; }
     public IReadOnlyDictionary<string, int>? RessourceQuantity { get; }
+
+    public UnitLocation(Unit unit, StarSystem system, Planet? planet, IReadOnlyDictionary<string, int>? ressourceQuantity)
+    {
+        Unit = unit;
+        System = system;
+        Planet = planet;
+        RessourceQuantity = ressourceQuantity;
+    }
 }
