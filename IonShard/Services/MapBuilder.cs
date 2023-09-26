@@ -3,14 +3,15 @@ using Shard.Shared.Core;
 
 namespace IonShard.Services;
 
-public class MapBuilderService
+public class MapBuilder
 {
     public Universe Map { get; }
 
-    public MapBuilderService(MapGenerator mapGenerator)
+    public MapBuilder(MapGenerator mapGenerator)
     {
 
-        IReadOnlyList<StarSystem> systems = mapGenerator.Generate()
+        IReadOnlyList<StarSystem> systems = mapGenerator
+            .Generate()
             .Systems
             .ToList()
             .ConvertAll(system => SystemSpecificationToStarSystem(system));
@@ -23,10 +24,11 @@ public class MapBuilderService
         => new(system.Name,
             system.Planets
             .ToList()
-            .ConvertAll(planet=> new Planet(planet.Name, planet.Size, ResourceKindToResource(planet.ResourceQuantity))));
+            .ConvertAll(planet => new Planet(planet.Name, planet.Size, ResourceKindToResource(planet.ResourceQuantity))));
 
 
 
     private IReadOnlyDictionary<Resource, int> ResourceKindToResource(IReadOnlyDictionary<ResourceKind, int> resourceQuantity)
-        => resourceQuantity.ToDictionary(resource => (Resource)resource.Key, resource => resource.Value);
+        => resourceQuantity
+        .ToDictionary(resource => (Resource)resource.Key, resource => resource.Value);
 }

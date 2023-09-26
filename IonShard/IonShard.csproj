@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Shard.Shared.Core\Shard.Shared.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\Users\" />
-  </ItemGroup>
-
 </Project>

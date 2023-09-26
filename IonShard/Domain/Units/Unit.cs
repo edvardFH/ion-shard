@@ -6,14 +6,12 @@ public class Unit
 {
     public string Id { get; }
     public string Type => "scout";
-    public StarSystem System { get; }
-    public Planet? Planet { get; }
+    public Location Location { get; }
 
-    public Unit(string id, StarSystem system, Planet? planet)
+    public Unit(string id, StarSystem starSystem, Planet? planet)
     {
         Id = id;
-        System = system;
-        Planet = planet;
+        Location = new(starSystem, planet);
     }
 
 }
