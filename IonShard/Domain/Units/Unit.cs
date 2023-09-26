@@ -1,6 +1,6 @@
-﻿using IonShard.Models.Map;
+﻿using IonShard.Domain.Map;
 
-namespace IonShard.Models.Units;
+namespace IonShard.Domain.Units;
 
 public class Unit
 {

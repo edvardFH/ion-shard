@@ -1,4 +1,4 @@
-﻿namespace IonShard.Models.Users;
+﻿namespace IonShard.Domain.Users;
 
 public class User
 {

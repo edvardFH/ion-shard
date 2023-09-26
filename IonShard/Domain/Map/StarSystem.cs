@@ -1,4 +1,4 @@
-﻿namespace IonShard.Models.Map
+﻿namespace IonShard.Domain.Map
 {
     public class StarSystem
     {
@@ -12,7 +12,7 @@
         public Planet? this[string name] => _planets.ContainsKey(name) ? _planets[name] : null;
 
 
-        public StarSystem(string name, List<Planet> planets)
+        public StarSystem(string name, IReadOnlyList<Planet> planets)
         {
             Name = name;
             _planets = planets.ToDictionary(planet => planet.Name, planet => planet);

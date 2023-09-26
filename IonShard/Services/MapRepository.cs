@@ -1,4 +1,4 @@
-﻿using IonShard.Models.Map;
+﻿using IonShard.Domain.Map;
 
 namespace IonShard.Services;
 

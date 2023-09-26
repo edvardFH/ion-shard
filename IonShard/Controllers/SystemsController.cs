@@ -1,4 +1,4 @@
-﻿using IonShard.Models.Map;
+﻿using IonShard.DTO.Map;
 using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -12,27 +12,27 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class SystemsController : ControllerBase
 {
-    private readonly MapRepository _map;
+    private readonly UniverseDTO _universe;
 
 
     public SystemsController(MapRepository mapBuilderService)
     {
-        _map = mapBuilderService;
+        _universe = new UniverseDTO(mapBuilderService.Systems);
     }
 
 
     [HttpGet]
     [SwaggerOperation(Summary="Fetches all systems")]
-    public IEnumerable<StarSystem> GetAllSystems() => _map.Systems;
+    public IEnumerable<StarSystemDTO> GetAllSystems() => _universe.Systems;
 
 
     [HttpGet("{systemName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Fetches a specific system")]
-    public ActionResult<StarSystem> GetOneSystem(string systemName)
+    public ActionResult<StarSystemDTO> GetOneSystem(string systemName)
     {
-        StarSystem? system = _map[systemName];
+        StarSystemDTO? system = _universe[systemName];
 
         return system is not null
             ? system
@@ -44,9 +44,9 @@ public class SystemsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Fetches all planet for a specific system")]
-    public ActionResult<IEnumerable<Planet>> GetAllPlanetsFromSystem(string systemName)
+    public ActionResult<IEnumerable<PlanetDTO>> GetAllPlanetsFromSystem(string systemName)
     {
-        IReadOnlyList<Planet>? planets = _map[systemName]?.Planets;
+        IReadOnlyList<PlanetDTO>? planets = _universe[systemName]?.Planets;
 
         return planets is not null 
             ? planets.ToList()
@@ -58,9 +58,9 @@ public class SystemsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Fetches a single planet")]
-    public ActionResult<Planet> GetOnePlanet(string systemName, string planetName)
+    public ActionResult<PlanetDTO> GetOnePlanet(string systemName, string planetName)
     {
-        Planet? planet = _map[systemName, planetName];
+        PlanetDTO? planet = _universe[systemName]?[planetName];
 
         return planet is not null
             ? planet

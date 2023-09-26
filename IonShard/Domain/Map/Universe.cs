@@ -1,4 +1,4 @@
-﻿namespace IonShard.Models.Map
+﻿namespace IonShard.Domain.Map
 {
     public class Universe
     {
