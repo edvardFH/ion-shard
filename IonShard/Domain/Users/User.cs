@@ -1,9 +1,11 @@
 ﻿using IonShard.Domain.Units;
+using System.ComponentModel.DataAnnotations;
 
 namespace IonShard.Domain.Users;
 
 public class User
 {
+    [RegularExpression("^[a-zA-Z0-9_-]+$")]
     public string Id { get; }
     public string Pseudo { get; }
     public DateTime DateOfCreation { get; }

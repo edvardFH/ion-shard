@@ -5,6 +5,7 @@ using IonShard.DTO.Users;
 using IonShard.Mappers;
 using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -68,9 +69,9 @@ namespace IonShard.Controllers
             User? user = _usersRepository[userId];
             Unit? unit = null;
 
-            if (user is not null && user.Units.ContainsKey(userId))
+            if (user is not null && user.Units.ContainsKey(unitId))
             {
-                unit = user.Units[userId];
+                unit = user.Units[unitId];
             }
 
             return unit is not null
@@ -90,7 +91,8 @@ namespace IonShard.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<UserDTO?> CreateNewUser(string userId, [FromBody] CreateUserRequestBody body)
         {
-            if (body.Id is not null && body.Pseudo is not null && body.Id == userId)
+            if (body.Id is not null && body.Pseudo is not null && body.Id == userId
+                && Regex.IsMatch(userId, "^[a-zA-Z0-9_-]+$"))
             {
                 User newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
                 _usersRepository.Users.Add(newUser.Id, newUser);
