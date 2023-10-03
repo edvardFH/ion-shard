@@ -16,8 +16,8 @@ builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGen
 builder.Services.AddSingleton<MapBuilder>();
 builder.Services.AddSingleton<MapRepository>();
 
-//builder.Services.AddSingleton<UsersRepository>();
-
+builder.Services.AddSingleton<UsersRepository>();
+builder.Services.AddSingleton<UserFactory>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

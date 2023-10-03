@@ -1,4 +1,7 @@
-﻿using IonShard.Services;
+﻿using IonShard.Domain.Users;
+using IonShard.DTO.Users;
+using IonShard.Mappers;
+using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,13 +13,15 @@ namespace IonShard.Controllers
     [Produces("application/json")]
     public class UsersController : ControllerBase
     {
-        /*
+        
         private readonly UsersRepository _usersRepository;
+        private readonly UserFactory _userFactory;
 
-        public UsersController(UsersRepository usersRepository )
+        public UsersController(UsersRepository usersRepository, UserFactory userFactory)
         {
             _usersRepository = usersRepository;
-        }*/
+            _userFactory = userFactory;
+        }
 
 
         // GET: api/<UsersController>
@@ -26,11 +31,16 @@ namespace IonShard.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<UsersController>/5
+
         [HttpGet("{id}")]
-        public string Get(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<UserDTO> Get(string id)
         {
-            return "value";
+            UserDTO? user = _usersRepository[id]?.ToDTO();
+            return user is not null
+                ? user
+                : NotFound();
         }
 
         // POST api/<UsersController>
@@ -39,10 +49,21 @@ namespace IonShard.Controllers
         {
         }
 
-        // PUT api/<UsersController>/5
+   
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<UserDTO?> Put(string id, [FromBody] CreateUserRequestBody body)
         {
+            if (body.Id is not null && body.Pseudo is not null && body.Id == id)
+            {
+                User newUser = _userFactory.CreateNewUser(id, body.Pseudo);
+                _usersRepository.Users.Add(newUser.Id, newUser);
+                return newUser.ToDTO();
+            } else
+            {
+                return NotFound();
+            }
         }
 
         // DELETE api/<UsersController>/5

@@ -4,11 +4,9 @@ namespace IonShard.Services
 {
     public class UsersRepository
     {
-        private readonly IDictionary<string, User> _users;
+        private readonly IDictionary<string, User> _users = new Dictionary<string, User>();
+        public IDictionary<string, User> Users { get => _users; }
 
-        public UsersRepository(IDictionary<string, User> users)
-        {
-            _users = users;
-        }
+        public User? this[string id] => _users[id];
     }
 }
