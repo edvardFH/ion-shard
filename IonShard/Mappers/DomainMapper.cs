@@ -15,14 +15,21 @@ public static class DomainMapper
 
     public static UnitDTO ToDTO(this Unit unit)
     {
-        var unitSystem = unit.Location.System;
-        var unitPlanet = unit.Location.Planet;
+        var unitLocation = unit.Location;
 
         return new UnitDTO(
             unit.Id,
-            new StarSystemDTO(unitSystem.Name, unitSystem.Planets),
-            unitPlanet is not null
-                ? new PlanetDTO(unitPlanet.Name, unitPlanet.Size)
-                : null);
+            unitLocation.System.Name,
+            unitLocation.Planet?.Name);
+    }
+
+    public static UnitLocationDTO ToLocationDTO(this Unit unit)
+    {
+        var unitLocation = unit.Location;
+
+        return new UnitLocationDTO(
+            unitLocation.System.Name,
+            unitLocation.Planet?.Name,
+            unit.Location.Planet?.ResourceQuantity);
     }
 }

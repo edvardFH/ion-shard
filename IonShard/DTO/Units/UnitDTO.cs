@@ -6,10 +6,10 @@ public class UnitDTO
 {
     public string Id { get; }
     public string Type => "scout";
-    public StarSystemDTO System { get; }
-    public PlanetDTO? Planet { get; }
+    public string System { get; }
+    public string? Planet { get; }
 
-    public UnitDTO(string id, StarSystemDTO system, PlanetDTO? planet)
+    public UnitDTO(string id, string system, string? planet)
     {
         Id = id;
         System = system;
