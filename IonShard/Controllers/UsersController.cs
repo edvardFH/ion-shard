@@ -84,7 +84,7 @@ public class UsersController : ControllerBase
     [HttpGet("{userId}/units/{unitId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [SwaggerOperation(Summary = "Returns information about one unit")]
+    [SwaggerOperation(Summary = "Returns information about one single unit of a user")]
     public ActionResult<UnitDTO> GetOneUnitFromUser(string userId, string unitId)
     {
         Unit? unit = GetUnitFromRepository(userId, unitId);
@@ -99,6 +99,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
     public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
         if (unitId != body.Id || body.Id is null || body.System is null)
@@ -128,6 +129,7 @@ public class UsersController : ControllerBase
     [HttpGet("{userId}/units/{unitId}/location")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Returns more detailed information about the location a unit of user currently is about")]
     public ActionResult<UnitLocationDTO> GetUnitLocation(string userId, string unitId)
     {
         Unit? unit = GetUnitFromRepository(userId, unitId);
