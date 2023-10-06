@@ -1,7 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace IonShard;
+namespace IonShard.Swagger;
 
 public class RequestBodiesDocumentFilter : IDocumentFilter
 {

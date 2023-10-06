@@ -1,6 +1,6 @@
-﻿namespace IonShard;
+﻿namespace IonShard.Utils;
 
-internal static class Extensions
+internal static class RandomGeneratorExtension
 {
     internal static Guid NextGuid(this Random random)
     {

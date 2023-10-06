@@ -1,5 +1,5 @@
-using IonShard;
 using IonShard.Services;
+using IonShard.Swagger;
 using Microsoft.OpenApi.Models;
 using Shard.Shared.Core;
 
