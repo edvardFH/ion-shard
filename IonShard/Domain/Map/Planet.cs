@@ -4,13 +4,13 @@
     {
         public string Name { get; }
         public int Size { get; }
-        public IReadOnlyDictionary<Resource, int> ResourceQuantity { get; }
+        public IReadOnlyDictionary<Resource, int> ResourcesQuantity { get; }
 
-        public Planet(string name, int size, IReadOnlyDictionary<Resource, int> resourceQuantity)
+        public Planet(string name, int size, IReadOnlyDictionary<Resource, int> resourcesQuantity)
         {
             Name = name;
             Size = size;
-            ResourceQuantity = resourceQuantity;
+            ResourcesQuantity = resourcesQuantity;
         }
     }
 }

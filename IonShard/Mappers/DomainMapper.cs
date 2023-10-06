@@ -30,7 +30,7 @@ public static class DomainMapper
         return new UnitLocationDTO(
             unitLocation.System.Name,
             unitLocation.Planet?.Name,
-            unit.Location.Planet?.ResourceQuantity
+            unit.Location.Planet?.ResourcesQuantity
                 .ToDictionary(resource => resource.Key.ToString().ToLower(), resource => resource.Value));
     }
 }
