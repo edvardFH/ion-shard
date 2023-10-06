@@ -1,3 +1,4 @@
+using IonShard;
 using IonShard.Services;
 using Microsoft.OpenApi.Models;
 using Shard.Shared.Core;
@@ -23,6 +24,7 @@ builder.Services.AddSingleton<UserFactory>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+    c.DocumentFilter<RequestBodiesDocumentFilter>();
     c.EnableAnnotations();
     c.SwaggerDoc(configuration.GetValue<string>("AppSettings:Version"), new OpenApiInfo 
     {
@@ -38,7 +40,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint(
+            $"/swagger/{configuration.GetValue<string>("AppSettings:Version")}/swagger.json", 
+            configuration.GetValue<string>("AppSettings:Title")));
 }
 
 app.UseAuthorization();
