@@ -1,6 +1,4 @@
-﻿using IonShard.Domain.Map;
-
-namespace IonShard.DTO.Map;
+﻿namespace IonShard.Contracts.DTO.Map;
 
 public class StarSystemDTO
 {
@@ -18,13 +16,5 @@ public class StarSystemDTO
     {
         Name = name;
         _planets = planets.ToDictionary(planet => planet.Name, planet => planet);
-    }
-    
-    public StarSystemDTO(string name, IReadOnlyList<Planet> planets)
-    {
-        Name = name;
-        _planets = planets.ToList()
-            .ConvertAll(planet => new PlanetDTO(planet.Name, planet.Size))
-            .ToDictionary(planet => planet.Name, planet => planet);
     }
 }

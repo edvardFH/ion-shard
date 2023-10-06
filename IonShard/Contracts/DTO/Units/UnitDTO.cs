@@ -1,6 +1,4 @@
-﻿using IonShard.DTO.Map;
-
-namespace IonShard.DTO.Units;
+﻿namespace IonShard.Contracts.DTO.Units;
 
 public class UnitDTO
 {

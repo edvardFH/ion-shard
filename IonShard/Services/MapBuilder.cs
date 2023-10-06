@@ -30,5 +30,6 @@ public class MapBuilder
 
     private IReadOnlyDictionary<Resource, int> ResourceKindToResource(IReadOnlyDictionary<ResourceKind, int> resourceQuantity)
         => resourceQuantity
-        .ToDictionary(resource => (Resource)resource.Key, resource => resource.Value);
+            .ToDictionary(resource => (Resource)resource.Key, resource => resource.Value);
 }
+
