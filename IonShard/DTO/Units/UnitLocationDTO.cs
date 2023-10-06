@@ -7,9 +7,9 @@ public class UnitLocationDTO
 {
     public string System { get; }
     public string? Planet { get; }
-    public IReadOnlyDictionary<Resource, int>? RessourceQuantity { get; }
+    public IReadOnlyDictionary<string, int>? RessourceQuantity { get; }
 
-    public UnitLocationDTO(string system, string? planet, IReadOnlyDictionary<Resource, int>? ressourceQuantity)
+    public UnitLocationDTO(string system, string? planet, IReadOnlyDictionary<string, int>? ressourceQuantity)
     {
         System = system;
         Planet = planet;
