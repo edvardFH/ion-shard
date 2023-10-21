@@ -36,7 +36,7 @@ public class UsersController : ControllerBase
         if (body.Id is not null && body.Pseudo is not null && body.Id == userId
             && Regex.IsMatch(userId, "^[a-zA-Z0-9_-]+$"))
         {
-            User newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
+            IUser newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
             _usersRepository.Users.Add(newUser.Id, newUser);
             return newUser.ToDTO();
         }

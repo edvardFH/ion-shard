@@ -17,17 +17,17 @@ public class UserFactory
         this.map = map;
     }
 
-    public User CreateNewUser(string id, string pseudo)
+    public IUser CreateNewUser(string id, string pseudo)
     {
-        User newUser = new(id, pseudo, DateTime.Now);
+        IUser newUser = new User(id, pseudo, DateTime.Now);
 
-        Unit userUnit = GetDefaultUnit();
+        ScoutUnit userUnit = GetDefaultUnit();
         newUser.Units.Add(userUnit.Id, userUnit);
 
         return newUser;
     }
 
-    private Unit GetDefaultUnit()
+    private ScoutUnit GetDefaultUnit()
     {
         StarSystem starSystem = GetRandomStarSystem();
         return new(random.NextGuid().ToString(), starSystem, GetRandomPlanet(starSystem));

@@ -3,7 +3,7 @@ using IonShard.Domain.Units;
 
 namespace IonShard.Domain.Buildings;
 
-public class Building
+public class Building: IBuilding
 {
     public string Id { get; }
 

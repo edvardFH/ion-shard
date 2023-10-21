@@ -11,7 +11,7 @@ namespace IonShard.Mappers;
 
 public static class DomainToDTOMapper
 {
-    public static BuildingDTO ToDTO(this Building building)
+    public static BuildingDTO ToDTO(this IBuilding building)
         => new BuildingDTO(
             building.Id,
             building.Type,
@@ -19,18 +19,18 @@ public static class DomainToDTOMapper
             building.Location.Planet?.Name);
 
 
-    public static UserDTO ToDTO(this User user)
+    public static UserDTO ToDTO(this IUser user)
         => new UserDTO(user.Id, user.Pseudo, user.DateOfCreation);
 
 
-    public static UnitDTO ToDTO(this Unit unit)
+    public static UnitDTO ToDTO(this IUnit unit)
         => new UnitDTO(
             unit.Id,
             unit.Location.System.Name,
             unit.Location.Planet?.Name);
 
 
-    public static UnitLocationDTO ToLocationDTO(this Unit unit) 
+    public static UnitLocationDTO ToLocationDTO(this IUnit unit) 
         => new UnitLocationDTO(
             unit.Location.System.Name,
             unit.Location.Planet?.Name,

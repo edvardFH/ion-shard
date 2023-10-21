@@ -31,7 +31,7 @@ public class BuildingsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<BuildingDTO> Post(string userId, [FromBody] CreateBuildingPostRequestBody body)
     {
-        User? user = _usersRepository[userId];
+        IUser? user = _usersRepository[userId];
 
         if(user is null)
             return NotFound();
@@ -41,10 +41,10 @@ public class BuildingsController : ControllerBase
 
         IUnit? unit = user.Units[body.BuilderId];
 
-        if (unit is null || unit is not IBuilder || unit.Location.Planet is null)
+        if (unit is null || unit is not IBuilderUnit || unit.Location.Planet is null)
             return BadRequest();
 
-        IBuilder builder = (IBuilder)unit;
+        IBuilderUnit builder = (IBuilderUnit)unit;
 
         return builder.Build(body.Type).ToDTO();
     }

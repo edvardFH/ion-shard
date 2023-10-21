@@ -33,7 +33,7 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Returns all units of a user")]
     public ActionResult<IEnumerable<UnitDTO>> GetAllUnitsOfUser(string userId)
     {
-        User? user = _usersRepository[userId];
+        IUser? user = _usersRepository[userId];
 
         return user is not null
             ? user.Units
@@ -50,7 +50,7 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Returns information about one single unit of a user")]
     public ActionResult<UnitDTO> GetOneUnitFromUser(string userId, string unitId)
     {
-        Unit? unit = GetUnitFromRepository(userId, unitId);
+        IUnit? unit = GetUnitFromRepository(userId, unitId);
 
         return unit is not null
             ? unit.ToDTO()
@@ -68,7 +68,7 @@ public class UnitsController : ControllerBase
         if (unitId != body.Id || body.Id is null || body.System is null)
             return BadRequest();
 
-        Unit? unit = GetUnitFromRepository(userId, unitId);
+        IUnit? unit = GetUnitFromRepository(userId, unitId);
         Location? location = unit?.Location;
         StarSystem? system = _mapRepository[body.System];
             
@@ -95,7 +95,7 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Returns more detailed information about the location a unit of user currently is about")]
     public ActionResult<UnitLocationDTO> GetUnitLocation(string userId, string unitId)
     {
-        Unit? unit = GetUnitFromRepository(userId, unitId);
+        IUnit? unit = GetUnitFromRepository(userId, unitId);
         var location = unit?.ToLocationDTO();
 
         return unit is not null
@@ -104,10 +104,10 @@ public class UnitsController : ControllerBase
     }
 
 
-    private Unit? GetUnitFromRepository(string userId, string unitId)
+    private IUnit? GetUnitFromRepository(string userId, string unitId)
     {
-        User? user = _usersRepository[userId];
-        Unit? unit = null;
+        IUser? user = _usersRepository[userId];
+        IUnit? unit = null;
 
         if (user is not null && user.Units.ContainsKey(unitId))
         {
