@@ -1,6 +1,4 @@
-﻿using IonShard.Domain.Map;
-
-namespace IonShard.Domain.Units;
+﻿namespace IonShard.Domain.Map;
 
 public class Location
 {
@@ -11,6 +9,10 @@ public class Location
     public Location(StarSystem system, Planet? planet)
     {
         System = system;
+
+        if (planet is not null && system[planet.Name] is not null)
+            throw new ArgumentException("This planet does not belong to the system.", planet.Name);
+
         Planet = planet;
     }
 }

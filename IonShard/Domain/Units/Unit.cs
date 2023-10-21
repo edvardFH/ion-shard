@@ -13,5 +13,4 @@ public class Unit
         Id = id;
         Location = new(starSystem, planet);
     }
-
 }
