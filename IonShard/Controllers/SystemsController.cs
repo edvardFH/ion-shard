@@ -1,6 +1,6 @@
 ﻿using IonShard.Contracts.DTO.Map;
 using IonShard.Mappers;
-using IonShard.Services;
+using IonShard.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 

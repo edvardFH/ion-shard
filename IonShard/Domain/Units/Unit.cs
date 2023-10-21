@@ -2,7 +2,7 @@
 
 namespace IonShard.Domain.Units;
 
-public class Unit
+public class Unit : IUnit
 {
     public string Id { get; }
     public string Type => "scout";

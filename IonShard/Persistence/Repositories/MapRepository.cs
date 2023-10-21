@@ -1,6 +1,7 @@
 ﻿using IonShard.Domain.Map;
+using IonShard.Services;
 
-namespace IonShard.Services;
+namespace IonShard.Persistence.Repositories;
 
 public class MapRepository
 {

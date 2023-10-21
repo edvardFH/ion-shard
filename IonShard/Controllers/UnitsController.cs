@@ -4,7 +4,7 @@ using IonShard.Domain.Map;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
-using IonShard.Services;
+using IonShard.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 

@@ -1,6 +1,8 @@
-﻿using IonShard.Contracts.DTO.Map;
+﻿using IonShard.Contracts.DTO.Buildings;
+using IonShard.Contracts.DTO.Map;
 using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.DTO.Users;
+using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
@@ -9,19 +11,23 @@ namespace IonShard.Mappers;
 
 public static class DomainToDTOMapper
 {
+    public static BuildingDTO ToDTO(this Building building)
+        => new BuildingDTO(
+            building.Id,
+            building.Type,
+            building.Location.System.Name,
+            building.Location.Planet?.Name);
+
+
     public static UserDTO ToDTO(this User user)
         => new UserDTO(user.Id, user.Pseudo, user.DateOfCreation);
 
 
     public static UnitDTO ToDTO(this Unit unit)
-    {
-        var unitLocation = unit.Location;
-
-        return new UnitDTO(
+        => new UnitDTO(
             unit.Id,
-            unitLocation.System.Name,
-            unitLocation.Planet?.Name);
-    }
+            unit.Location.System.Name,
+            unit.Location.Planet?.Name);
 
 
     public static UnitLocationDTO ToLocationDTO(this Unit unit) 

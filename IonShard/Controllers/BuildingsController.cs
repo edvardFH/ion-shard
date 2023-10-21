@@ -1,41 +1,51 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IonShard.Contracts.DTO.Buildings;
+using IonShard.Contracts.RequestBodies;
+using IonShard.Domain.Units;
+using IonShard.Domain.Users;
+using IonShard.Mappers;
+using IonShard.Persistence.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
-namespace IonShard.Controllers
+namespace IonShard.Controllers;
+
+[Route("users")]
+[ApiController]
+[Produces("application/json")]
+public class BuildingsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BuildingsController : ControllerBase
+    private readonly UserRepository _usersRepository;
+    private readonly MapRepository _mapRepository;
+    private readonly BuildingRepository _buildingRepository;
+
+    public BuildingsController(UserRepository usersRepository, MapRepository mapRepository, BuildingRepository buildingRepository)
     {
-        // GET: api/<ValuesController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        _usersRepository = usersRepository;
+        _mapRepository = mapRepository;
+        _buildingRepository = buildingRepository;
+    }
 
-        // GET api/<ValuesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
-        // POST api/<ValuesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<BuildingDTO> Post(string userId, [FromBody] CreateBuildingPostRequestBody body)
+    {
+        User? user = _usersRepository[userId];
 
-        // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        if(user is null)
+            return NotFound();
 
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        if (body is null || body.BuilderId is null || body.Type != "mine")
+            return BadRequest();
+
+        IUnit? unit = user.Units[body.BuilderId];
+
+        if (unit is null || unit is not IBuilder || unit.Location.Planet is null)
+            return BadRequest();
+
+        IBuilder builder = (IBuilder)unit;
+
+        return builder.Build(body.Type).ToDTO();
     }
 }

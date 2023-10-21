@@ -2,6 +2,7 @@
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
+using IonShard.Persistence.Repositories;
 using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -18,13 +19,11 @@ public class UsersController : ControllerBase
     
     private readonly UserRepository _usersRepository;
     private readonly UserFactory _userFactory;
-    private readonly MapRepository _mapRepository;
 
-    public UsersController(UserRepository usersRepository, UserFactory userFactory, MapRepository mapRepository)
+    public UsersController(UserRepository usersRepository, UserFactory userFactory)
     {
         _usersRepository = usersRepository;
         _userFactory = userFactory;
-        _mapRepository = mapRepository;
     }
 
 

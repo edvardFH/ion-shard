@@ -9,14 +9,14 @@ public class Building
 
     public string Type => "mine";
 
-    public Unit Unit {  get; }
+    public IUnit Builder {  get; }
 
     public Location Location { get; }
 
-    public Building(string id, Unit unit, StarSystem starSystem, Planet? planet)
+    public Building(string id, IUnit builder, StarSystem starSystem, Planet? planet)
     {
         Id = id;
-        Unit = unit;
+        Builder = builder;
         Location = new Location(starSystem, planet);
     }
 }

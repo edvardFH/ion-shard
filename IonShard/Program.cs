@@ -1,3 +1,4 @@
+using IonShard.Persistence.Repositories;
 using IonShard.Services;
 using IonShard.Swagger;
 using Microsoft.OpenApi.Models;
@@ -19,6 +20,8 @@ builder.Services.AddSingleton<MapRepository>();
 
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserFactory>();
+
+builder.Services.AddSingleton<BuildingRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
