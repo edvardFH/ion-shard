@@ -2,8 +2,8 @@
 
 public class Location : ILocation
 {
-    public StarSystem System { get; set; }
-    public Planet? Planet { get; set; }
+    public StarSystem System { get; }
+    public Planet? Planet { get; }
 
 
     public Location(StarSystem system, Planet? planet)

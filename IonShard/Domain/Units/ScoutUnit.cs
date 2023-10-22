@@ -4,16 +4,11 @@ using IonShard.Domain.Map.Locations;
 
 namespace IonShard.Domain.Units;
 
-public class ScoutUnit : IUnit
+public class ScoutUnit : AbstractUnit
 {
-    public string Id { get; }
-    public string Type => "scout";
-    public ILocation Location { get; }
+    public override string Type => "scout";
+    public override ILocation Location
+        => new LocationWithDetails(base.Location.System, base.Location.Planet);
 
-
-    public ScoutUnit(string id, StarSystem starSystem, Planet? planet)
-    {
-        Id = id;
-        Location = new LocationWithDetails(starSystem, planet);
-    }
+    public ScoutUnit(string id, StarSystem starSystem, Planet? planet) : base(id, starSystem, planet) { }
 }

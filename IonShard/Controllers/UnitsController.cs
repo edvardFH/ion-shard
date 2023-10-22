@@ -70,21 +70,19 @@ public class UnitsController : ControllerBase
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
-        ILocation? location = unit?.Location;
-        StarSystem? system = _mapRepository[body.System];
+        StarSystem? system = _mapRepository[body.DestinationSystem];
             
-        if (unit is null || location is null || system is null)
+        if (unit is null || system is null)
             return NotFound();
             
-        Planet? planet = body.Planet is not null
-            ? system?[body.Planet]
+        Planet? planet = body.DestinationPlanet is not null
+            ? system?[body.DestinationPlanet]
             : null;
 
-        if (planet is null && body.Planet is not null)
+        if (planet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        location.System = system;
-        location.Planet = planet;
+        _ = unit.Move(system, planet);
 
         return unit.ToDTO();
     }
@@ -94,13 +92,27 @@ public class UnitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Returns more detailed information about the location a unit of user currently is about")]
-    public ActionResult<UnitLocationDTO> GetUnitLocation(string userId, string unitId)
+    public async Task<ActionResult<UnitLocationDTO>> GetUnitLocation(string userId, string unitId)
     {
         IUnit? unit = GetUnitFromRepository(userId, unitId);
 
-        return unit is not null
-            ? unit.Location.ToDTO()
-            : NotFound();
+        if (unit is null)
+            return NotFound();
+
+        if(unit.Destination is null)
+            return unit.Location.ToDTO();
+
+
+        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - DateTime.Now;
+        bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
+
+        if (unitArrivesSoon)
+        {
+            await Task.Delay(unitRemainingTimeOfTravel);
+            return unit.Location.ToDTO();
+        }
+
+        return new Location(unit.Destination.System, unit.Destination.Planet).ToDTO();
     }
 
 

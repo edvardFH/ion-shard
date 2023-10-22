@@ -5,12 +5,14 @@ namespace IonShard.Domain.Units;
 
 public class Destination
 {
-    public ILocation Location { get; }
-    public DateTime DateTime { get; }
+    private ILocation _location;
+    public StarSystem System => _location.System;
+    public Planet? Planet => _location.Planet;
+    public DateTime EstimatedTimeOfArrival { get; }
 
     public Destination(StarSystem system, Planet? planet, DateTime dateTime)
     {
-        Location = new Location(system,  planet);
-        DateTime = dateTime;
+        _location = new Location(system,  planet);
+        EstimatedTimeOfArrival = dateTime;
     }
 }

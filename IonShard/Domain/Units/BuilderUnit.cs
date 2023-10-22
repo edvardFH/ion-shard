@@ -4,11 +4,9 @@ using IonShard.Domain.Map.Locations;
 
 namespace IonShard.Domain.Units;
 
-public class BuilderUnit: IBuilderUnit
+public class BuilderUnit : AbstractUnit, IBuilderUnit
 {
-    public string Id { get; }
-    public string Type => "builder";
-    public ILocation Location { get; }
+    public override string Type => "builder";
 
 
     public IBuilding Build(string buildingType)
@@ -20,10 +18,6 @@ public class BuilderUnit: IBuilderUnit
             Location.Planet);
     }
 
-    
-    public BuilderUnit(string id, StarSystem starSystem, Planet? planet)
-    {
-        Id = id;
-        Location = new Location(starSystem, planet);
-    }
+
+    public BuilderUnit(string id, StarSystem starSystem, Planet? planet) : base(id, starSystem, planet) { }
 }
