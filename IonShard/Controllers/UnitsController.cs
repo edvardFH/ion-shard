@@ -96,7 +96,6 @@ public class UnitsController : ControllerBase
     public ActionResult<UnitLocationDTO> GetUnitLocation(string userId, string unitId)
     {
         IUnit? unit = GetUnitFromRepository(userId, unitId);
-        var location = unit?.ToLocationDTO();
 
         return unit is not null
             ? unit.ToLocationDTO()

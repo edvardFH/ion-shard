@@ -21,16 +21,20 @@ public class UserFactory
     {
         IUser newUser = new User(id, pseudo, DateTime.Now);
 
-        ScoutUnit userUnit = GetDefaultUnit();
-        newUser.Units.Add(userUnit.Id, userUnit);
+        GetDefaultUnits()
+            .ToList()
+            .ForEach(unit => newUser.Units.Add(unit.Id, unit));
 
         return newUser;
     }
 
-    private ScoutUnit GetDefaultUnit()
+    private IEnumerable<IUnit> GetDefaultUnits()
     {
         StarSystem starSystem = GetRandomStarSystem();
-        return new(random.NextGuid().ToString(), starSystem, GetRandomPlanet(starSystem));
+        Planet? planet = GetRandomPlanet(starSystem);
+
+        yield return new ScoutUnit(random.NextGuid().ToString(), starSystem, planet);
+        yield return new BuilderUnit(random.NextGuid().ToString(), starSystem, planet);
     }
 
     private StarSystem GetRandomStarSystem() => map.Systems[random.Next(map.Systems.Count)];

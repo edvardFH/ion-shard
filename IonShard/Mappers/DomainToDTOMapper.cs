@@ -26,11 +26,15 @@ public static class DomainToDTOMapper
     public static UnitDTO ToDTO(this IUnit unit)
         => new UnitDTO(
             unit.Id,
+            unit.Type,
             unit.Location.System.Name,
-            unit.Location.Planet?.Name);
+            unit.Location.Planet?.Name,
+            null,
+            null,
+            null);
 
 
-    public static UnitLocationDTO ToLocationDTO(this IUnit unit) 
+    public static UnitLocationDTO ToLocationDTO(this ScoutUnit unit) 
         => new UnitLocationDTO(
             unit.Location.System.Name,
             unit.Location.Planet?.Name,
@@ -38,7 +42,13 @@ public static class DomainToDTOMapper
                 .ToDictionary(
                     resource => resource.Key.ToString().ToLower(),
                     resource => resource.Value));
-   
+
+    public static UnitLocationDTO ToLocationDTO(this IUnit unit)
+        => new UnitLocationDTO(
+            unit.Location.System.Name,
+            unit.Location.Planet?.Name,
+            null);
+
 
 
     public static PlanetDTO ToDTO(this Planet planet)
