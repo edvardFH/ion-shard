@@ -1,6 +1,7 @@
 ﻿using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Map;
+using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
@@ -69,7 +70,7 @@ public class UnitsController : ControllerBase
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
-        Location? location = unit?.Location;
+        ILocation? location = unit?.Location;
         StarSystem? system = _mapRepository[body.System];
             
         if (unit is null || location is null || system is null)
@@ -98,7 +99,7 @@ public class UnitsController : ControllerBase
         IUnit? unit = GetUnitFromRepository(userId, unitId);
 
         return unit is not null
-            ? unit.ToLocationDTO()
+            ? unit.Location.ToDTO()
             : NotFound();
     }
 

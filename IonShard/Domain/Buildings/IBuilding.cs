@@ -1,4 +1,4 @@
-﻿using IonShard.Domain.Map;
+﻿using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Units;
 
 namespace IonShard.Domain.Buildings;
@@ -11,5 +11,5 @@ public interface IBuilding
 
     public IUnit Builder { get; }
 
-    public Location Location { get; }
+    public ILocation Location { get; }
 }

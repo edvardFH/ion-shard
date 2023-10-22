@@ -1,4 +1,5 @@
 ﻿using IonShard.Domain.Map;
+using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Units;
 
 namespace IonShard.Domain.Buildings;
@@ -11,7 +12,7 @@ public class Building: IBuilding
 
     public IUnit Builder {  get; }
 
-    public Location Location { get; }
+    public ILocation Location { get; }
 
     public Building(string id, IUnit builder, StarSystem starSystem, Planet? planet)
     {

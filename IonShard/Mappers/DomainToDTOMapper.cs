@@ -4,6 +4,7 @@ using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.DTO.Users;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
+using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 
@@ -34,21 +35,20 @@ public static class DomainToDTOMapper
             null);
 
 
-    public static UnitLocationDTO ToLocationDTO(this ScoutUnit unit) 
+    public static UnitLocationDTO ToDTO(this ILocation location)
         => new UnitLocationDTO(
-            unit.Location.System.Name,
-            unit.Location.Planet?.Name,
-            unit.Location.Planet?.ResourcesQuantity
+            location.System.Name,
+            location.Planet?.Name,
+            null);
+
+    public static UnitLocationDTO ToDTO(this ILocationWithDetails location)
+        => new UnitLocationDTO(
+            location.System.Name,
+            location.Planet?.Name,
+            location.Planet?.ResourcesQuantity
                 .ToDictionary(
                     resource => resource.Key.ToString().ToLower(),
                     resource => resource.Value));
-
-    public static UnitLocationDTO ToLocationDTO(this IUnit unit)
-        => new UnitLocationDTO(
-            unit.Location.System.Name,
-            unit.Location.Planet?.Name,
-            null);
-
 
 
     public static PlanetDTO ToDTO(this Planet planet)
