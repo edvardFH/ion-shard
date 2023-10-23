@@ -66,7 +66,7 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
     public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
-        if (unitId != body.Id || body.Id is null || body.System is null)
+        if (unitId != body.Id || body.Id is null || body.System is null || body.DestinationSystem is null)
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
@@ -76,7 +76,7 @@ public class UnitsController : ControllerBase
             return NotFound();
             
         Planet? planet = body.DestinationPlanet is not null
-            ? system?[body.DestinationPlanet]
+            ? system[body.DestinationPlanet]
             : null;
 
         if (planet is null && body.DestinationPlanet is not null)
@@ -84,7 +84,7 @@ public class UnitsController : ControllerBase
 
         _ = unit.Move(system, planet);
 
-        return unit.ToDTO();
+        return new UnitDTO(unit.Id, unit.Type, unit.Location.System.Name, unit.Location.Planet?.Name, system.Name, planet?.Name, null);
     }
 
 

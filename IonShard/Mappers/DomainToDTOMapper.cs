@@ -32,7 +32,7 @@ public static class DomainToDTOMapper
             unit.Location.Planet?.Name,
             unit.Destination?.System.Name,
             unit.Destination?.Planet?.Name,
-            unit.Destination?.EstimatedTimeOfArrival);
+            unit.Destination?.EstimatedTimeOfArrival.ToString());
 
 
     public static UnitLocationDTO ToDTO(this ILocation location)

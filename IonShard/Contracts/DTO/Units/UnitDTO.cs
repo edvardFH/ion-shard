@@ -8,9 +8,9 @@ public class UnitDTO
     public string? Planet { get; }
     public string? DestinationSystem { get; }
     public string? DestinationPlanet { get; }
-    public DateTime? EstimatedTimeOfArrival { get; }
+    public string? EstimatedTimeOfArrival { get; }
 
-    public UnitDTO(string id, string type, string system, string? planet, string? destinationSystem, string? destinationPlanet, DateTime? estimatedTimeOfArrival)
+    public UnitDTO(string id, string type, string system, string? planet, string? destinationSystem, string? destinationPlanet, string? estimatedTimeOfArrival)
     {
         Id = id;
         Type = type;

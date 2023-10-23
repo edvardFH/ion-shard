@@ -22,30 +22,32 @@ public abstract class AbstractUnit : IUnit
         _location = new Location(system, planet);
     }
 
-    async public Task Move(StarSystem system, Planet? planet)
+    async public Task Move(StarSystem destinationSystem, Planet? destinationPlanet)
     {
-        int travelDuration = GetTravalDuration(system, planet);
-        _destination = new Destination(system, planet, DateTime.Now.AddMilliseconds(travelDuration));
+        int travelDuration = GetTravalDuration(destinationSystem, destinationPlanet);
+        _destination = new Destination(destinationSystem, destinationPlanet, DateTime.Now.AddMilliseconds(travelDuration));
 
-        bool unitLeavePlanet = this.Location.Planet is not null && this.Location.Planet != planet;
-        bool systemChange = this.Location.System != system;
-        bool unitEnterOnPlanet = this.Location.Planet != planet && planet is not null;
+        bool unitLeavePlanet = this.Location.Planet is not null && this.Location.Planet != destinationPlanet;
+        bool systemChange = this.Location.System != destinationSystem;
+        bool unitEnterOnPlanet = this.Location.Planet != destinationPlanet && destinationPlanet is not null;
 
-        
+
         if (unitLeavePlanet)
             _location = new Location(this.Location.System, null);
 
-        if(systemChange)
+        if (systemChange)
         {
             await Task.Delay(60000);
-            _location = new Location(system, null);
+            _location = new Location(destinationSystem, null);
         }
-     
-        if(unitEnterOnPlanet)
+
+        if (unitEnterOnPlanet)
         {
             await Task.Delay(15000);
-            _location = new Location(system, planet);
+            _location = new Location(destinationSystem, destinationPlanet);
         }
+
+        _destination = null;
     }
 
     private int GetTravalDuration(StarSystem system, Planet? planet)
@@ -55,7 +57,7 @@ public abstract class AbstractUnit : IUnit
         bool systemChange = this.Location.System != system;
         bool unitEnterOnPlanet = this.Location.Planet != planet && planet is not null;
 
-        if(systemChange)
+        if (systemChange)
             result += 60000;
 
         if (unitEnterOnPlanet)
