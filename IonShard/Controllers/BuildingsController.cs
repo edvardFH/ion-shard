@@ -39,7 +39,7 @@ public class BuildingsController : ControllerBase
         if (body is null || body.BuilderId is null || body.Type != "mine")
             return BadRequest();
 
-        IUnit? unit = user.Units[body.BuilderId];
+        IUnit? unit = user.Units.TryGetValue(body.BuilderId, out var result) ? result : null;
 
         if (unit is null || unit is not IBuilderUnit || unit.Location.Planet is null)
             return BadRequest();

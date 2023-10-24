@@ -6,6 +6,7 @@ using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
+using IonShard.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -64,13 +65,14 @@ public class UnitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
-    public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
+    public async Task<ActionResult<UnitDTO?>> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
-        if (unitId != body.Id || body.Id is null || body.System is null || body.DestinationSystem is null)
+        if (unitId != body.Id || body.Id is null || body.System is null || (body.DestinationSystem is null && body.DestinationPlanet is null))
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
-        StarSystem? system = _mapRepository[body.DestinationSystem];
+        string systemName = body.DestinationSystem ?? _mapRepository.getSystemNameOfAPlanet(body.DestinationPlanet);
+        StarSystem? system = _mapRepository[systemName];
             
         if (unit is null || system is null)
             return NotFound();
@@ -82,7 +84,11 @@ public class UnitsController : ControllerBase
         if (planet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        _ = unit.Move(system, planet);
+        //TODO Wait for unit to move if delay is less or equal to 2 sec
+        var delayTask = Task.Delay(2000);
+        var moveTask = unit.Move(system, planet);
+
+        Task.WaitAny(delayTask, moveTask);
 
         return new UnitDTO(unit.Id, unit.Type, unit.Location.System.Name, unit.Location.Planet?.Name, system.Name, planet?.Name, null);
     }

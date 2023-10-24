@@ -6,6 +6,9 @@ namespace IonShard.Domain.Units;
 
 public abstract class AbstractUnit : IUnit
 {
+    private const int SystemChangeDelay = 60000;
+    private const int EnterPlanetDelay = 15000;
+    
     public string Id { get; }
     public abstract string Type { get; }
 
@@ -24,7 +27,7 @@ public abstract class AbstractUnit : IUnit
 
     async public Task Move(StarSystem destinationSystem, Planet? destinationPlanet)
     {
-        int travelDuration = GetTravalDuration(destinationSystem, destinationPlanet);
+        int travelDuration = GetTravelDuration(destinationSystem, destinationPlanet);
         _destination = new Destination(destinationSystem, destinationPlanet, DateTime.Now.AddMilliseconds(travelDuration));
 
         bool unitLeavePlanet = this.Location.Planet is not null && this.Location.Planet != destinationPlanet;
@@ -37,20 +40,20 @@ public abstract class AbstractUnit : IUnit
 
         if (systemChange)
         {
-            await Task.Delay(60000);
+            await Task.Delay(SystemChangeDelay);
             _location = new Location(destinationSystem, null);
         }
 
         if (unitEnterOnPlanet)
         {
-            await Task.Delay(15000);
+            await Task.Delay(EnterPlanetDelay);
             _location = new Location(destinationSystem, destinationPlanet);
         }
 
         _destination = null;
     }
 
-    private int GetTravalDuration(StarSystem system, Planet? planet)
+    private int GetTravelDuration(StarSystem system, Planet? planet)
     {
         var result = 0;
 
@@ -58,10 +61,10 @@ public abstract class AbstractUnit : IUnit
         bool unitEnterOnPlanet = this.Location.Planet != planet && planet is not null;
 
         if (systemChange)
-            result += 60000;
+            result += SystemChangeDelay;
 
         if (unitEnterOnPlanet)
-            result += 15000;
+            result += EnterPlanetDelay;
 
         return result;
     }
