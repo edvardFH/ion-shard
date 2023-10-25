@@ -10,7 +10,6 @@ IConfiguration configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-// Add services to the container.
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<MapGenerator>();

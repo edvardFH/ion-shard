@@ -10,5 +10,6 @@ public interface IUnit
     public ILocation Location { get; }
     public Destination? Destination { get; }
 
-    public Task Move(StarSystem starSystem, Planet? planet);
+    public Task TravelTask { get; }
+    public void Move(StarSystem starSystem, Planet? planet);
 }

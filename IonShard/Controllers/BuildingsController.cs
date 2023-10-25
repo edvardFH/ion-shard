@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IonShard.Controllers;
 
-[Route("users")]
+[Route("Users")]
 [ApiController]
 [Produces("application/json")]
 public class BuildingsController : ControllerBase
@@ -39,10 +39,14 @@ public class BuildingsController : ControllerBase
         if (body is null || body.BuilderId is null || body.Type != "mine")
             return BadRequest();
 
-        IUnit? unit = user.Units[body.BuilderId];
+
+        IUnit? unit = user.Units.ContainsKey(body.BuilderId)
+            ? user.Units[body.BuilderId]
+            : null;
 
         if (unit is null || unit is not IBuilderUnit || unit.Location.Planet is null)
             return BadRequest();
+
 
         IBuilderUnit builder = (IBuilderUnit)unit;
 
