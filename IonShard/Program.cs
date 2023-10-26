@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGeneratorOptions"));
+
 builder.Services.AddSingleton<MapBuilder>();
 builder.Services.AddSingleton<MapRepository>();
 

@@ -1,12 +1,15 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
 public abstract class AbstractUnit : IUnit
 {
+    private const int LeavePlanetManeuverDuration = 0;
+    private const int ChangeSystemManeuverDuration = 60;
+    private const int EnterPlanetManeuverDuration = 15;
+
     public string Id { get; }
     public abstract string Type { get; }
 
@@ -25,62 +28,47 @@ public abstract class AbstractUnit : IUnit
         _location = new Location(system, planet);
     }
 
-    public void StartMove(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
+    public void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
-        int travelDuration = GetTravalDuration(destinationSystem, destinationPlanet);
-        _destination = new Destination(destinationSystem, destinationPlanet, clock.Now.AddMilliseconds(travelDuration)); // todo: use TimeStamp
+        var travelDuration = 0;
 
-        _travelTask = MoveAsync(clock);
+        if (_location.IsPlanetLeft(destinationPlanet))
+            travelDuration += LeavePlanetManeuverDuration;
+
+        if (_location.IsSystemChanged(destinationSystem))
+            travelDuration += ChangeSystemManeuverDuration;
+
+        if (_location.IsPlanetEntered(destinationPlanet))
+            travelDuration += EnterPlanetManeuverDuration;
+
+        _destination = new Destination(
+            destinationSystem,
+            destinationPlanet,
+            clock.Now.Add(new TimeSpan(0, 0, travelDuration)));
+
+        _travelTask = TravelAsync(clock);
     }
 
-    private async Task MoveAsync(IClock clock)
+    private async Task TravelAsync(IClock clock)
     {
         if (_destination is null)
             return;
 
-        bool unitLeavePlanet = _location.Planet is not null && _location.Planet != _destination.Planet;
-        bool systemChange = _location.System != _destination.System;
-        bool unitEnterOnPlanet = _location.Planet != _destination.Planet && _destination.Planet is not null;
 
+        if (_location.IsPlanetLeft(_destination.Planet))
+            await clock.Delay(new TimeSpan(0, 0, LeavePlanetManeuverDuration));
+        _location = new Location(_location.System, null);
 
-        if (unitLeavePlanet)
-            _location = new Location(_location.System, null);
-
-        if (systemChange)
+        if (_location.IsSystemChanged(_destination.System))
         {
-            await clock.Delay(60000);
+            await clock.Delay(new TimeSpan(0, 0, ChangeSystemManeuverDuration));
             _location = new Location(_destination.System, null);
         }
 
-        if (unitEnterOnPlanet)
+        if (_location.IsPlanetEntered(_destination.Planet))
         {
-            await clock.Delay(15000);
+            await clock.Delay(new TimeSpan(0, 0, EnterPlanetManeuverDuration));
             _location = new Location(_destination.System, _destination.Planet);
         }
     }
-
-    private int GetTravalDuration(StarSystem system, Planet? planet)
-    {
-        var result = 0;
-
-        bool systemChange = _location.System != system;
-        bool unitEnterOnPlanet = _location.Planet != planet && planet is not null;
-
-        if (systemChange)
-            result += 60000;
-
-        if (unitEnterOnPlanet)
-            result += 15000;
-
-        return result;
-    }
-
-    public bool HasToLeavePlanet
-        => this.Destination is not null && this.Location.Planet is not null && this.Destination.Planet is null;
-
-    public bool HasToChangeSystem
-        => this.Destination is not null && this.Location.System != this.Destination.System;
-
-    public bool HasToEnterPlanet
-        => this.Destination is not null && this.Location.Planet != this.Destination.Planet;
 }

@@ -12,5 +12,5 @@ public interface IUnit
     public Destination? Destination { get; }
 
     public Task TravelTask { get; }
-    public void StartMove(IClock clock, StarSystem starSystem, Planet? planet);
+    public void StartTravel(IClock clock, StarSystem starSystem, Planet? planet);
 }

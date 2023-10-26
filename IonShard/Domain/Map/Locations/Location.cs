@@ -16,17 +16,12 @@ public class Location : ILocation
         Planet = planet;
     }
 
-    public static bool operator ==(Location leftLocation, Location rightLocation) 
-        => leftLocation.System == rightLocation.System && leftLocation.Planet == rightLocation.Planet;
-    public static bool operator !=(Location leftLocation, Location rightLocation)
-        => leftLocation.System != rightLocation.System || leftLocation.Planet == rightLocation.Planet;
+    public bool IsPlanetLeft(Planet? newPlanet)
+        => this.Planet is not null && this.Planet != newPlanet;
 
-    public bool IsPlanetLeft(ILocation newLocation)
-        => this.Planet is not null && this.Planet != newLocation.Planet;
+    public bool IsSystemChanged(StarSystem newStarSytem)
+        => this.System != newStarSytem;
 
-    public bool DoesSystemChange(ILocation newLocation)
-        => this.System != newLocation.System;
-
-    public bool IsPlanetEntered(ILocation newLocation)
-        => this.Planet != newLocation.Planet;
+    public bool IsPlanetEntered(Planet? newPlanet)
+        => this.Planet != newPlanet;
 }
