@@ -1,6 +1,7 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
@@ -24,15 +25,15 @@ public abstract class AbstractUnit : IUnit
         _location = new Location(system, planet);
     }
 
-    public void Move(StarSystem destinationSystem, Planet? destinationPlanet)
+    public void Move(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
         int travelDuration = GetTravalDuration(destinationSystem, destinationPlanet);
-        _destination = new Destination(destinationSystem, destinationPlanet, DateTime.Now.AddMilliseconds(travelDuration));
+        _destination = new Destination(destinationSystem, destinationPlanet, clock.Now.AddMilliseconds(travelDuration));
 
-        _travelTask = Movement();
+        _travelTask = Movement(clock);
     }
 
-    private async Task Movement()
+    private async Task Movement(IClock clock)
     {
         if (_destination is null)
              return;
@@ -47,17 +48,15 @@ public abstract class AbstractUnit : IUnit
 
         if (systemChange)
         {
-            await Task.Delay(60000);
+            await clock.Delay(60000);
             _location = new Location(_destination.System, null);
         }
 
         if (unitEnterOnPlanet)
         {
-            await Task.Delay(15000);
+            await clock.Delay(15000);
             _location = new Location(_destination.System, _destination.Planet);
         }
-
-        _destination = null;
     }
 
     private int GetTravalDuration(StarSystem system, Planet? planet)

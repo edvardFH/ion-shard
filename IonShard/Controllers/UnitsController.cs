@@ -21,11 +21,13 @@ public class UnitsController : ControllerBase
 
     private readonly UserRepository _usersRepository;
     private readonly MapRepository _mapRepository;
+    private readonly IClock _clock;
 
-    public UnitsController(UserRepository usersRepository, MapRepository mapRepository)
+    public UnitsController(UserRepository usersRepository, MapRepository mapRepository, IClock clock)
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;
+        _clock = clock;
     }
 
 
@@ -105,7 +107,7 @@ public class UnitsController : ControllerBase
         if (planet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        unit.Move(system, planet);
+        unit.Move(_clock, system, planet);
 
         return unit.ToDTO(); //new UnitDTO(unit.Id, unit.Type, unit.Location.System.Name, unit.Location.Planet?.Name, system.Name, planet?.Name, null);
     }

@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
@@ -11,5 +12,5 @@ public interface IUnit
     public Destination? Destination { get; }
 
     public Task TravelTask { get; }
-    public void Move(StarSystem starSystem, Planet? planet);
+    public void Move(IClock clock, StarSystem starSystem, Planet? planet);
 }
