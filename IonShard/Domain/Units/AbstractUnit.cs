@@ -25,18 +25,18 @@ public abstract class AbstractUnit : IUnit
         _location = new Location(system, planet);
     }
 
-    public void Move(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
+    public void StartMove(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
         int travelDuration = GetTravalDuration(destinationSystem, destinationPlanet);
-        _destination = new Destination(destinationSystem, destinationPlanet, clock.Now.AddMilliseconds(travelDuration));
+        _destination = new Destination(destinationSystem, destinationPlanet, clock.Now.AddMilliseconds(travelDuration)); // todo: use TimeStamp
 
-        _travelTask = Movement(clock);
+        _travelTask = MoveAsync(clock);
     }
 
-    private async Task Movement(IClock clock)
+    private async Task MoveAsync(IClock clock)
     {
         if (_destination is null)
-             return;
+            return;
 
         bool unitLeavePlanet = _location.Planet is not null && _location.Planet != _destination.Planet;
         bool systemChange = _location.System != _destination.System;
@@ -74,4 +74,13 @@ public abstract class AbstractUnit : IUnit
 
         return result;
     }
+
+    public bool HasToLeavePlanet
+        => this.Destination is not null && this.Location.Planet is not null && this.Destination.Planet is null;
+
+    public bool HasToChangeSystem
+        => this.Destination is not null && this.Location.System != this.Destination.System;
+
+    public bool HasToEnterPlanet
+        => this.Destination is not null && this.Location.Planet != this.Destination.Planet;
 }

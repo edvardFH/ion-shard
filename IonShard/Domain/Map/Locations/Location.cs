@@ -15,4 +15,18 @@ public class Location : ILocation
 
         Planet = planet;
     }
+
+    public static bool operator ==(Location leftLocation, Location rightLocation) 
+        => leftLocation.System == rightLocation.System && leftLocation.Planet == rightLocation.Planet;
+    public static bool operator !=(Location leftLocation, Location rightLocation)
+        => leftLocation.System != rightLocation.System || leftLocation.Planet == rightLocation.Planet;
+
+    public bool IsPlanetLeft(ILocation newLocation)
+        => this.Planet is not null && this.Planet != newLocation.Planet;
+
+    public bool DoesSystemChange(ILocation newLocation)
+        => this.System != newLocation.System;
+
+    public bool IsPlanetEntered(ILocation newLocation)
+        => this.Planet != newLocation.Planet;
 }

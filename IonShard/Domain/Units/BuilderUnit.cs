@@ -11,7 +11,10 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 
     public IBuilding Build(string buildingType)
     {
-        return new Building(
+        if (Location.Planet is null)
+            throw new Exception();
+        
+        return new Mine(
             Guid.NewGuid().ToString(),
             this,
             Location.System,

@@ -107,7 +107,7 @@ public class UnitsController : ControllerBase
         if (planet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        unit.Move(_clock, system, planet);
+        unit.StartMove(_clock, system, planet);
 
         return unit.ToDTO();
     }
