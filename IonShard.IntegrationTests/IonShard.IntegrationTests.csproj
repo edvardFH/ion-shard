@@ -27,4 +27,13 @@
     <ProjectReference Include="..\Shard.Shared.Web.IntegrationTests\Shard.Shared.Web.IntegrationTests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Mappers\" />
+    <Folder Include="Repository\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Repository\LocalTestRepository.cs" />
+  </ItemGroup>
+
 </Project>

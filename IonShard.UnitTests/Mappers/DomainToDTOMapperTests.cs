@@ -1,5 +1,7 @@
-﻿using IonShard.UnitTests.Repository;
-using Xunit;
+﻿using IonShard.Contracts.DTO.Map;
+using IonShard.Domain.Map;
+using IonShard.UnitTests.Repository;
+using IonShard.Mappers;
 
 namespace IonShard.UnitTests.Mappers;
 
