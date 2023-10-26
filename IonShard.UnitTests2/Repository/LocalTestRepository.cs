@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
-using IonShard.Domain.Map;
+﻿using IonShard.Domain.Map;
 using IonShard.Persistence.Repositories;
+using System.Text.Json;
 
-namespace IonShard.IntegrationTests.Repository;
+namespace IonShard.UnitTests.Repository;
 
 public class LocalTestRepository
 {

@@ -1,9 +1,9 @@
 ﻿using IonShard.Contracts.DTO.Map;
 using IonShard.Domain.Map;
-using IonShard.IntegrationTests.Repository;
+using IonShard.UnitTests.Repository;
 using IonShard.Mappers;
 
-namespace IonShard.IntegrationTests.Mappers;
+namespace IonShard.UnitTests.Mappers;
 
 public class DomainToDtoMapperTests
 {

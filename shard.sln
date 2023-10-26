@@ -6,9 +6,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shard.Shared.Web.Integratio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shard.Shared.Core", "Shard.Shared.Core\Shard.Shared.Core.csproj", "{7D73D8F4-7CA6-443D-AC94-5881C4C935FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IonShard", "IonShard\IonShard.csproj", "{9E5EC7AC-E334-4087-944F-980CD65DD584}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonShard", "IonShard\IonShard.csproj", "{9E5EC7AC-E334-4087-944F-980CD65DD584}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IonShard.IntegrationTests", "IonShard.IntegrationTests\IonShard.IntegrationTests.csproj", "{850A8C16-BB65-4E75-919F-E739831A062F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonShard.IntegrationTests", "IonShard.IntegrationTests\IonShard.IntegrationTests.csproj", "{850A8C16-BB65-4E75-919F-E739831A062F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IonShard.UnitTests", "IonShard.UnitTests2\IonShard.UnitTests.csproj", "{C09BC892-D9FB-4903-92B4-D5316FA0C87C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{850A8C16-BB65-4E75-919F-E739831A062F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{850A8C16-BB65-4E75-919F-E739831A062F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{850A8C16-BB65-4E75-919F-E739831A062F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C09BC892-D9FB-4903-92B4-D5316FA0C87C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C09BC892-D9FB-4903-92B4-D5316FA0C87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C09BC892-D9FB-4903-92B4-D5316FA0C87C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C09BC892-D9FB-4903-92B4-D5316FA0C87C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
