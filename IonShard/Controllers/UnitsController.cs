@@ -9,7 +9,8 @@ using IonShard.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
-
+using System.Drawing;
+using System.Reflection.Metadata.Ecma335;
 
 namespace IonShard.Controllers;
 
@@ -55,32 +56,11 @@ public class UnitsController : ControllerBase
     public async Task<ActionResult<UnitDTO>> GetOneUnitFromUser(string userId, string unitId)
     {
 
-        IUnit? unit = GetUnitFromRepository(userId, unitId);
+        IUnit? unit = await GetUnitAsync(userId, unitId);
 
-        if (unit is null)
-            return NotFound();
-
-        if (unit.Destination is null)
-            return unit.ToDTO();
-
-
-        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
-        bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
-
-        if (unitArrivesSoon)
-        {
-            await unit.TravelTask;
-            return unit.ToDTO();
-        }
-
-        return new UnitDTO(
-            unit.Id,
-            unit.Type,
-            unit.Location.System.Name,
-            unit.Location.Planet?.Name,
-            unit.Destination.System.Name,
-            unit.Destination.Planet?.Name,
-            unit.Destination.EstimatedTimeOfArrival.ToString());
+        return unit is null
+            ? NotFound()
+            : unit.ToDTO();
     }
 
 
@@ -119,13 +99,23 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Returns more detailed information about the location a unit of user currently is about")]
     public async Task<ActionResult<UnitLocationDTO>> GetUnitLocation(string userId, string unitId)
     {
+        IUnit? unit = await GetUnitAsync(userId, unitId);
+
+        return unit is null
+            ? NotFound()
+            : unit.Location.ToDTO();
+    }
+
+
+    private async Task<IUnit?> GetUnitAsync(string userId, string unitId)
+    {
         IUnit? unit = GetUnitFromRepository(userId, unitId);
 
         if (unit is null)
-            return NotFound();
+            return null;
 
         if (unit.Destination is null)
-            return unit.Location.ToDTO();
+            return unit;
 
 
         TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
@@ -134,10 +124,10 @@ public class UnitsController : ControllerBase
         if (unitArrivesSoon)
         {
             await unit.TravelTask;
-            return unit.Location.ToDTO();
+            return unit;
         }
 
-        return new Location(unit.Destination.System, unit.Destination.Planet).ToDTO();
+        return unit;
     }
 
 
