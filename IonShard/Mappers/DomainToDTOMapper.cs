@@ -25,21 +25,35 @@ public static class DomainToDTOMapper
 
 
     public static UnitDTO ToDTO(this IUnit unit)
-        => new UnitDTO(
+    {
+        var unitSystem = unit.Location.System.Name;
+        var unitPlanet = unit.Location.Planet?.Name;
+
+        return new UnitDTO(
             unit.Id,
             unit.Type,
-            unit.Location.System.Name,
-            unit.Location.Planet?.Name,
-            unit.Destination?.System.Name,
-            unit.Destination?.Planet?.Name,
+            unitSystem,
+            unitPlanet,
+            unit.Destination?.System.Name ?? unitSystem,
+            unit.Destination?.Planet?.Name ?? unitPlanet,
             unit.Destination?.EstimatedTimeOfArrival.ToString());
+    }
 
 
-    public static UnitLocationDTO ToDTO(this ILocation location)
-        => new UnitLocationDTO(
+    public static UnitLocationDTO ToDTO(this ILocation location) 
+        => location switch
+        {
+            ILocationWithDetails locationWithDetails => locationWithDetails.ToDTO(),
+            _ => location.ToDtoWithoutDetails()
+        };
+
+    private static UnitLocationDTO ToDtoWithoutDetails(this ILocation location)
+    {
+        return new UnitLocationDTO(
             location.System.Name,
             location.Planet?.Name,
             null);
+    }
 
     public static UnitLocationDTO ToDTO(this ILocationWithDetails location)
         => new UnitLocationDTO(

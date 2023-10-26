@@ -10,7 +10,7 @@ public class Location : ILocation
     {
         System = system;
 
-        if (planet is not null && system[planet.Name] is not null)
+        if (planet is not null && system[planet.Name] is null)
             throw new ArgumentException("This planet does not belong to the system.", planet.Name);
 
         Planet = planet;

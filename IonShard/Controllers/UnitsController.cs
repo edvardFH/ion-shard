@@ -6,26 +6,28 @@ using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
-using IonShard.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
 
 
 namespace IonShard.Controllers;
 
-[Route("users")]
+[Route("Users")]
 [ApiController]
 [Produces("application/json")]
 public class UnitsController : ControllerBase
 {
-    
+
     private readonly UserRepository _usersRepository;
     private readonly MapRepository _mapRepository;
+    private readonly IClock _clock;
 
-    public UnitsController(UserRepository usersRepository, MapRepository mapRepository)
+    public UnitsController(UserRepository usersRepository, MapRepository mapRepository, IClock clock)
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;
+        _clock = clock;
     }
 
 
@@ -50,13 +52,35 @@ public class UnitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Returns information about one single unit of a user")]
-    public ActionResult<UnitDTO> GetOneUnitFromUser(string userId, string unitId)
+    public async Task<ActionResult<UnitDTO>> GetOneUnitFromUser(string userId, string unitId)
     {
+
         IUnit? unit = GetUnitFromRepository(userId, unitId);
 
-        return unit is not null
-            ? unit.ToDTO()
-            : NotFound();
+        if (unit is null)
+            return NotFound();
+
+        if (unit.Destination is null)
+            return unit.ToDTO();
+
+
+        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
+        bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
+
+        if (unitArrivesSoon)
+        {
+            await unit.TravelTask;
+            return unit.ToDTO();
+        }
+
+        return new UnitDTO(
+            unit.Id,
+            unit.Type,
+            unit.Location.System.Name,
+            unit.Location.Planet?.Name,
+            unit.Destination.System.Name,
+            unit.Destination.Planet?.Name,
+            unit.Destination.EstimatedTimeOfArrival.ToString());
     }
 
 
@@ -65,18 +89,17 @@ public class UnitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
-    public async Task<ActionResult<UnitDTO?>> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
+    public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
-        if (unitId != body.Id || body.Id is null || body.System is null || (body.DestinationSystem is null && body.DestinationPlanet is null))
+        if (unitId != body.Id || body.Id is null || body.System is null || body.DestinationSystem is null)
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
-        string systemName = body.DestinationSystem ?? _mapRepository.getSystemNameOfAPlanet(body.DestinationPlanet);
-        StarSystem? system = _mapRepository[systemName];
-            
+        StarSystem? system = _mapRepository[body.DestinationSystem];
+
         if (unit is null || system is null)
             return NotFound();
-            
+
         Planet? planet = body.DestinationPlanet is not null
             ? system[body.DestinationPlanet]
             : null;
@@ -84,13 +107,9 @@ public class UnitsController : ControllerBase
         if (planet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        //TODO Wait for unit to move if delay is less or equal to 2 sec
-        var delayTask = Task.Delay(2000);
-        var moveTask = unit.Move(system, planet);
+        unit.Move(_clock, system, planet);
 
-        Task.WaitAny(delayTask, moveTask);
-
-        return new UnitDTO(unit.Id, unit.Type, unit.Location.System.Name, unit.Location.Planet?.Name, system.Name, planet?.Name, null);
+        return unit.ToDTO();
     }
 
 
@@ -105,16 +124,16 @@ public class UnitsController : ControllerBase
         if (unit is null)
             return NotFound();
 
-        if(unit.Destination is null)
+        if (unit.Destination is null)
             return unit.Location.ToDTO();
 
 
-        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - DateTime.Now;
+        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
         bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
 
         if (unitArrivesSoon)
         {
-            await Task.Delay(unitRemainingTimeOfTravel);
+            await unit.TravelTask;
             return unit.Location.ToDTO();
         }
 
@@ -128,9 +147,7 @@ public class UnitsController : ControllerBase
         IUnit? unit = null;
 
         if (user is not null && user.Units.ContainsKey(unitId))
-        {
             unit = user.Units[unitId];
-        }
 
         return unit;
     }
