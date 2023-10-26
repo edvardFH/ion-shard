@@ -64,7 +64,7 @@ public class UnitsController : ControllerBase
             return unit.ToDTO();
 
 
-        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - DateTime.Now;
+        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
         bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
 
         if (unitArrivesSoon)
@@ -109,7 +109,7 @@ public class UnitsController : ControllerBase
 
         unit.Move(_clock, system, planet);
 
-        return unit.ToDTO(); //new UnitDTO(unit.Id, unit.Type, unit.Location.System.Name, unit.Location.Planet?.Name, system.Name, planet?.Name, null);
+        return unit.ToDTO();
     }
 
 
@@ -128,7 +128,7 @@ public class UnitsController : ControllerBase
             return unit.Location.ToDTO();
 
 
-        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - DateTime.Now;
+        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
         bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
 
         if (unitArrivesSoon)

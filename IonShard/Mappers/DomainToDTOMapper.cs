@@ -40,11 +40,20 @@ public static class DomainToDTOMapper
     }
 
 
-    public static UnitLocationDTO ToDTO(this ILocation location)
-        => new UnitLocationDTO(
+    public static UnitLocationDTO ToDTO(this ILocation location) 
+        => location switch
+        {
+            ILocationWithDetails locationWithDetails => locationWithDetails.ToDTO(),
+            _ => location.ToDtoWithoutDetails()
+        };
+
+    private static UnitLocationDTO ToDtoWithoutDetails(this ILocation location)
+    {
+        return new UnitLocationDTO(
             location.System.Name,
             location.Planet?.Name,
             null);
+    }
 
     public static UnitLocationDTO ToDTO(this ILocationWithDetails location)
         => new UnitLocationDTO(
