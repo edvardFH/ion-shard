@@ -1,6 +1,7 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Units;
+using IonShard.Utils;
 
 namespace IonShard.Domain.Buildings;
 
@@ -14,9 +15,9 @@ public class Mine: IBuilding
 
     public ILocation Location { get; }
 
-    public Mine(string id, IUnit builder, StarSystem starSystem, Planet? planet)
+    public Mine(IUnit builder, StarSystem starSystem, Planet? planet)
     {
-        Id = id;
+        Id = new Random().NextGuid().ToString();
         Builder = builder;
         Location = new Location(starSystem, planet);
     }

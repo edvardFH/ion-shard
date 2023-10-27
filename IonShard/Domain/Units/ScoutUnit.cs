@@ -10,5 +10,5 @@ public class ScoutUnit : AbstractUnit
     public override ILocation Location
         => new LocationWithDetails(base.Location.System, base.Location.Planet);
 
-    public ScoutUnit(string id, StarSystem starSystem, Planet? planet) : base(id, starSystem, planet) { }
+    public ScoutUnit(StarSystem starSystem, Planet? planet) : base(starSystem, planet) { }
 }

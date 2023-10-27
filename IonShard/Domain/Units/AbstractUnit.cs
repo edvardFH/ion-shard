@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using IonShard.Utils;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
@@ -12,63 +13,58 @@ public abstract class AbstractUnit : IUnit
 
     public string Id { get; }
     public abstract string Type { get; }
+    public virtual ILocation Location { get; private set; }
+    public Destination? Destination { get; private set; }
+    public Task TravelTask { get; private set; }
 
-    private ILocation _location;
-    public virtual ILocation Location => _location;
-
-    private Destination? _destination;
-    public Destination? Destination => _destination;
-
-    private Task _travelTask = Task.CompletedTask;
-    public Task TravelTask => _travelTask;
-
-    public AbstractUnit(string id, StarSystem system, Planet? planet)
+    public AbstractUnit(StarSystem system, Planet? planet)
     {
-        Id = id;
-        _location = new Location(system, planet);
+        Id = new Random().NextGuid().ToString();
+        Location = new Location(system, planet);
+        TravelTask = Task.CompletedTask;
     }
 
     public void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
         var travelDuration = 0;
 
-        if (_location.IsPlanetLeft(destinationPlanet))
+        if (Location.IsPlanetLeft(destinationPlanet))
             travelDuration += LeavePlanetManeuverDuration;
 
-        if (_location.IsSystemChanged(destinationSystem))
+        if (Location.IsSystemChanged(destinationSystem))
             travelDuration += ChangeSystemManeuverDuration;
 
-        if (_location.IsPlanetEntered(destinationPlanet))
+        if (Location.IsPlanetEntered(destinationPlanet))
             travelDuration += EnterPlanetManeuverDuration;
 
-        _destination = new Destination(
+        Destination = new Destination(
             destinationSystem,
             destinationPlanet,
             clock.Now.Add(new TimeSpan(0, 0, travelDuration)));
 
-        _travelTask = TravelAsync(clock);
+        TravelTask = TravelAsync(clock);
     }
 
     private async Task TravelAsync(IClock clock)
     {
-        if (_destination is null)
+        if (Destination is null)
             return;
 
 
-        if (_location.IsPlanetLeft(_destination.Planet))
+        if (Location.IsPlanetLeft(Destination.Planet))
             await clock.Delay(new TimeSpan(0, 0, LeavePlanetManeuverDuration));
-        _location = new Location(_location.System, null);
+        Location = new Location(Location.System, null);
 
-        if (_location.IsSystemChanged(_destination.System))
+        if (Location.IsSystemChanged(Destination.System))
         {
             await clock.Delay(new TimeSpan(0, 0, ChangeSystemManeuverDuration));
-            _location = new Location(_destination.System, null);
+            Location = new Location(Destination.System, null);
         }
 
-        if (_location.IsPlanetEntered(_destination.Planet))
+        if (Location.IsPlanetEntered(Destination.Planet))
         {
             await clock.Delay(new TimeSpan(0, 0, EnterPlanetManeuverDuration));
-            _location = new Location(_destination.System, _destination.Planet);
+            Location = new Location(Destination.System, Destination.Planet);
         }
     }
 }

@@ -33,8 +33,8 @@ public class UserFactory
         StarSystem starSystem = GetRandomStarSystem();
         Planet? planet = GetRandomPlanet(starSystem);
 
-        yield return new ScoutUnit(random.NextGuid().ToString(), starSystem, planet);
-        yield return new BuilderUnit(random.NextGuid().ToString(), starSystem, planet);
+        yield return new ScoutUnit(starSystem, planet);
+        yield return new BuilderUnit(starSystem, planet);
     }
 
     private StarSystem GetRandomStarSystem() => map.Systems[random.Next(map.Systems.Count)];

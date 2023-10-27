@@ -15,12 +15,11 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
             throw new Exception();
         
         return new Mine(
-            Guid.NewGuid().ToString(),
             this,
             Location.System,
             Location.Planet);
     }
 
 
-    public BuilderUnit(string id, StarSystem starSystem, Planet? planet) : base(id, starSystem, planet) { }
+    public BuilderUnit(StarSystem starSystem, Planet? planet) : base(starSystem, planet) { }
 }
