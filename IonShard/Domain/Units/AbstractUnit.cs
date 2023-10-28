@@ -18,6 +18,7 @@ public abstract class AbstractUnit : IUnit
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
     public Task TravelTask { get; private set; }
+    private CancellationTokenSource? _cancellationTokenSource;
 
 
     public AbstractUnit(IUser owner, StarSystem system, Planet? planet)
@@ -47,10 +48,14 @@ public abstract class AbstractUnit : IUnit
             destinationPlanet,
             clock.Now.Add(new TimeSpan(0, 0, travelDuration)));
 
-        TravelTask = TravelAsync(clock);
+
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        TravelTask = TravelAsync(clock, _cancellationTokenSource.Token);
     }
 
-    private async Task TravelAsync(IClock clock)
+
+    private async Task TravelAsync(IClock clock, CancellationToken cancellationToken)
     {
         if (Destination is null)
             return;
@@ -58,21 +63,42 @@ public abstract class AbstractUnit : IUnit
 
         if (Location.IsPlanetLeft(Destination.Planet))
         {
-            await clock.Delay(new TimeSpan(0, 0, LeavePlanetManeuverDuration));
+            await clock.Delay(
+                new TimeSpan(0, 0, LeavePlanetManeuverDuration),
+                cancellationToken);
             Location = new Location(Location.System, null);
         }
 
 
         if (Location.IsSystemChanged(Destination.System))
         {
-            await clock.Delay(new TimeSpan(0, 0, ChangeSystemManeuverDuration));
+            await clock.Delay(
+                new TimeSpan(0, 0, ChangeSystemManeuverDuration),
+                cancellationToken);
             Location = new Location(Destination.System, null);
         }
 
         if (Location.IsPlanetEntered(Destination.Planet))
         {
-            await clock.Delay(new TimeSpan(0, 0, EnterPlanetManeuverDuration));
+            await clock.Delay(
+                new TimeSpan(0, 0, EnterPlanetManeuverDuration),
+                cancellationToken);
             Location = new Location(Destination.System, Destination.Planet);
         }
+    }
+
+
+    public bool TryRequestTravelStop()
+    {
+        var cancellationSuccessfullyRequested = false;
+
+        if (TravelTask.Status == TaskStatus.Running && _cancellationTokenSource is not null)
+        {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource = null;
+            cancellationSuccessfullyRequested = true;
+        }
+
+        return cancellationSuccessfullyRequested;
     }
 }
