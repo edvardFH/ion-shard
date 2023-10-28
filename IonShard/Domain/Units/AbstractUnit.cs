@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using IonShard.Domain.Users;
 using IonShard.Utils;
 using Shard.Shared.Core;
 
@@ -13,16 +14,20 @@ public abstract class AbstractUnit : IUnit
 
     public string Id { get; }
     public abstract string Type { get; }
+    public IUser Owner { get; }
     public virtual ILocation Location { get; private set; }
-    public Destination? Destination { get; private set; }
+    public IDestination? Destination { get; private set; }
     public Task TravelTask { get; private set; }
 
-    public AbstractUnit(StarSystem system, Planet? planet)
+
+    public AbstractUnit(IUser owner, StarSystem system, Planet? planet)
     {
         Id = new Random().NextGuid().ToString();
+        Owner = owner;
         Location = new Location(system, planet);
         TravelTask = Task.CompletedTask;
     }
+
 
     public void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
@@ -52,8 +57,11 @@ public abstract class AbstractUnit : IUnit
 
 
         if (Location.IsPlanetLeft(Destination.Planet))
+        {
             await clock.Delay(new TimeSpan(0, 0, LeavePlanetManeuverDuration));
-        Location = new Location(Location.System, null);
+            Location = new Location(Location.System, null);
+        }
+
 
         if (Location.IsSystemChanged(Destination.System))
         {

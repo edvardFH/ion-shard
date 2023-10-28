@@ -1,7 +1,6 @@
 ﻿using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Map;
-using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
@@ -9,8 +8,6 @@ using IonShard.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Drawing;
-using System.Reflection.Metadata.Ecma335;
 
 namespace IonShard.Controllers;
 
@@ -19,6 +16,8 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class UnitsController : ControllerBase
 {
+    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = new TimeSpan(0, 0, 2);
+
 
     private readonly UserRepository _usersRepository;
     private readonly MapRepository _mapRepository;
@@ -119,9 +118,8 @@ public class UnitsController : ControllerBase
 
 
         TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
-        bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
 
-        if (unitArrivesSoon)
+        if (unitRemainingTimeOfTravel <= MaximumWaitingTimeBeforeResponse)
         {
             await unit.TravelTask;
             return unit;

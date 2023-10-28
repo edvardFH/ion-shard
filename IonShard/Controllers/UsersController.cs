@@ -16,7 +16,7 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class UsersController : ControllerBase
 {
-    
+
     private readonly UserRepository _usersRepository;
     private readonly UserFactory _userFactory;
 

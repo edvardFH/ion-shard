@@ -23,8 +23,6 @@ builder.Services.AddSingleton<UserFactory>();
 
 builder.Services.AddSingleton<SystemClock>();
 
-builder.Services.AddSingleton<BuildingRepository>();
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

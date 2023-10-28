@@ -30,7 +30,7 @@ public class BuildingsController : ControllerBase
     {
         IUser? user = _usersRepository[userId];
 
-        if(user is null)
+        if (user is null)
             return NotFound();
 
         if (body is null || body.BuilderId is null || body.Type != "mine")
@@ -46,9 +46,6 @@ public class BuildingsController : ControllerBase
 
 
         IBuilderUnit builder = (IBuilderUnit)unit;
-
-        IBuilding building = builder.Build(body.Type);
-        user.Buildings.Add(building.Id, building);
 
         return builder.Build(body.Type).ToDTO();
     }

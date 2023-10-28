@@ -10,6 +10,10 @@ public interface IUser
     public string Id { get; }
     public string Pseudo { get; }
     public DateTime DateOfCreation { get; }
-    public IDictionary<string, IUnit> Units { get; }
-    public IDictionary<string, IBuilding> Buildings { get; }
+    public IReadOnlyDictionary<string, IUnit> Units { get; }
+    public IReadOnlyDictionary<string, IBuilding> Buildings { get; }
+
+
+    public void AddUnit(IUnit unit);
+    public void AddBuilding(IBuilding building);
 }
