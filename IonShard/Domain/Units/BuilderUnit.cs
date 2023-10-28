@@ -13,7 +13,7 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
     public IBuilding Build(string buildingType)
     {
         if (Location.Planet is null)
-            throw new Exception("Builder must be on a planet to build.");
+            throw new InvalidOperationException("Builder must be on a planet to build but it's planet location is null.");
 
         var building = new MineBuilding(this, Location.System, Location.Planet);
         this.Owner.AddBuilding(building);

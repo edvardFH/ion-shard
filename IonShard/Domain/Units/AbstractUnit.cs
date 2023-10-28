@@ -57,8 +57,10 @@ public abstract class AbstractUnit : IUnit
 
     private async Task TravelAsync(IClock clock, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (Destination is null)
-            return;
+            throw new InvalidOperationException("Unit destination is null. Travel is impossible.");
 
 
         if (Location.IsPlanetLeft(Destination.Planet))
@@ -66,6 +68,8 @@ public abstract class AbstractUnit : IUnit
             await clock.Delay(
                 new TimeSpan(0, 0, LeavePlanetManeuverDuration),
                 cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
             Location = new Location(Location.System, null);
         }
 
@@ -75,6 +79,8 @@ public abstract class AbstractUnit : IUnit
             await clock.Delay(
                 new TimeSpan(0, 0, ChangeSystemManeuverDuration),
                 cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
             Location = new Location(Destination.System, null);
         }
 
@@ -83,6 +89,8 @@ public abstract class AbstractUnit : IUnit
             await clock.Delay(
                 new TimeSpan(0, 0, EnterPlanetManeuverDuration),
                 cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
             Location = new Location(Destination.System, Destination.Planet);
         }
     }
