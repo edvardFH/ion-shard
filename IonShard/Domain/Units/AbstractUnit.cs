@@ -100,7 +100,7 @@ public abstract class AbstractUnit : IUnit
     {
         var cancellationSuccessfullyRequested = false;
 
-        if (TravelTask.Status == TaskStatus.Running && _cancellationTokenSource is not null)
+        if (TravelTask.Status is TaskStatus.Running or TaskStatus.WaitingForActivation && _cancellationTokenSource is not null)
         {
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource = null;

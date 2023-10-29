@@ -23,5 +23,5 @@ public class Location : ILocation
         => this.System != newStarSytem;
 
     public bool IsPlanetEntered(Planet? newPlanet)
-        => this.Planet != newPlanet;
+        => newPlanet is not null && this.Planet != newPlanet;
 }

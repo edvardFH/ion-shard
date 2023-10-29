@@ -5,9 +5,9 @@ namespace IonShard.Swagger;
 
 public class RequestBodiesDocumentFilter : IDocumentFilter
 {
-    private readonly string[] blacklist = { "CreateUserPutRequestBody", "MoveUnitPutRequestBody", "MoveUnitPutRequestBody" };
+    private readonly string[] _blacklist = { "CreateUserPutRequestBody", "MoveUnitPutRequestBody", "MoveUnitPutRequestBody", "CreateBuildingPostRequestBody" };
     public void Apply(OpenApiDocument schema, DocumentFilterContext context) 
-        => blacklist
+        => _blacklist
             .ToList()
             .ForEach(key => context.SchemaRepository.Schemas.Remove(key));
 }

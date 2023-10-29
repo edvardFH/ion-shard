@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IonShard\IonShard.csproj" />
+    <ProjectReference Include="..\Shard.Shared.Web.IntegrationTests\Shard.Shared.Web.IntegrationTests.csproj" />
   </ItemGroup>
 
 </Project>
