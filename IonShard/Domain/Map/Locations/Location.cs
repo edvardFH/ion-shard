@@ -15,4 +15,13 @@ public class Location : ILocation
 
         Planet = planet;
     }
+
+    public bool IsPlanetLeft(Planet? newPlanet)
+        => this.Planet is not null && this.Planet != newPlanet;
+
+    public bool IsSystemChanged(StarSystem newStarSytem)
+        => this.System != newStarSytem;
+
+    public bool IsPlanetEntered(Planet? newPlanet)
+        => this.Planet != newPlanet;
 }

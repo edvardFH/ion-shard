@@ -1,7 +1,6 @@
 ﻿using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Map;
-using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
 
-
 namespace IonShard.Controllers;
 
 [Route("Users")]
@@ -18,6 +16,8 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class UnitsController : ControllerBase
 {
+    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = new TimeSpan(0, 0, 2);
+
 
     private readonly UserRepository _usersRepository;
     private readonly MapRepository _mapRepository;
@@ -55,32 +55,11 @@ public class UnitsController : ControllerBase
     public async Task<ActionResult<UnitDTO>> GetOneUnitFromUser(string userId, string unitId)
     {
 
-        IUnit? unit = GetUnitFromRepository(userId, unitId);
+        IUnit? unit = await GetUnitAsync(userId, unitId);
 
-        if (unit is null)
-            return NotFound();
-
-        if (unit.Destination is null)
-            return unit.ToDTO();
-
-
-        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
-        bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
-
-        if (unitArrivesSoon)
-        {
-            await unit.TravelTask;
-            return unit.ToDTO();
-        }
-
-        return new UnitDTO(
-            unit.Id,
-            unit.Type,
-            unit.Location.System.Name,
-            unit.Location.Planet?.Name,
-            unit.Destination.System.Name,
-            unit.Destination.Planet?.Name,
-            unit.Destination.EstimatedTimeOfArrival.ToString());
+        return unit is null
+            ? NotFound()
+            : unit.ToDTO();
     }
 
 
@@ -107,7 +86,7 @@ public class UnitsController : ControllerBase
         if (planet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        unit.Move(_clock, system, planet);
+        unit.StartTravel(_clock, system, planet);
 
         return unit.ToDTO();
     }
@@ -119,25 +98,34 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Returns more detailed information about the location a unit of user currently is about")]
     public async Task<ActionResult<UnitLocationDTO>> GetUnitLocation(string userId, string unitId)
     {
+        IUnit? unit = await GetUnitAsync(userId, unitId);
+
+        return unit is null
+            ? NotFound()
+            : unit.Location.ToDTO();
+    }
+
+
+    private async Task<IUnit?> GetUnitAsync(string userId, string unitId)
+    {
         IUnit? unit = GetUnitFromRepository(userId, unitId);
 
         if (unit is null)
-            return NotFound();
+            return null;
 
         if (unit.Destination is null)
-            return unit.Location.ToDTO();
+            return unit;
 
 
         TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
-        bool unitArrivesSoon = unitRemainingTimeOfTravel <= TimeSpan.FromSeconds(2);
 
-        if (unitArrivesSoon)
+        if (unitRemainingTimeOfTravel <= MaximumWaitingTimeBeforeResponse)
         {
             await unit.TravelTask;
-            return unit.Location.ToDTO();
+            return unit;
         }
 
-        return new Location(unit.Destination.System, unit.Destination.Planet).ToDTO();
+        return unit;
     }
 
 

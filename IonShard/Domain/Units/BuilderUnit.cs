@@ -1,6 +1,7 @@
 ﻿using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using IonShard.Domain.Users;
 
 namespace IonShard.Domain.Units;
 
@@ -11,13 +12,15 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 
     public IBuilding Build(string buildingType)
     {
-        return new Building(
-            Guid.NewGuid().ToString(),
-            this,
-            Location.System,
-            Location.Planet);
+        if (Location.Planet is null)
+            throw new InvalidOperationException("Builder must be on a planet to build but it's planet location is null.");
+
+        var building = new MineBuilding(this, Location.System, Location.Planet);
+        this.Owner.AddBuilding(building);
+
+        return building;
     }
 
 
-    public BuilderUnit(string id, StarSystem starSystem, Planet? planet) : base(id, starSystem, planet) { }
+    public BuilderUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet) { }
 }

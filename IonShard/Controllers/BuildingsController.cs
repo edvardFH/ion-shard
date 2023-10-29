@@ -1,5 +1,6 @@
 ﻿using IonShard.Contracts.DTO.Buildings;
 using IonShard.Contracts.RequestBodies;
+using IonShard.Domain.Buildings;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
@@ -14,14 +15,10 @@ namespace IonShard.Controllers;
 public class BuildingsController : ControllerBase
 {
     private readonly UserRepository _usersRepository;
-    private readonly MapRepository _mapRepository;
-    private readonly BuildingRepository _buildingRepository;
 
-    public BuildingsController(UserRepository usersRepository, MapRepository mapRepository, BuildingRepository buildingRepository)
+    public BuildingsController(UserRepository usersRepository)
     {
         _usersRepository = usersRepository;
-        _mapRepository = mapRepository;
-        _buildingRepository = buildingRepository;
     }
 
 
@@ -33,7 +30,7 @@ public class BuildingsController : ControllerBase
     {
         IUser? user = _usersRepository[userId];
 
-        if(user is null)
+        if (user is null)
             return NotFound();
 
         if (body is null || body.BuilderId is null || body.Type != "mine")

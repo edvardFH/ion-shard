@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGeneratorOptions"));
+
 builder.Services.AddSingleton<MapBuilder>();
 builder.Services.AddSingleton<MapRepository>();
 
@@ -21,8 +22,6 @@ builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserFactory>();
 
 builder.Services.AddSingleton<SystemClock>();
-
-builder.Services.AddSingleton<BuildingRepository>();
 
 
 builder.Services.AddEndpointsApiExplorer();

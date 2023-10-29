@@ -1,77 +1,112 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using IonShard.Domain.Users;
+using IonShard.Utils;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
 public abstract class AbstractUnit : IUnit
 {
+    private const int LeavePlanetManeuverDuration = 0;
+    private const int ChangeSystemManeuverDuration = 60;
+    private const int EnterPlanetManeuverDuration = 15;
+
     public string Id { get; }
     public abstract string Type { get; }
+    public IUser Owner { get; }
+    public virtual ILocation Location { get; private set; }
+    public IDestination? Destination { get; private set; }
+    public Task TravelTask { get; private set; }
+    private CancellationTokenSource? _cancellationTokenSource;
 
-    private ILocation _location;
-    public virtual ILocation Location => _location;
 
-    private Destination? _destination;
-    public Destination? Destination => _destination;
-
-    private Task _travelTask = Task.CompletedTask;
-    public Task TravelTask => _travelTask;
-
-    public AbstractUnit(string id, StarSystem system, Planet? planet)
+    public AbstractUnit(IUser owner, StarSystem system, Planet? planet)
     {
-        Id = id;
-        _location = new Location(system, planet);
+        Id = new Random().NextGuid().ToString();
+        Owner = owner;
+        Location = new Location(system, planet);
+        TravelTask = Task.CompletedTask;
     }
 
-    public void Move(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
-    {
-        int travelDuration = GetTravalDuration(destinationSystem, destinationPlanet);
-        _destination = new Destination(destinationSystem, destinationPlanet, clock.Now.AddMilliseconds(travelDuration));
 
-        _travelTask = Movement(clock);
+    public void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
+    {
+        var travelDuration = 0;
+
+        if (Location.IsPlanetLeft(destinationPlanet))
+            travelDuration += LeavePlanetManeuverDuration;
+
+        if (Location.IsSystemChanged(destinationSystem))
+            travelDuration += ChangeSystemManeuverDuration;
+
+        if (Location.IsPlanetEntered(destinationPlanet))
+            travelDuration += EnterPlanetManeuverDuration;
+
+        Destination = new Destination(
+            destinationSystem,
+            destinationPlanet,
+            clock.Now.Add(new TimeSpan(0, 0, travelDuration)));
+
+
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        TravelTask = TravelAsync(clock, _cancellationTokenSource.Token);
     }
 
-    private async Task Movement(IClock clock)
+
+    private async Task TravelAsync(IClock clock, CancellationToken cancellationToken)
     {
-        if (_destination is null)
-             return;
+        cancellationToken.ThrowIfCancellationRequested();
 
-        bool unitLeavePlanet = _location.Planet is not null && _location.Planet != _destination.Planet;
-        bool systemChange = _location.System != _destination.System;
-        bool unitEnterOnPlanet = _location.Planet != _destination.Planet && _destination.Planet is not null;
+        if (Destination is null)
+            throw new InvalidOperationException("Unit destination is null. Travel is impossible.");
 
 
-        if (unitLeavePlanet)
-            _location = new Location(_location.System, null);
-
-        if (systemChange)
+        if (Location.IsPlanetLeft(Destination.Planet))
         {
-            await clock.Delay(60000);
-            _location = new Location(_destination.System, null);
+            await clock.Delay(
+                new TimeSpan(0, 0, LeavePlanetManeuverDuration),
+                cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+            Location = new Location(Location.System, null);
         }
 
-        if (unitEnterOnPlanet)
+
+        if (Location.IsSystemChanged(Destination.System))
         {
-            await clock.Delay(15000);
-            _location = new Location(_destination.System, _destination.Planet);
+            await clock.Delay(
+                new TimeSpan(0, 0, ChangeSystemManeuverDuration),
+                cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+            Location = new Location(Destination.System, null);
+        }
+
+        if (Location.IsPlanetEntered(Destination.Planet))
+        {
+            await clock.Delay(
+                new TimeSpan(0, 0, EnterPlanetManeuverDuration),
+                cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+            Location = new Location(Destination.System, Destination.Planet);
         }
     }
 
-    private int GetTravalDuration(StarSystem system, Planet? planet)
+
+    public bool TryRequestTravelStop()
     {
-        var result = 0;
+        var cancellationSuccessfullyRequested = false;
 
-        bool systemChange = _location.System != system;
-        bool unitEnterOnPlanet = _location.Planet != planet && planet is not null;
+        if (TravelTask.Status == TaskStatus.Running && _cancellationTokenSource is not null)
+        {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource = null;
+            cancellationSuccessfullyRequested = true;
+        }
 
-        if (systemChange)
-            result += 60000;
-
-        if (unitEnterOnPlanet)
-            result += 15000;
-
-        return result;
+        return cancellationSuccessfullyRequested;
     }
 }

@@ -22,7 +22,7 @@ public class SystemsController : ControllerBase
 
 
     [HttpGet]
-    [SwaggerOperation(Summary="Fetches all systems")]
+    [SwaggerOperation(Summary = "Fetches all systems")]
     public IEnumerable<StarSystemDTO> GetAllSystems()
         => _map.Systems
             .ToList()
@@ -41,25 +41,25 @@ public class SystemsController : ControllerBase
             ? system
             : NotFound();
     }
-    
-    
+
+
     [HttpGet("{systemName}/planets")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Fetches all planet for a specific system")]
     public ActionResult<IEnumerable<PlanetDTO>> GetAllPlanetsFromSystem(string systemName)
     {
-        IReadOnlyList<PlanetDTO>? planets = 
+        IReadOnlyList<PlanetDTO>? planets =
             _map[systemName]?.Planets
                 .ToList()
                 .ConvertAll(planet => planet.ToDTO());
 
-        return planets is not null 
+        return planets is not null
             ? planets.ToList()
             : NotFound();
     }
 
-    
+
     [HttpGet("{systemName}/planets/{planetName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
