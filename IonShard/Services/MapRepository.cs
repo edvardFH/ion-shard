@@ -1,4 +1,4 @@
-﻿using IonShard.Models.Map;
+﻿using IonShard.Domain.Map;
 
 namespace IonShard.Services;
 
@@ -6,7 +6,7 @@ public class MapRepository
 {
     private readonly Universe _universe;
 
-    public MapRepository(MapBuilderService mapBuilder) => _universe = mapBuilder.Map;
+    public MapRepository(MapBuilder mapBuilder) => _universe = mapBuilder.Map;
 
 
     public IReadOnlyList<StarSystem> Systems => _universe.Systems;
