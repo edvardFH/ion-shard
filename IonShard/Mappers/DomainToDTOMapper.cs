@@ -17,7 +17,9 @@ public static class DomainToDTOMapper
             building.Id,
             building.Type,
             building.Location.System.Name,
-            building.Location.Planet?.Name);
+            building.Location.Planet?.Name,
+            building.IsBuilt,
+            building.EstimatedBuildTime);
 
 
     public static UserDTO ToDTO(this IUser user)

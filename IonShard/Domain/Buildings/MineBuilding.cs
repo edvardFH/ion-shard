@@ -5,17 +5,9 @@ using IonShard.Utils;
 
 namespace IonShard.Domain.Buildings;
 
-public class MineBuilding : IBuilding
+public class MineBuilding : AbstractBuilding
 {
-    public string Id { get; }
-    public string Type => "mine";
-    public IUnit Builder { get; }
-    public ILocation Location { get; }
-
-    public MineBuilding(IUnit builder, StarSystem starSystem, Planet? planet)
+    public MineBuilding(IUnit builder, StarSystem starSystem, Planet? planet) : base(builder, starSystem, planet, "mine")
     {
-        Id = new Random().NextGuid().ToString();
-        Builder = builder;
-        Location = new Location(starSystem, planet);
     }
 }

@@ -6,6 +6,7 @@ using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace IonShard.Controllers;
@@ -16,10 +17,12 @@ namespace IonShard.Controllers;
 public class BuildingsController : ControllerBase
 {
     private readonly UserRepository _usersRepository;
+    private readonly IClock _clock;
 
-    public BuildingsController(UserRepository usersRepository)
+    public BuildingsController(UserRepository usersRepository, IClock clock)
     {
         _usersRepository = usersRepository;
+        _clock = clock;
     }
 
 
@@ -49,6 +52,8 @@ public class BuildingsController : ControllerBase
 
         IBuilderUnit builder = (IBuilderUnit)unit;
 
-        return builder.Build(body.Type).ToDTO();
+        IBuilding building = builder.Build(body.Type);
+        building.StartBuildBuilding(_clock);
+        return building.ToDTO();
     }
 }
