@@ -30,7 +30,7 @@ public abstract class AbstractUnit : IUnit
     }
 
 
-    public void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
+    public virtual void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
         var travelDuration = 0;
 

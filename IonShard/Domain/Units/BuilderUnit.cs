@@ -1,7 +1,7 @@
 ﻿using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
-using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Users;
+using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
@@ -9,6 +9,12 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 {
     public override string Type => "builder";
 
+    public override void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
+    {
+        foreach (var building in GetBuildingsWhereBuildInProgress())
+            building.TryRequestBuildStop();
+        base.StartTravel(clock, destinationSystem, destinationPlanet);
+    }
 
     public IBuilding Build(string buildingType)
     {
@@ -23,4 +29,11 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 
 
     public BuilderUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet) { }
+
+    private List<IBuilding> GetBuildingsWhereBuildInProgress()
+        => Owner.Buildings.Values.Where(building => 
+            building is { IsBuilt: false, BuildTask.Status: TaskStatus.WaitingForActivation or TaskStatus.Running }
+            && building.Builder == this )
+            .ToList();
+    
 }
