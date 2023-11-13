@@ -16,6 +16,8 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class BuildingsController : ControllerBase
 {
+    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = new TimeSpan(0, 0, 2);
+    
     private readonly UserRepository _usersRepository;
     private readonly IClock _clock;
 
@@ -25,6 +27,21 @@ public class BuildingsController : ControllerBase
         _clock = clock;
     }
 
+    [HttpGet("{userId}/buildings")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Return all buildings of a user")]
+    public ActionResult<List<BuildingDTO>> Get(string userId)
+    {
+        IUser? user = _usersRepository[userId];
+
+        return user is not null
+            ? user.Buildings
+                .Values
+                .ToList()
+                .ConvertAll(building => building.ToDTO())
+            : NotFound();
+    }
 
     [HttpPost("{userId}/buildings")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -54,6 +71,26 @@ public class BuildingsController : ControllerBase
 
         IBuilding building = builder.Build(body.Type);
         building.StartBuildBuilding(_clock);
+        return building.ToDTO();
+    }
+
+    [HttpGet("{userId}/buildings/{buildingId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Return information about one single building of a user")]
+    public async Task<ActionResult<BuildingDTO>> GetBuildingById(string userId, string buildingId)
+    {
+        IUser? user = _usersRepository[userId];
+        IBuilding? building = user?.Buildings[buildingId];
+        
+        if (user is null || building is null)
+            return NotFound();
+
+        TimeSpan buildingRemainingBuildTime = building.EstimatedBuildTime - _clock.Now;
+        if (building.IsBuilt || buildingRemainingBuildTime > MaximumWaitingTimeBeforeResponse) 
+            return building.ToDTO();
+        
+        await building.BuildTask;
         return building.ToDTO();
     }
 }
