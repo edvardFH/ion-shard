@@ -12,7 +12,7 @@ public interface IBuilding
     public ILocation Location { get; }
     public Boolean IsBuilt { get; }
     public Task BuildTask { get; }
-    public DateTime EstimatedBuildTime { get; }
+    public DateTime? EstimatedBuildTime { get; }
 
     public void StartBuildBuilding(IClock clock);
     public bool TryRequestBuildStop();

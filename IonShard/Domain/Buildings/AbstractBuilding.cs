@@ -14,7 +14,7 @@ public class AbstractBuilding : IBuilding
     public ILocation Location { get; protected set; }
     public bool IsBuilt { get; protected set; }
     public Task BuildTask { get; protected set; }
-    public DateTime EstimatedBuildTime { get; protected set; }
+    public DateTime? EstimatedBuildTime { get; protected set; }
     private CancellationTokenSource _cancellationTokenSource;
 
     protected AbstractBuilding(IUnit builder, StarSystem starSystem, Planet? planet, String type)
@@ -42,6 +42,7 @@ public class AbstractBuilding : IBuilding
         EstimatedBuildTime = clock.Now.AddMinutes(5);
         await clock.Delay(TimeSpan.FromMinutes(5), cancellationToken);
         IsBuilt = true;
+        EstimatedBuildTime = null;
     }
 
     public bool TryRequestBuildStop()

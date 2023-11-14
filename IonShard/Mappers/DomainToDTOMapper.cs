@@ -23,7 +23,10 @@ public static class DomainToDTOMapper
 
 
     public static UserDTO ToDTO(this IUser user)
-        => new UserDTO(user.Id, user.Pseudo, user.DateOfCreation);
+        => new UserDTO(user.Id, user.Pseudo, user.DateOfCreation, 
+            user.ResourcesQuantity.ToDictionary(
+                resource => resource.Key.ToString().ToLower(),
+                resource => resource.Value));
 
 
     public static UnitDTO ToDTO(this IUnit unit)

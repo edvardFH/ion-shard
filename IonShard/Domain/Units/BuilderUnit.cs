@@ -11,8 +11,11 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 
     public override void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
-        foreach (var building in GetBuildingsWhereBuildInProgress())
-            building.TryRequestBuildStop();
+        foreach (var building in GetBuildingsWhereBuildInProgress().Where(building => building.TryRequestBuildStop()))
+        {
+            Owner.RemoveBuilding(Id);
+        }
+
         base.StartTravel(clock, destinationSystem, destinationPlanet);
     }
 

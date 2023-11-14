@@ -85,8 +85,8 @@ public class BuildingsController : ControllerBase
         
         if (user is null || building is null)
             return NotFound();
-
-        TimeSpan buildingRemainingBuildTime = building.EstimatedBuildTime - _clock.Now;
+        
+        var buildingRemainingBuildTime = building.EstimatedBuildTime - _clock.Now;
         if (building.IsBuilt || buildingRemainingBuildTime > MaximumWaitingTimeBeforeResponse) 
             return building.ToDTO();
         
