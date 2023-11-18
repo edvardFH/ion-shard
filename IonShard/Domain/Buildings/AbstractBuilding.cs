@@ -6,7 +6,7 @@ using Shard.Shared.Core;
 
 namespace IonShard.Domain.Buildings;
 
-public class AbstractBuilding : IBuilding
+public abstract class AbstractBuilding : IBuilding
 {
     public string Id { get; protected set; }
     public string Type { get; protected set; }
@@ -15,9 +15,9 @@ public class AbstractBuilding : IBuilding
     public bool IsBuilt { get; protected set; }
     public Task BuildTask { get; protected set; }
     public DateTime? EstimatedBuildTime { get; protected set; }
-    private CancellationTokenSource _cancellationTokenSource;
+    private CancellationTokenSource? _cancellationTokenSource;
 
-    protected AbstractBuilding(IUnit builder, StarSystem starSystem, Planet? planet, String type)
+    public AbstractBuilding(IUnit builder, StarSystem starSystem, Planet? planet, String type)
     {
         Id = new Random().NextGuid().ToString();
         Builder = builder;
@@ -27,7 +27,7 @@ public class AbstractBuilding : IBuilding
         BuildTask = Task.CompletedTask;
     }
     
-    public void StartBuildBuilding(IClock clock)
+    public void StartBuildSelf(IClock clock)
     {
         if (!IsBuilt)
         {

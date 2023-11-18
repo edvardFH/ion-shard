@@ -7,9 +7,8 @@ namespace IonShard.Domain.Units;
 
 public class ScoutUnit : AbstractUnit
 {
-    public override string Type => "scout";
-    public override ILocation Location
-        => new LocationWithDetails(base.Location.System, base.Location.Planet);
+    public ScoutUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet, "scout") { }
 
-    public ScoutUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet) { }
+    public override ILocationWithDetails Location
+        => new LocationWithDetails(base.Location.System, base.Location.Planet);
 }

@@ -7,7 +7,8 @@ namespace IonShard.Domain.Units;
 
 public class BuilderUnit : AbstractUnit, IBuilderUnit
 {
-    public override string Type => "builder";
+    public BuilderUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet, "builder") { }
+
 
     public override void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
@@ -19,19 +20,18 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
         base.StartTravel(clock, destinationSystem, destinationPlanet);
     }
 
-    public IBuilding Build(string buildingType)
+    public IBuilding Build(IClock clock, string buildingType)
     {
         if (Location.Planet is null)
             throw new InvalidOperationException("Builder must be on a planet to build but it's planet location is null.");
 
         var building = new MineBuilding(this, Location.System, Location.Planet);
+        building.StartBuildSelf(clock);
         this.Owner.AddBuilding(building);
 
         return building;
     }
 
-
-    public BuilderUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet) { }
 
     private List<IBuilding> GetBuildingsWhereBuildInProgress()
         => Owner.Buildings.Values.Where(building => 

@@ -13,7 +13,7 @@ public abstract class AbstractUnit : IUnit
     private const int EnterPlanetManeuverDuration = 15;
 
     public string Id { get; }
-    public abstract string Type { get; }
+    public string Type { get; }
     public IUser Owner { get; }
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
@@ -21,12 +21,13 @@ public abstract class AbstractUnit : IUnit
     private CancellationTokenSource? _cancellationTokenSource;
 
 
-    public AbstractUnit(IUser owner, StarSystem system, Planet? planet)
+    public AbstractUnit(IUser owner, StarSystem system, Planet? planet, string type)
     {
         Id = new Random().NextGuid().ToString();
         Owner = owner;
         Location = new Location(system, planet);
         TravelTask = Task.CompletedTask;
+        Type = type;
     }
 
 
