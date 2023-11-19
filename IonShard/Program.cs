@@ -1,3 +1,4 @@
+using IonShard.Persistence.Repositories;
 using IonShard.Services;
 using IonShard.Swagger;
 using Microsoft.OpenApi.Models;
@@ -9,18 +10,20 @@ IConfiguration configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-// Add services to the container.
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGeneratorOptions"));
+
 builder.Services.AddSingleton<MapBuilder>();
 builder.Services.AddSingleton<MapRepository>();
 
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserFactory>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddSingleton<SystemClock>();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

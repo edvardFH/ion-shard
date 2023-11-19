@@ -1,17 +1,10 @@
 ﻿namespace IonShard.Contracts.DTO.Units;
 
-public class UnitDTO
-{
-    public string Id { get; }
-    public string Type => "scout";
-    public string System { get; }
-    public string? Planet { get; }
-
-    public UnitDTO(string id, string system, string? planet)
-    {
-        Id = id;
-        System = system;
-        Planet = planet;
-    }
-
-}
+public record UnitDTO(
+    string Id,
+    string Type,
+    string System,
+    string? Planet,
+    string? DestinationSystem,
+    string? DestinationPlanet,
+    string? EstimatedTimeOfArrival);

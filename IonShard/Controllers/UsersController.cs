@@ -2,6 +2,7 @@
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
+using IonShard.Persistence.Repositories;
 using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -15,16 +16,14 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class UsersController : ControllerBase
 {
-    
+
     private readonly UserRepository _usersRepository;
     private readonly UserFactory _userFactory;
-    private readonly MapRepository _mapRepository;
 
-    public UsersController(UserRepository usersRepository, UserFactory userFactory, MapRepository mapRepository)
+    public UsersController(UserRepository usersRepository, UserFactory userFactory)
     {
         _usersRepository = usersRepository;
         _userFactory = userFactory;
-        _mapRepository = mapRepository;
     }
 
 
@@ -37,7 +36,7 @@ public class UsersController : ControllerBase
         if (body.Id is not null && body.Pseudo is not null && body.Id == userId
             && Regex.IsMatch(userId, "^[a-zA-Z0-9_-]+$"))
         {
-            User newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
+            IUser newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
             _usersRepository.Users.Add(newUser.Id, newUser);
             return newUser.ToDTO();
         }

@@ -6,7 +6,7 @@ public class Universe
 
     public IReadOnlyList<StarSystem> Systems => _starSystems.Values.ToList();
 
-    public StarSystem? this[string name] => _starSystems.ContainsKey(name) 
+    public StarSystem? this[string name] => _starSystems.ContainsKey(name)
         ? _starSystems[name]
         : null;
 

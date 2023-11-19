@@ -4,26 +4,30 @@ using IonShard.Domain.Map;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
-using IonShard.Services;
+using IonShard.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
-
 
 namespace IonShard.Controllers;
 
-[Route("users")]
+[Route("Users")]
 [ApiController]
 [Produces("application/json")]
 public class UnitsController : ControllerBase
 {
-    
+    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = new TimeSpan(0, 0, 2);
+
+
     private readonly UserRepository _usersRepository;
     private readonly MapRepository _mapRepository;
+    private readonly IClock _clock;
 
-    public UnitsController(UserRepository usersRepository, MapRepository mapRepository)
+    public UnitsController(UserRepository usersRepository, MapRepository mapRepository, IClock clock)
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;
+        _clock = clock;
     }
 
 
@@ -33,7 +37,7 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Returns all units of a user")]
     public ActionResult<IEnumerable<UnitDTO>> GetAllUnitsOfUser(string userId)
     {
-        User? user = _usersRepository[userId];
+        IUser? user = _usersRepository[userId];
 
         return user is not null
             ? user.Units
@@ -48,13 +52,14 @@ public class UnitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Returns information about one single unit of a user")]
-    public ActionResult<UnitDTO> GetOneUnitFromUser(string userId, string unitId)
+    public async Task<ActionResult<UnitDTO>> GetOneUnitFromUser(string userId, string unitId)
     {
-        Unit? unit = GetUnitFromRepository(userId, unitId);
 
-        return unit is not null
-            ? unit.ToDTO()
-            : NotFound();
+        IUnit? unit = await GetUnitAsync(userId, unitId);
+
+        return unit is null
+            ? NotFound()
+            : unit.ToDTO();
     }
 
 
@@ -65,25 +70,23 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
     public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
-        if (unitId != body.Id || body.Id is null || body.System is null)
+        if (unitId != body.Id || body.Id is null || body.System is null || body.DestinationSystem is null)
             return BadRequest();
 
-        Unit? unit = GetUnitFromRepository(userId, unitId);
-        Location? location = unit?.Location;
-        StarSystem? system = _mapRepository[body.System];
-            
-        if (unit is null || location is null || system is null)
+        IUnit? unit = GetUnitFromRepository(userId, unitId);
+        StarSystem? system = _mapRepository[body.DestinationSystem];
+
+        if (unit is null || system is null)
             return NotFound();
-            
-        Planet? planet = body.Planet is not null
-            ? system?[body.Planet]
+
+        Planet? planet = body.DestinationPlanet is not null
+            ? system[body.DestinationPlanet]
             : null;
 
-        if (planet is null && body.Planet is not null)
+        if (planet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        location.System = system;
-        location.Planet = planet;
+        unit.StartTravel(_clock, system, planet);
 
         return unit.ToDTO();
     }
@@ -93,26 +96,46 @@ public class UnitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [SwaggerOperation(Summary = "Returns more detailed information about the location a unit of user currently is about")]
-    public ActionResult<UnitLocationDTO> GetUnitLocation(string userId, string unitId)
+    public async Task<ActionResult<UnitLocationDTO>> GetUnitLocation(string userId, string unitId)
     {
-        Unit? unit = GetUnitFromRepository(userId, unitId);
-        var location = unit?.ToLocationDTO();
+        IUnit? unit = await GetUnitAsync(userId, unitId);
 
-        return unit is not null
-            ? unit.ToLocationDTO()
-            : NotFound();
+        return unit is null
+            ? NotFound()
+            : unit.Location.ToDTO();
     }
 
 
-    private Unit? GetUnitFromRepository(string userId, string unitId)
+    private async Task<IUnit?> GetUnitAsync(string userId, string unitId)
     {
-        User? user = _usersRepository[userId];
-        Unit? unit = null;
+        IUnit? unit = GetUnitFromRepository(userId, unitId);
+
+        if (unit is null)
+            return null;
+
+        if (unit.Destination is null)
+            return unit;
+
+
+        TimeSpan unitRemainingTimeOfTravel = unit.Destination.EstimatedTimeOfArrival - _clock.Now;
+
+        if (unitRemainingTimeOfTravel <= MaximumWaitingTimeBeforeResponse)
+        {
+            await unit.TravelTask;
+            return unit;
+        }
+
+        return unit;
+    }
+
+
+    private IUnit? GetUnitFromRepository(string userId, string unitId)
+    {
+        IUser? user = _usersRepository[userId];
+        IUnit? unit = null;
 
         if (user is not null && user.Units.ContainsKey(unitId))
-        {
             unit = user.Units[unitId];
-        }
 
         return unit;
     }

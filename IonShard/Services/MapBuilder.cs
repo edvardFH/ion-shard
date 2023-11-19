@@ -20,7 +20,7 @@ public class MapBuilder
     }
 
 
-    private StarSystem SystemSpecificationToStarSystem(SystemSpecification system) 
+    private StarSystem SystemSpecificationToStarSystem(SystemSpecification system)
         => new(system.Name,
             system.Planets
             .ToList()

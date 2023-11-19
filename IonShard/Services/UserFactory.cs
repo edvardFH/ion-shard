@@ -1,6 +1,7 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
+using IonShard.Persistence.Repositories;
 using IonShard.Utils;
 
 namespace IonShard.Services;
@@ -16,20 +17,24 @@ public class UserFactory
         this.map = map;
     }
 
-    public User CreateNewUser(string id, string pseudo)
+    public IUser CreateNewUser(string id, string pseudo)
     {
-        User newUser = new(id, pseudo, DateTime.Now);
+        IUser newUser = new User(id, pseudo, DateTime.Now);
 
-        Unit userUnit = GetDefaultUnit();
-        newUser.Units.Add(userUnit.Id, userUnit);
+        GetDefaultUnits(newUser)
+            .ToList()
+            .ForEach(unit => newUser.AddUnit(unit));
 
         return newUser;
     }
 
-    private Unit GetDefaultUnit()
+    private IEnumerable<IUnit> GetDefaultUnits(IUser owner)
     {
         StarSystem starSystem = GetRandomStarSystem();
-        return new(random.NextGuid().ToString(), starSystem, GetRandomPlanet(starSystem));
+        Planet? planet = GetRandomPlanet(starSystem);
+
+        yield return new ScoutUnit(owner, starSystem, planet);
+        yield return new BuilderUnit(owner, starSystem, planet);
     }
 
     private StarSystem GetRandomStarSystem() => map.Systems[random.Next(map.Systems.Count)];
