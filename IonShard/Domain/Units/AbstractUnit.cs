@@ -47,7 +47,7 @@ public abstract class AbstractUnit : IUnit
         Destination = new Destination(
             destinationSystem,
             destinationPlanet,
-            clock.Now.Add(new TimeSpan(0, 0, travelDuration)));
+            clock.Now.Add(TimeSpan.FromSeconds(travelDuration)));
 
 
         _cancellationTokenSource = new CancellationTokenSource();
@@ -94,6 +94,9 @@ public abstract class AbstractUnit : IUnit
             cancellationToken.ThrowIfCancellationRequested();
             Location = new Location(Destination.System, Destination.Planet);
         }
+
+        Destination = null;
+        _cancellationTokenSource = null;
     }
 
 

@@ -32,14 +32,16 @@ public class User : IUser
         DateOfCreation = dateOfCreation;
         _units = new Dictionary<string, IUnit>();
         _buildings = new Dictionary<string, IBuilding>();
-        _resourcesQuantity = new Dictionary<Resource, int>();
-        _resourcesQuantity.Add(Resource.Carbon, 20);
-        _resourcesQuantity.Add(Resource.Iron, 10);
-        _resourcesQuantity.Add(Resource.Oxygen, 50);
-        _resourcesQuantity.Add(Resource.Water, 50);
-        _resourcesQuantity.Add(Resource.Aluminium, 0);
-        _resourcesQuantity.Add(Resource.Gold, 0);
-        _resourcesQuantity.Add(Resource.Titanium, 0);
+        _resourcesQuantity = new Dictionary<Resource, int>
+        {
+            { Resource.Carbon, 20 },
+            { Resource.Iron, 10 },
+            { Resource.Oxygen, 50 },
+            { Resource.Water, 50 },
+            { Resource.Aluminium, 0 },
+            { Resource.Gold, 0 },
+            { Resource.Titanium, 0 }
+        };
     }
 
 

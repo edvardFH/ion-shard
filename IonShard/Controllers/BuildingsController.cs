@@ -16,7 +16,7 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class BuildingsController : ControllerBase
 {
-    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = new TimeSpan(0, 0, 2); // TODO: move to conf becasue object defined twice
+    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(2); // TODO: move to conf becasue object defined twice
     
     private readonly UserRepository _usersRepository;
     private readonly IClock _clock;
@@ -53,7 +53,7 @@ public class BuildingsController : ControllerBase
 
 
         IBuilderUnit builder = (IBuilderUnit)unit;
-        IBuilding building = builder.Build(_clock, body.Type);
+        IBuilding building = builder.StartBuild(_clock, body.Type);
 
         return building.ToDTO();
     }
@@ -99,13 +99,13 @@ public class BuildingsController : ControllerBase
             return building.ToDTO();
 
 
-        var buildingRemainingBuildTime = building.EstimatedBuildTime - _clock.Now;
+        var buildingRemainingBuildTime = building.Builder.EstimatedBuildTime - _clock.Now;
 
         if (buildingRemainingBuildTime > MaximumWaitingTimeBeforeResponse) 
             return building.ToDTO();
 
         
-        await building.BuildTask;
+        await building.Builder.BuildTask;
         return building.ToDTO();
     }
 }

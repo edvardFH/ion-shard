@@ -86,7 +86,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void Building_ToDTO()
     {
-        IUnit builderUnit = new BuilderUnit(_userJohn, _sol, _earth);
+        IBuilderUnit builderUnit = new BuilderUnit(_userJohn, _sol, _earth);
         IBuilding building = new MineBuilding(builderUnit, _sol, _earth);
         BuildingDTO buildingDTO = building.ToDTO();
 

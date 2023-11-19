@@ -7,36 +7,75 @@ namespace IonShard.Domain.Units;
 
 public class BuilderUnit : AbstractUnit, IBuilderUnit
 {
-    public BuilderUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet, "builder") { }
+    private const int BuildBuildingDuration = 300;
+
+    public Task BuildTask { get; private set; }
+    public bool IsBuilding => _buildingBeingBuilt is not null;
+    public DateTime? EstimatedBuildTime { get; private set; }
+
+    private CancellationTokenSource? _cancellationTokenSource;
+    private IBuilding? _buildingBeingBuilt;
+
+    public BuilderUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet, "builder")
+    {
+        BuildTask = Task.CompletedTask;
+    }
 
 
     public override void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
-        foreach (var building in GetBuildingsWhereBuildInProgress().Where(building => building.TryRequestBuildStop()))
-        {
-            Owner.RemoveBuilding(Id);
-        }
-
+        TryRequestBuildStop();
         base.StartTravel(clock, destinationSystem, destinationPlanet);
     }
 
-    public IBuilding Build(IClock clock, string buildingType)
+
+    public IBuilding StartBuild(IClock clock, string buildingType)
     {
         if (Location.Planet is null)
-            throw new InvalidOperationException("Builder must be on a planet to build but it's planet location is null.");
+            throw new InvalidOperationException("Builder must be on a planet to build but its planet location is null.");
 
-        var building = new MineBuilding(this, Location.System, Location.Planet);
-        building.StartBuildSelf(clock);
-        this.Owner.AddBuilding(building);
 
-        return building;
+        _buildingBeingBuilt = new MineBuilding(this, Location.System, Location.Planet);
+        this.Owner.AddBuilding(_buildingBeingBuilt);
+
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        EstimatedBuildTime = clock.Now.AddSeconds(BuildBuildingDuration);
+
+        BuildTask = BuildAsync(clock, _cancellationTokenSource.Token);
+
+        return _buildingBeingBuilt;
     }
 
 
-    private List<IBuilding> GetBuildingsWhereBuildInProgress()
-        => Owner.Buildings.Values.Where(building => 
-            building is { IsBuilt: false, BuildTask.Status: TaskStatus.WaitingForActivation or TaskStatus.Running }
-            && building.Builder == this )
-            .ToList();
-    
+    private async Task BuildAsync(IClock clock, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        await clock.Delay(TimeSpan.FromSeconds(BuildBuildingDuration), cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        _buildingBeingBuilt?.FinishBuild();
+
+        ResetBuildStatus();
+    }
+
+    public bool TryRequestBuildStop()
+    {
+        if (BuildTask.IsCompleted || _cancellationTokenSource is null || _buildingBeingBuilt is null)
+            return false;
+
+        _cancellationTokenSource.Cancel();
+        Owner.RemoveBuilding(_buildingBeingBuilt.Id);
+
+        ResetBuildStatus();
+
+        return true;
+    }
+
+    private void ResetBuildStatus()
+    {
+        _buildingBeingBuilt = null;
+        _cancellationTokenSource = null;
+        EstimatedBuildTime = null;
+    }
 }

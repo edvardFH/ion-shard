@@ -5,5 +5,8 @@ namespace IonShard.Domain.Units;
 
 public interface IBuilderUnit : IUnit
 {
-    public IBuilding Build(IClock clock, string buildingType);
+    public IBuilding StartBuild(IClock clock, string buildingType);
+    public Task BuildTask { get; }
+    public bool IsBuilding { get; }
+    public DateTime? EstimatedBuildTime { get; }
 }
