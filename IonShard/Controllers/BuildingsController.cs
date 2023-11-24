@@ -17,7 +17,7 @@ namespace IonShard.Controllers;
 public class BuildingsController : ControllerBase
 {
     private readonly TimeSpan MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(2); // TODO: move to conf becasue object defined twice
-    
+
     private readonly UserRepository _usersRepository;
     private readonly IClock _clock;
 
@@ -91,21 +91,27 @@ public class BuildingsController : ControllerBase
         IBuilding? building = user.Buildings.ContainsKey(buildingId)
             ? user.Buildings[buildingId]
             : null;
-        
+
         if (building is null)
             return NotFound("User does not have a building with such id");
-        
+
         if (building.IsBuilt)
             return building.ToDTO();
 
 
         var buildingRemainingBuildTime = building.Builder.EstimatedBuildTime - _clock.Now;
 
-        if (buildingRemainingBuildTime > MaximumWaitingTimeBeforeResponse) 
+        if (buildingRemainingBuildTime > MaximumWaitingTimeBeforeResponse)
             return building.ToDTO();
 
-        
-        await building.Builder.BuildTask;
-        return building.ToDTO();
+        try
+        {
+            await building.Builder.BuildTask;
+            return building.ToDTO();
+        }
+        catch (Exception)
+        {
+            return NotFound();
+        }
     }
 }
