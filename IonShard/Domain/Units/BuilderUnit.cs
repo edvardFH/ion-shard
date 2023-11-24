@@ -24,7 +24,8 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 
     public override void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
-        TryRequestBuildStop();
+        if(IsBuilding && destinationPlanet != Location.Planet)
+            TryRequestBuildStop();
         base.StartTravel(clock, destinationSystem, destinationPlanet);
     }
 
