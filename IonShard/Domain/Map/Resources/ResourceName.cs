@@ -1,6 +1,6 @@
-﻿namespace IonShard.Domain.Map;
+﻿namespace IonShard.Domain.Map.Resources;
 
-public enum Resource
+public enum ResourceName
 {
     Carbon,
     Iron,

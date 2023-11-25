@@ -8,8 +8,6 @@ namespace IonShard.Domain.Buildings;
 
 public abstract class AbstractBuilding : IBuilding
 {
-    private const int BuildBuildingDuration = 300;
-
     public string Id { get; }
     public string Type { get; }
     public IBuilderUnit Builder { get; }

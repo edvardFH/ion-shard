@@ -66,7 +66,7 @@ public static class DomainToDTOMapper
             location.Planet?.Name,
             location.Planet?.ResourcesQuantity
                 .ToDictionary(
-                    resource => resource.Key.ToString().ToLower(),
+                    resource => resource.Key.Name.ToString().ToLower(),
                     resource => resource.Value));
 
 

@@ -1,7 +1,7 @@
 ﻿using IonShard.Domain.Buildings;
 using IonShard.Domain.Units;
 using System.ComponentModel.DataAnnotations;
-using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
 
 namespace IonShard.Domain.Users;
 
@@ -20,9 +20,9 @@ public class User : IUser
     public IReadOnlyDictionary<string, IBuilding> Buildings
         => (IReadOnlyDictionary<string, IBuilding>)_buildings;
     
-    private readonly IDictionary<Resource, int> _resourcesQuantity;
-    public IReadOnlyDictionary<Resource, int> ResourcesQuantity
-        => (IReadOnlyDictionary<Resource, int>)_resourcesQuantity;
+    private readonly IDictionary<ResourceName, int> _resourcesQuantity;
+    public IReadOnlyDictionary<ResourceName, int> ResourcesQuantity
+        => (IReadOnlyDictionary<ResourceName, int>)_resourcesQuantity;
 
 
     public User(string id, string pseudo, DateTime dateOfCreation)
@@ -32,15 +32,15 @@ public class User : IUser
         DateOfCreation = dateOfCreation;
         _units = new Dictionary<string, IUnit>();
         _buildings = new Dictionary<string, IBuilding>();
-        _resourcesQuantity = new Dictionary<Resource, int>
+        _resourcesQuantity = new Dictionary<ResourceName, int>
         {
-            { Resource.Carbon, 20 },
-            { Resource.Iron, 10 },
-            { Resource.Oxygen, 50 },
-            { Resource.Water, 50 },
-            { Resource.Aluminium, 0 },
-            { Resource.Gold, 0 },
-            { Resource.Titanium, 0 }
+            { ResourceName.Carbon, 20 },
+            { ResourceName.Iron, 10 },
+            { ResourceName.Oxygen, 50 },
+            { ResourceName.Water, 50 },
+            { ResourceName.Aluminium, 0 },
+            { ResourceName.Gold, 0 },
+            { ResourceName.Titanium, 0 }
         };
     }
 

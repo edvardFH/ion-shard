@@ -1,7 +1,7 @@
 ﻿using IonShard.Domain.Buildings;
 using IonShard.Domain.Units;
 using System.ComponentModel.DataAnnotations;
-using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
 
 namespace IonShard.Domain.Users;
 
@@ -13,7 +13,7 @@ public interface IUser
     public DateTime DateOfCreation { get; }
     public IReadOnlyDictionary<string, IUnit> Units { get; }
     public IReadOnlyDictionary<string, IBuilding> Buildings { get; }
-    public IReadOnlyDictionary<Resource, int> ResourcesQuantity { get; }
+    public IReadOnlyDictionary<ResourceName, int> ResourcesQuantity { get; }
 
 
     public void AddUnit(IUnit unit);
