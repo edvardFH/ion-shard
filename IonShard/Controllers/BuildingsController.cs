@@ -18,15 +18,22 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class BuildingsController : ControllerBase
 {
-    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(2); // TODO: move to conf becasue object defined twice
+    private readonly TimeSpan MaximumWaitingTimeBeforeResponse;
 
     private readonly UserRepository _usersRepository;
     private readonly IClock _clock;
 
-    public BuildingsController(UserRepository usersRepository, IClock clock)
+
+    public BuildingsController(
+        UserRepository usersRepository,
+        IClock clock,
+        IConfiguration configuration)
     {
         _usersRepository = usersRepository;
         _clock = clock;
+        MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(
+            configuration.GetValue<int>(
+                "Controllers:MaximumWaitingTimeBeforeResponse"));
     }
 
 
@@ -46,7 +53,9 @@ public class BuildingsController : ControllerBase
             return BadRequest();
 
 
-        if (!Enum.TryParse(body.ResourceCategory.UppercaseFirstWord(), out ResourceCategory category))
+        if (!Enum.TryParse(
+                body.ResourceCategory.UppercaseFirstWord(),
+                out ResourceCategory category))
             return BadRequest("Invalid resource category");
 
         IUnit? unit = user.Units.ContainsKey(body.BuilderId)

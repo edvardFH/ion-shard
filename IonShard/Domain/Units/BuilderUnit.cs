@@ -31,6 +31,7 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
     {
         if (IsBuilding && destinationPlanet != Location.Planet)
             TryRequestBuildStop();
+
         base.StartTravel(clock, destinationSystem, destinationPlanet);
     }
 
@@ -56,9 +57,6 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
         this.Owner.AddBuilding(_buildingBeingBuilt);
 
         _cancellationTokenSource = new CancellationTokenSource();
-
-    
-
         BuildTask = BuildAsync(clock, _cancellationTokenSource.Token);
 
         return _buildingBeingBuilt;

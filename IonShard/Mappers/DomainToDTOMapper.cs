@@ -32,7 +32,6 @@ public static class DomainToDTOMapper
     }
 
 
-
     public static UserDTO ToDTO(this IUser user)
         => new UserDTO(user.Id, user.Pseudo, user.DateOfCreation,
             user.ResourcesQuantity.ToDictionary(
@@ -64,12 +63,10 @@ public static class DomainToDTOMapper
         };
 
     private static UnitLocationDTO ToDTOWithoutDetails(this ILocation location)
-    {
-        return new UnitLocationDTO(
+        => new UnitLocationDTO(
             location.System.Name,
             location.Planet?.Name,
             null);
-    }
 
     public static UnitLocationDTO ToDTO(this ILocationWithDetails location)
         => new UnitLocationDTO(
