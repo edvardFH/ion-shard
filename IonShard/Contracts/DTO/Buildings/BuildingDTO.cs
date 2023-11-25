@@ -14,7 +14,14 @@ public record BuildingDTO
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ResourceCategory { get; }
 
-    public BuildingDTO(string id, string type, string system, string? planet, bool isBuilt, DateTime? estimatedBuildTime, ResourceCategory? resourceCategory)
+    public BuildingDTO(
+        string id,
+        string type,
+        string system,
+        string? planet,
+        bool isBuilt,
+        DateTime? estimatedBuildTime,
+        ResourceCategory? resourceCategory)
     {
         Id = id;
         Type = type;

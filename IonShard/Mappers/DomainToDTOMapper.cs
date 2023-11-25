@@ -27,7 +27,7 @@ public static class DomainToDTOMapper
             building.Location.System.Name,
             building.Location.Planet?.Name,
             building.IsBuilt,
-            building.Builder.EstimatedBuildTime,
+            building.EstimatedBuildTime,
             resourceCategory);
     }
 

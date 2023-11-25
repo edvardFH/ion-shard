@@ -11,12 +11,20 @@ public class MineBuilding : AbstractBuilding, IMineBuilding
 
     public ResourceCategory ResourceCategory { get; }
 
-    public MineBuilding(IBuilderUnit builder, StarSystem starSystem, Planet planet, ResourceCategory resourceCategory, IClock clock)
-        : base(builder, starSystem, planet, "mine")
+    public MineBuilding(
+        IBuilderUnit builder,
+        StarSystem starSystem,
+        Planet planet,
+        ResourceCategory resourceCategory,
+        IClock clock,
+        DateTime? estimatedBuildTime = null,
+        bool isBuilt = false)
+        : base(builder, starSystem, planet, "mine", estimatedBuildTime, isBuilt)
     {
         ResourceCategory = resourceCategory;
         clock.CreateTimer(
-            ExtractOneResource, this,
+            ExtractOneResource,
+            this,
             TimeSpan.FromSeconds(BuildingBuildDuration + MineExtractionPeriode),
             TimeSpan.FromSeconds(MineExtractionPeriode));
     }
@@ -26,7 +34,7 @@ public class MineBuilding : AbstractBuilding, IMineBuilding
         var resourceToExtract = ResourceCategory switch
         {
             ResourceCategory.Solid => GetSolidResourceToExtract(),
-            _ => GetMostAbondantResourceOfCategory(ResourceCategory),
+            _ => GetMostAbondantResourceOfCategoryToExtract(ResourceCategory),
         };
 
         if (resourceToExtract is null || Location.Planet is null)
@@ -38,26 +46,30 @@ public class MineBuilding : AbstractBuilding, IMineBuilding
         Builder.Owner.AddOneResource(resourceToExtract);
     }
 
-    private IResource? GetSolidResourceToExtract()
-        => (from resource in Location.Planet?.ResourcesQuantity ?? Enumerable.Empty<KeyValuePair<IResource, int>>()
-                where resource.Value > 0
-                where resource.Key.Category == ResourceCategory.Solid
-                orderby resource.Value descending,
-                        resource.Key.Name switch
-                        {
-                            ResourceName.Titanium => 5,
-                            ResourceName.Gold => 4,
-                            ResourceName.Aluminium => 3,
-                            ResourceName.Iron => 2,
-                            ResourceName.Carbon => 1,
-                            _ => 0
-                        } descending
-                select resource.Key).FirstOrDefault();
-    
-    private IResource? GetMostAbondantResourceOfCategory(ResourceCategory category) => 
-        (from resource in Location.Planet?.ResourcesQuantity ?? Enumerable.Empty<KeyValuePair<IResource, int>>()
-                where resource.Value > 0
-                where resource.Key.Category == category
-                orderby resource.Value descending
-                select resource.Key).FirstOrDefault();
+    private IResource? GetSolidResourceToExtract() =>
+        (from resourceQuantity in Location.Planet?.ResourcesQuantity
+            ?? Enumerable.Empty<KeyValuePair<IResource, int>>()
+         where resourceQuantity.Value > 0
+         where resourceQuantity.Key.Category == ResourceCategory.Solid
+         orderby resourceQuantity.Value descending,
+                 resourceQuantity.Key.Name switch
+                 {
+                     ResourceName.Titanium => 5,
+                     ResourceName.Gold => 4,
+                     ResourceName.Aluminium => 3,
+                     ResourceName.Iron => 2,
+                     ResourceName.Carbon => 1,
+                     _ => 0
+                 } descending
+         select resourceQuantity.Key)
+         .FirstOrDefault();
+
+    private IResource? GetMostAbondantResourceOfCategoryToExtract(ResourceCategory category) =>
+        (from resourceQuantity in Location.Planet?.ResourcesQuantity
+         ?? Enumerable.Empty<KeyValuePair<IResource, int>>()
+         where resourceQuantity.Value > 0
+         where resourceQuantity.Key.Category == category
+         orderby resourceQuantity.Value descending
+         select resourceQuantity.Key)
+        .FirstOrDefault();
 }

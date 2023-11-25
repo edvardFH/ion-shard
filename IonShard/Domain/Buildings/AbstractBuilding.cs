@@ -14,15 +14,23 @@ public abstract class AbstractBuilding : IBuilding
     public string Type { get; }
     public IBuilderUnit Builder { get; }
     public ILocation Location { get; }
+    public DateTime? EstimatedBuildTime { get; private set; }
     public bool IsBuilt { get; private set; }
 
-    public AbstractBuilding(IBuilderUnit builder, StarSystem starSystem, Planet planet, String type, bool isBuilt = false)
+    public AbstractBuilding(
+        IBuilderUnit builder,
+        StarSystem starSystem,
+        Planet planet,
+        String type,
+        DateTime? estimatedBuildTime = null,
+        bool isBuilt = false)
     {
         Id = new Random().NextGuid().ToString();
         Builder = builder;
         Location = new Location(starSystem, planet);
         Type = type;
         IsBuilt = isBuilt;
+        EstimatedBuildTime = estimatedBuildTime;
     }
 
     public void FinishBuild()
@@ -30,6 +38,7 @@ public abstract class AbstractBuilding : IBuilding
         if (IsBuilt)
             throw new InvalidOperationException("Building is already built.");
 
+        EstimatedBuildTime = null;
         IsBuilt = true;
     }
 }

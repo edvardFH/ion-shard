@@ -17,7 +17,11 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
     private CancellationTokenSource? _cancellationTokenSource;
     private IBuilding? _buildingBeingBuilt;
 
-    public BuilderUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet, "builder")
+    public BuilderUnit(
+        IUser owner,
+        StarSystem starSystem,
+        Planet? planet)
+        : base(owner, starSystem, planet, "builder")
     {
         BuildTask = Task.CompletedTask;
     }
@@ -25,7 +29,7 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 
     public override void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
-        if(IsBuilding && destinationPlanet != Location.Planet)
+        if (IsBuilding && destinationPlanet != Location.Planet)
             TryRequestBuildStop();
         base.StartTravel(clock, destinationSystem, destinationPlanet);
     }
@@ -38,14 +42,22 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
 
         if (resourceCategory is null)
             throw new ArgumentException("Mine must have a resource category but the provided one is null");
-       
 
-        _buildingBeingBuilt = new MineBuilding(this, Location.System, Location.Planet, (ResourceCategory) resourceCategory, clock);
+
+        EstimatedBuildTime = clock.Now.AddSeconds(BuildBuildingDuration);
+        _buildingBeingBuilt = new MineBuilding(
+            this,
+            Location.System,
+            Location.Planet,
+            (ResourceCategory)resourceCategory,
+            clock,
+            EstimatedBuildTime);
+
         this.Owner.AddBuilding(_buildingBeingBuilt);
 
         _cancellationTokenSource = new CancellationTokenSource();
 
-        EstimatedBuildTime = clock.Now.AddSeconds(BuildBuildingDuration);
+    
 
         BuildTask = BuildAsync(clock, _cancellationTokenSource.Token);
 

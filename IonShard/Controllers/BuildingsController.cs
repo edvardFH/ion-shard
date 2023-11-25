@@ -47,7 +47,7 @@ public class BuildingsController : ControllerBase
 
 
         if (!Enum.TryParse(body.ResourceCategory.UppercaseFirstWord(), out ResourceCategory category))
-            return BadRequest();
+            return BadRequest("Invalid resource category");
 
         IUnit? unit = user.Units.ContainsKey(body.BuilderId)
             ? user.Units[body.BuilderId]
