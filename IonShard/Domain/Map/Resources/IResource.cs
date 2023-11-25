@@ -3,5 +3,5 @@
 public interface IResource
 {
     public ResourceName Name { get; }
-    public ResourceState State { get; }
+    public ResourceCategory Category { get; }
 }

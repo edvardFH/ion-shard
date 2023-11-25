@@ -9,6 +9,8 @@ using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.UnitTests.Repository;
 using IonShard.Mappers;
+using IonShard.Domain.Map.Resources;
+using Shard.Shared.Core;
 
 namespace IonShard.UnitTests.Mappers;
 
@@ -18,13 +20,15 @@ public class DomainToDtoMapperTests
     private readonly StarSystem _sol;
     private readonly Planet _earth;
     private readonly IUser _userJohn;
+    private readonly IClock _clock;
 
-    public DomainToDtoMapperTests()
+    public DomainToDtoMapperTests(IClock clock)
     {
         _repository = LocalTestRepository.GetInstance();
         _sol = _repository["sol"]!;
         _earth = _sol["earth"]!;
         _userJohn = _repository.UserRepository.Users["1"];
+        _clock = clock;
     }
 
     [Fact]
@@ -87,7 +91,7 @@ public class DomainToDtoMapperTests
     public void Building_ToDTO()
     {
         IBuilderUnit builderUnit = new BuilderUnit(_userJohn, _sol, _earth);
-        IBuilding building = new MineBuilding(builderUnit, _sol, _earth);
+        IBuilding building = new MineBuilding(builderUnit, _sol, _earth, ResourceCategory.Solid, _clock);
         BuildingDTO buildingDTO = building.ToDTO();
 
         Assert.NotNull(buildingDTO);

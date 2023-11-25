@@ -8,13 +8,15 @@ namespace IonShard.Domain.Buildings;
 
 public abstract class AbstractBuilding : IBuilding
 {
+    protected const int BuildingBuildDuration = 300;
+
     public string Id { get; }
     public string Type { get; }
     public IBuilderUnit Builder { get; }
     public ILocation Location { get; }
     public bool IsBuilt { get; private set; }
 
-    public AbstractBuilding(IBuilderUnit builder, StarSystem starSystem, Planet? planet, String type, bool isBuilt = false)
+    public AbstractBuilding(IBuilderUnit builder, StarSystem starSystem, Planet planet, String type, bool isBuilt = false)
     {
         Id = new Random().NextGuid().ToString();
         Builder = builder;

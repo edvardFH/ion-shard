@@ -1,10 +1,12 @@
 ﻿using IonShard.Contracts.DTO.Buildings;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
+using IonShard.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
@@ -40,9 +42,12 @@ public class BuildingsController : ControllerBase
         if (user is null)
             return NotFound();
 
-        if (body is null || body.BuilderId is null || body.Type != "mine")
+        if (body is null || body.BuilderId is null || body.Type != "mine" || body.ResourceCategory is null)
             return BadRequest();
 
+
+        if (!Enum.TryParse(body.ResourceCategory.UppercaseFirstWord(), out ResourceCategory category))
+            return BadRequest();
 
         IUnit? unit = user.Units.ContainsKey(body.BuilderId)
             ? user.Units[body.BuilderId]
@@ -53,7 +58,7 @@ public class BuildingsController : ControllerBase
 
 
         IBuilderUnit builder = (IBuilderUnit)unit;
-        IBuilding building = builder.StartBuild(_clock, body.Type);
+        IBuilding building = builder.StartBuild(_clock, body.Type, category);
 
         return building.ToDTO();
     }

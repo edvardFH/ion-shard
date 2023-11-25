@@ -1,6 +1,6 @@
 ﻿namespace IonShard.Domain.Map.Resources;
 
-public enum ResourceState
+public enum ResourceCategory
 {
     Liquid,
     Solid,

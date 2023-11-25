@@ -1,6 +1,8 @@
-﻿namespace IonShard.Domain.Buildings;
+﻿using IonShard.Domain.Map.Resources;
+
+namespace IonShard.Domain.Buildings;
 
 public interface IMineBuilding : IBuilding
 {
-    protected void Mine();
+    public ResourceCategory ResourceCategory { get; }
 }

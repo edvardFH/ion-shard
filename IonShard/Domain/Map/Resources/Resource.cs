@@ -3,16 +3,16 @@
 public record Resource: IResource
 {
     public ResourceName Name { get; }
-    public ResourceState State { get; }
+    public ResourceCategory Category { get; }
 
     public Resource(ResourceName name)
     {
         Name = name;
-        State = name switch
+        Category = name switch
         {
-            ResourceName.Oxygen => ResourceState.Gaseous,
-            ResourceName.Water => ResourceState.Liquid,
-            _ => ResourceState.Solid
+            ResourceName.Oxygen => ResourceCategory.Gaseous,
+            ResourceName.Water => ResourceCategory.Liquid,
+            _ => ResourceCategory.Solid
         };
     }
 }

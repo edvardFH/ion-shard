@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 using Shard.Shared.Core;
 
@@ -30,13 +31,16 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
     }
 
 
-    public IBuilding StartBuild(IClock clock, string buildingType)
+    public IBuilding StartBuild(IClock clock, string buildingType, ResourceCategory? resourceCategory)
     {
         if (Location.Planet is null)
             throw new InvalidOperationException("Builder must be on a planet to build but its planet location is null.");
 
+        if (resourceCategory is null)
+            throw new ArgumentException("Mine must have a resource category but the provided one is null");
+       
 
-        _buildingBeingBuilt = new MineBuilding(this, Location.System, Location.Planet);
+        _buildingBeingBuilt = new MineBuilding(this, Location.System, Location.Planet, (ResourceCategory) resourceCategory, clock);
         this.Owner.AddBuilding(_buildingBeingBuilt);
 
         _cancellationTokenSource = new CancellationTokenSource();
