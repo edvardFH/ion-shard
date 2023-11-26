@@ -11,6 +11,7 @@ using IonShard.UnitTests.Repository;
 using IonShard.Mappers;
 using IonShard.Domain.Map.Resources;
 using Shard.Shared.Core;
+using Shard.Shared.Web.IntegrationTests.Clock;
 
 namespace IonShard.UnitTests.Mappers;
 
@@ -22,13 +23,13 @@ public class DomainToDtoMapperTests
     private readonly IUser _userJohn;
     private readonly IClock _clock;
 
-    public DomainToDtoMapperTests(IClock clock)
+    public DomainToDtoMapperTests()
     {
         _repository = LocalTestRepository.GetInstance();
         _sol = _repository["sol"]!;
         _earth = _sol["earth"]!;
         _userJohn = _repository.UserRepository.Users["1"];
-        _clock = clock;
+        _clock = new FakeClock();
     }
 
     [Fact]
