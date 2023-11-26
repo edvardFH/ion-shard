@@ -5,28 +5,28 @@
       {
         "Name": "earth",
         "Size": 12742,
-        "ResourcesQuantity": {
-          "Carbon": 3,
-          "Iron": 9,
-          "Gold": 7,
-          "Aluminium": 5,
-          "Titanium": 10,
-          "Water": 70,
-          "Oxygen": 20
-        }
+        "ResourcesQuantity": [
+          {"Key":{"Name": "Carbon", "Category": "Solid"}, "Value": 3},
+          {"Key":{"Name": "Iron", "Category": "Solid"}, "Value": 9},
+          {"Key":{"Name": "Gold", "Category": "Solid"}, "Value": 7},
+          {"Key":{"Name": "Aluminium", "Category": "Solid"}, "Value": 5},
+          {"Key":{"Name": "Titanium", "Category": "Solid"}, "Value": 10},
+          {"Key":{"Name": "Water", "Category": "Liquid"}, "Value": 70},
+          {"Key":{"Name": "Oxygen", "Category": "Gaseous"}, "Value": 20}
+        ]
       },
       {
         "Name": "mars",
         "Size": 6779,
-        "ResourcesQuantity": {
-          "Carbon": 3,
-          "Iron": 9,
-          "Gold": 7,
-          "Aluminium": 5,
-          "Titanium": 10,
-          "Water": 0,
-          "Oxygen": 0
-        }
+        "ResourcesQuantity": [
+          {"Key":{"Name": "Carbon", "Category": "Solid"}, "Value": 3},
+          {"Key":{"Name": "Iron", "Category": "Solid"}, "Value": 9},
+          {"Key":{"Name": "Gold", "Category": "Solid"}, "Value": 7},
+          {"Key":{"Name": "Aluminium", "Category": "Solid"}, "Value": 5},
+          {"Key":{"Name": "Titanium", "Category": "Solid"}, "Value": 10},
+          {"Key":{"Name": "Water", "Category": "Liquid"}, "Value": 0},
+          {"Key":{"Name": "Oxygen", "Category": "Gaseous"}, "Value": 0}
+        ]
       }
     ]
   },
@@ -36,28 +36,28 @@
       {
         "Name": "proxima",
         "Size": 3540,
-        "ResourcesQuantity": {
-          "Carbon": 3,
-          "Iron": 9,
-          "Gold": 7,
-          "Aluminium": 5,
-          "Titanium": 10,
-          "Water": 70,
-          "Oxygen": 20
-        }
+        "ResourcesQuantity": [
+          {"Key":{"Name": "Carbon", "Category": "Solid"}, "Value": 3},
+          {"Key":{"Name": "Iron", "Category": "Solid"}, "Value": 9},
+          {"Key":{"Name": "Gold", "Category": "Solid"}, "Value": 7},
+          {"Key":{"Name": "Aluminium", "Category": "Solid"}, "Value": 5},
+          {"Key":{"Name": "Titanium", "Category": "Solid"}, "Value": 10},
+          {"Key":{"Name": "Water", "Category": "Liquid"}, "Value": 70},
+          {"Key":{"Name": "Oxygen", "Category": "Gaseous"}, "Value": 20}
+        ]
       },
       {
         "Name": "centauri-a",
         "Size": 89202,
-        "ResourcesQuantity": {
-          "Carbon": 3,
-          "Iron": 9,
-          "Gold": 7,
-          "Aluminium": 5,
-          "Titanium": 10,
-          "Water": 0,
-          "Oxygen": 0
-        }
+        "ResourcesQuantity": [
+          {"Key":{"Name": "Carbon", "Category": "Solid"}, "Value": 3},
+          {"Key":{"Name": "Iron", "Category": "Solid"}, "Value": 9},
+          {"Key":{"Name": "Gold", "Category": "Solid"}, "Value": 7},
+          {"Key":{"Name": "Aluminium", "Category": "Solid"}, "Value": 5},
+          {"Key":{"Name": "Titanium", "Category": "Solid"}, "Value": 10},
+          {"Key":{"Name": "Water", "Category": "Liquid"}, "Value": 0},
+          {"Key":{"Name": "Oxygen", "Category": "Gaseous"}, "Value": 0}
+        ]
       }
     ]
   }
