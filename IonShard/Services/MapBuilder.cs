@@ -28,7 +28,6 @@ public class MapBuilder
             .ConvertAll(planet => new Planet(planet.Name, planet.Size, ResourceKindToResource(planet.ResourceQuantity))));
 
 
-
     private IReadOnlyDictionary<IResource, int> ResourceKindToResource(IReadOnlyDictionary<ResourceKind, int> resourceQuantity)
         => resourceQuantity
             .ToDictionary(

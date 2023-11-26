@@ -41,9 +41,7 @@ public class UsersController : ControllerBase
             return newUser.ToDTO();
         }
         else
-        {
             return BadRequest();
-        }
     }
 
 
