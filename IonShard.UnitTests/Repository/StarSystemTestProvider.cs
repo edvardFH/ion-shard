@@ -4,10 +4,10 @@ using IonShard.Domain.Map.Resources;
 
 namespace IonShard.UnitTests.Repository;
 
-public class StarSystemTestProvider
+public static class StarSystemTestProvider
 {
-    private static IDictionary<IResource, int>? _resources;
-    
+    private static IReadOnlyDictionary<IResource, int>? _resources;
+
     public static List<StarSystem> ProvideSystems()
     {
         var starSystems = new List<StarSystem>();
@@ -32,17 +32,20 @@ public class StarSystemTestProvider
 
     private static IReadOnlyDictionary<IResource, int> GetResources()
     {
-        if (_resources is not null)
-            return new ReadOnlyDictionary<IResource, int>(_resources);
-        
-        _resources = new Dictionary<IResource, int>();
-        _resources.Add(new Resource(ResourceName.Carbon), 3);
-        _resources.Add(new Resource(ResourceName.Iron), 9);
-        _resources.Add(new Resource(ResourceName.Gold), 7);
-        _resources.Add(new Resource(ResourceName.Aluminium), 5);
-        _resources.Add(new Resource(ResourceName.Titanium), 10);
-        _resources.Add(new Resource(ResourceName.Water), 70);
-        _resources.Add(new Resource(ResourceName.Oxygen), 20);
-        return new ReadOnlyDictionary<IResource, int>(_resources);
+        if (_resources is not null) return _resources;
+        var dictionary = new Dictionary<IResource, int>
+        {
+            { new Resource(ResourceName.Carbon), 3 },
+            { new Resource(ResourceName.Iron), 9 },
+            { new Resource(ResourceName.Gold), 7 },
+            { new Resource(ResourceName.Aluminium), 5 },
+            { new Resource(ResourceName.Titanium), 10 },
+            { new Resource(ResourceName.Water), 70 },
+            { new Resource(ResourceName.Oxygen), 20 }
+        };
+
+        _resources = new ReadOnlyDictionary<IResource, int>(dictionary);
+
+        return _resources;
     }
 }

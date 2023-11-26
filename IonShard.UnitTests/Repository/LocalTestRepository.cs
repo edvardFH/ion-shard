@@ -6,7 +6,6 @@ namespace IonShard.UnitTests.Repository;
 
 public class LocalTestRepository
 {
-    private const string JsonFilePathName = "../../../TestResources/TestRepoSystems.json";
     private static LocalTestRepository _instance;
     private readonly Universe _universe;
     public Universe Universe { get => _universe; }
@@ -26,9 +25,6 @@ public class LocalTestRepository
     {
         if (_instance is null)
         {
-            // TODO : fix json
-            //string jsonString = File.ReadAllText(JsonFilePathName);
-            //List<StarSystem> systems = JsonSerializer.Deserialize<List<StarSystem>>(jsonString)!;
             _instance = new LocalTestRepository(StarSystemTestProvider.ProvideSystems());
         }
 
