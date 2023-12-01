@@ -21,7 +21,7 @@ public abstract class Building : IBuilding
         IBuilderUnit builder,
         StarSystem starSystem,
         Planet planet,
-        String type,
+        string type,
         DateTime? estimatedBuildTime = null,
         bool isBuilt = false)
     {

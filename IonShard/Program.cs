@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("gamerules.json", optional: false, reloadOnChange: true)
             .Build();
 
 builder.Services.AddControllers();
@@ -20,6 +21,8 @@ builder.Services.AddSingleton<MapRepository>();
 
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserFactory>();
+
+builder.Services.AddSingleton<UnitFactory>();
 
 builder.Services.AddSingleton<SystemClock>();
 
