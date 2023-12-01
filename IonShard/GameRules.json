@@ -76,7 +76,7 @@
       }
     },
 
-    "FighterUnit": {
+    "CombatUnit": {
       "Fighter": {
         "ResourceCost": {
           "Iron": 20,
@@ -93,8 +93,7 @@
           "Cruiser"
         ],
         "Shield": {
-          "DamageReduction": {
-          }
+          "DamageReduction": null
         }
       },
 
@@ -114,8 +113,7 @@
           "Bomber"
         ],
         "Shield": {
-          "DamageReduction": {
-          }
+          "DamageReduction": null
         }
       },
 
@@ -135,8 +133,8 @@
           "Fighter"
         ],
         "Shield": {
-          "DamageReduction": {
-            "Cruiser": 0.9
+          "DamageReductionMultiplier": {
+            "Cruiser": 0.1
           }
         }
       }

@@ -62,11 +62,9 @@ public class BuildingsController : ControllerBase
             ? user.Units[body.BuilderId]
             : null;
 
-        if (unit is null || unit is not IBuilderUnit || unit.Location.Planet is null)
+        if (unit is not IBuilderUnit builder || unit.Location.Planet is null)
             return BadRequest();
 
-
-        IBuilderUnit builder = (IBuilderUnit)unit;
         IBuilding building = builder.StartBuild(_clock, body.Type, category);
 
         return building.ToDTO();
@@ -81,12 +79,12 @@ public class BuildingsController : ControllerBase
     {
         IUser? user = _usersRepository[userId];
 
-        return user is not null
-            ? user.Buildings
+        return user is null
+            ? NotFound()
+            : user.Buildings
                 .Values
                 .ToList()
-                .ConvertAll(building => building.ToDTO())
-            : NotFound();
+                .ConvertAll(building => building.ToDTO());
     }
 
 
