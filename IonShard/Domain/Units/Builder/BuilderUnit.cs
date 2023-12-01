@@ -4,9 +4,9 @@ using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 using Shard.Shared.Core;
 
-namespace IonShard.Domain.Units;
+namespace IonShard.Domain.Units.Builder;
 
-public class BuilderUnit : AbstractUnit, IBuilderUnit
+public class BuilderUnit : Unit, IBuilderUnit
 {
     private const int BuildBuildingDuration = 300;
 
@@ -54,7 +54,7 @@ public class BuilderUnit : AbstractUnit, IBuilderUnit
             clock,
             EstimatedBuildTime);
 
-        this.Owner.AddBuilding(_buildingBeingBuilt);
+        Owner.AddBuilding(_buildingBeingBuilt);
 
         _cancellationTokenSource = new CancellationTokenSource();
         BuildTask = BuildAsync(clock, _cancellationTokenSource.Token);

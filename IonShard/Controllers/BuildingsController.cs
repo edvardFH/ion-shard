@@ -3,6 +3,7 @@ using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;

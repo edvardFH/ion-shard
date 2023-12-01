@@ -1,12 +1,12 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
-using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 using IonShard.Utils;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Buildings;
 
-public abstract class AbstractBuilding : IBuilding
+public abstract class Building : IBuilding
 {
     protected const int BuildingBuildDuration = 300;
 
@@ -17,7 +17,7 @@ public abstract class AbstractBuilding : IBuilding
     public DateTime? EstimatedBuildTime { get; private set; }
     public bool IsBuilt { get; private set; }
 
-    public AbstractBuilding(
+    public Building(
         IBuilderUnit builder,
         StarSystem starSystem,
         Planet planet,

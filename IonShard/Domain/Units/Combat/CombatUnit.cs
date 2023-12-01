@@ -3,13 +3,13 @@ using IonShard.Domain.Users;
 
 namespace IonShard.Domain.Units.Combat;
 
-public abstract class AbstractCombatUnit : AbstractUnit, ICombatUnit
+public abstract class CombatUnit : Unit, ICombatUnit
 {
     public int HealthPoints { get; private set;  }
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
     
-    public AbstractCombatUnit(
+    public CombatUnit(
         IUser owner,
         StarSystem system,
         Planet? planet,

@@ -1,10 +1,11 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Buildings;
 
-public class StartPortBuilding: AbstractBuilding, IStarPortBuilding
+public class StatioportBuilding: Building, IStatioportBuilding
 {
     public Queue<IUnit> BuildQueue { get; }
    
@@ -14,7 +15,7 @@ public class StartPortBuilding: AbstractBuilding, IStarPortBuilding
     public bool IsBuilding => _unitBeingBuilt is not null;
     public DateTime? EstimatedCurrentUnitBuildTime { get; }
 
-    public StartPortBuilding(
+    public StatioportBuilding(
         IBuilderUnit builder,
         StarSystem starSystem,
         Planet planet,

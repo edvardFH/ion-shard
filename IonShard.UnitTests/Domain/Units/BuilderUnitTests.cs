@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Users;
 using IonShard.UnitTests.Repository;
 using Shard.Shared.Core;

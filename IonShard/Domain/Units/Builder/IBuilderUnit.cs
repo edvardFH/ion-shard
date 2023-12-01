@@ -2,7 +2,7 @@
 using IonShard.Domain.Map.Resources;
 using Shard.Shared.Core;
 
-namespace IonShard.Domain.Units;
+namespace IonShard.Domain.Units.Builder;
 
 public interface IBuilderUnit : IUnit
 {

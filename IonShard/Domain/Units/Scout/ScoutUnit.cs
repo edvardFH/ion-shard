@@ -3,9 +3,9 @@ using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Users;
 
-namespace IonShard.Domain.Units;
+namespace IonShard.Domain.Units.Scout;
 
-public class ScoutUnit : AbstractUnit
+public class ScoutUnit : Unit, IScoutUnit
 {
     public ScoutUnit(IUser owner, StarSystem starSystem, Planet? planet) : base(owner, starSystem, planet, "scout") { }
 

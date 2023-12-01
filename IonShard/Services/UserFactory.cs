@@ -1,8 +1,9 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
+using IonShard.Domain.Units.Scout;
 using IonShard.Domain.Users;
 using IonShard.Persistence.Repositories;
-using IonShard.Utils;
 
 namespace IonShard.Services;
 
@@ -17,7 +18,7 @@ public class UserFactory
         this.map = map;
     }
 
-    public IUser CreateNewUser(string id, string pseudo)
+    public IUser GetNewUser(string id, string pseudo)
     {
         IUser newUser = new User(id, pseudo, DateTime.Now);
 

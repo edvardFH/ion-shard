@@ -1,11 +1,11 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
-using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Buildings;
 
-public class MineBuilding : AbstractBuilding, IMineBuilding
+public class MineBuilding : Building, IMineBuilding
 {
     private const int MineExtractionPeriode = 60;
 

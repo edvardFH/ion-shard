@@ -4,7 +4,7 @@ using Shard.Shared.Core;
 
 namespace IonShard.Domain.Buildings;
 
-public interface IStarPortBuilding: IBuilding
+public interface IStatioportBuilding: IBuilding
 {
     public Queue<IUnit> BuildQueue { get; }
     public IUnit AddToQueue(IClock clock, string unitType);

@@ -6,7 +6,7 @@ using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
-public abstract class AbstractUnit : IUnit
+public abstract class Unit : IUnit
 {
     private const int LeavePlanetManeuverDuration = 0;
     private const int ChangeSystemManeuverDuration = 60;
@@ -21,7 +21,7 @@ public abstract class AbstractUnit : IUnit
     private CancellationTokenSource? _cancellationTokenSource;
 
 
-    public AbstractUnit(IUser owner, StarSystem system, Planet? planet, string type)
+    public Unit(IUser owner, StarSystem system, Planet? planet, string type)
     {
         Id = new Random().NextGuid().ToString();
         Owner = owner;

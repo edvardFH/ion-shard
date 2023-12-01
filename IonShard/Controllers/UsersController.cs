@@ -41,7 +41,7 @@ public class UsersController : ControllerBase
         if (_usersRepository.Users.ContainsKey(userId))
             return BadRequest("This functionality is WIP."); // TODO: handle admin request
 
-        IUser newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
+        IUser newUser = _userFactory.GetNewUser(userId, body.Pseudo);
         _usersRepository.Users.Add(newUser.Id, newUser);
 
         return newUser.ToDTO();

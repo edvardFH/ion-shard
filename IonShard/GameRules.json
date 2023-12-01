@@ -30,11 +30,34 @@
     }
   },
 
+
+  "Users": {
+    "StartingResources": {
+      "Carbon": 20,
+      "Iron": 10,
+      "Oxygen": 50,
+      "Water": 50
+    }
+  },
+
+
+  "Buildings": {
+    "Mine": {
+      "BuildingDuration": 300,
+      "ExtractionPeriode": 60
+    },
+    "Statioport": {
+      "BuildingDuration": 300
+    }
+  },
+
+
   "TravelDurations": {
     "LeavePlanet": 0,
     "ChangeSystem": 60,
     "EnterPlanet": 15
   },
+
 
   "Weapons": {
     "Canon": {
@@ -47,15 +70,6 @@
     }
   },
 
-  "Buildings": {
-    "Mine": {
-      "BuildingDuration": 300,
-      "ExtractionPeriode": 60
-    },
-    "SpacePort": {
-      "BuildingDuration": 300
-    }
-  },
 
   "Units": {
     "PeacefulUnit": {
@@ -87,7 +101,7 @@
         "Weapons": {
           "Canon": 1
         },
-        "FightPriorities": [
+        "CombatPriorities": [
           "Bomber",
           "Fighter",
           "Cruiser"
@@ -107,7 +121,7 @@
         "Weapons": {
           "Canon": 4
         },
-        "FightPriorities": [
+        "CombatPriorities": [
           "Fighter",
           "Cruiser",
           "Bomber"
@@ -127,7 +141,7 @@
         "Weapons": {
           "BombBay": 1
         },
-        "FightPriorities": [
+        "CombatPriorities": [
           "Cruiser",
           "Bomber",
           "Fighter"
