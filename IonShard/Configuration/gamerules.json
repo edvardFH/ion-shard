@@ -106,9 +106,7 @@
           "Fighter",
           "Cruiser"
         ],
-        "Shield": {
-          "DamageReduction": null
-        }
+        "ShieldDamageReductionMultiplier": {}
       },
 
       "Cruiser": {
@@ -126,9 +124,7 @@
           "Cruiser",
           "Bomber"
         ],
-        "Shield": {
-          "DamageReduction": null
-        }
+        "ShieldDamageReductionMultiplier": {}
       },
 
       "Bomber": {
@@ -146,10 +142,8 @@
           "Bomber",
           "Fighter"
         ],
-        "Shield": {
-          "DamageReductionMultiplier": {
-            "Cruiser": 0.1
-          }
+        "ShieldDamageReductionMultiplier": {
+          "Cruiser": 0.1
         }
       }
     }

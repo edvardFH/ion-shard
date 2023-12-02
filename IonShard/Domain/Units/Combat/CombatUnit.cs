@@ -3,12 +3,12 @@ using IonShard.Domain.Users;
 
 namespace IonShard.Domain.Units.Combat;
 
-public abstract class CombatUnit : Unit, ICombatUnit
+public class CombatUnit : Unit, ICombatUnit
 {
-    public int HealthPoints { get; private set;  }
+    public int HealthPoints { get; private set; }
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
-    
+
     public CombatUnit(
         IUser owner,
         StarSystem system,
@@ -26,11 +26,14 @@ public abstract class CombatUnit : Unit, ICombatUnit
 
     public int ApplyDamage(int damage)
     {
-        if(HealthPoints >= damage)
+        if (HealthPoints >= damage)
             return (HealthPoints -= damage);
 
         return (HealthPoints = 0);
     }
 
-    protected abstract IUnit ChooseTarget();
+    protected IUnit ChooseTarget()
+    {
+        return null;
+    }
 }

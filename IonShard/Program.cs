@@ -1,3 +1,4 @@
+using IonShard.Configuration;
 using IonShard.Persistence.Repositories;
 using IonShard.Services;
 using IonShard.Swagger;
@@ -8,10 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("gamerules.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("Configuration/gamerules.json", optional: false, reloadOnChange: true)
             .Build();
 
 builder.Services.AddControllers();
+
+builder.Services.AddSingleton<GameRulesConfigurationService>();
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGeneratorOptions"));
