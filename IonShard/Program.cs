@@ -13,7 +13,7 @@ builder.Configuration
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<GameRulesConfigurationService>();
+builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(
@@ -28,7 +28,7 @@ builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserFactory>();
 
 
-builder.Services.AddSingleton<SystemClock>();
+builder.Services.AddSingleton<IClock, SystemClock>();
 
 
 builder.Services.AddEndpointsApiExplorer();

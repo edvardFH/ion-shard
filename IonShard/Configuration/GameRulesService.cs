@@ -3,11 +3,11 @@ using System.Collections.ObjectModel;
 
 namespace IonShard.Configuration;
 
-public class GameRulesConfigurationService
+public class GameRulesService : IGameRulesService
 {
     private IConfiguration _configuration;
 
-    public GameRulesConfigurationService(IConfiguration configuration)
+    public GameRulesService(IConfiguration configuration)
     {
         _configuration = configuration;
     }

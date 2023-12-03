@@ -14,10 +14,10 @@ public class UnitFactory
 {
     private IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
     private IReadOnlyDictionary<string, IUnitConfiguration> _units;
-    public UnitFactory(GameRulesConfigurationService gameRulesConfigurationService)
+    public UnitFactory(IGameRulesService gameRulesService)
     {
-        _weapons = gameRulesConfigurationService.GetWeapons();
-        _units = gameRulesConfigurationService.GetUnits();
+        _weapons = gameRulesService.GetWeapons();
+        _units = gameRulesService.GetUnits();
     }
 
     public IUnit GetNewUnit(IUser owner, StarSystem system, Planet? planet, string type)
@@ -30,16 +30,44 @@ public class UnitFactory
 
         return unitStats switch
         {
-            CombatUnitConfiguration combatUnitStats => new CombatUnit(
-                owner,
-                system,
-                planet,
-                type,
-                combatUnitStats.HealthPoints,
-                new List<IWeapon>(),
-                new List<string>()),
+            CombatUnitConfiguration combatUnitStats =>
+                new CombatUnit
+                (
+                    owner,
+                    system,
+                    planet,
+                    type,
+                    combatUnitStats.HealthPoints,
+                    CreateWeapons(_weapons, combatUnitStats.Weapons),
+                    combatUnitStats.CombatPriorities
+                ),
             _ => CreatePeacefulUnit(owner, system, planet, type)
         };
+    }
+
+    public bool TypeExists(string type) => _units.ContainsKey(type);
+
+    private IReadOnlyList<IWeapon> CreateWeapons(
+        IReadOnlyDictionary<string, WeaponConfiguration> weapons,
+        IReadOnlyDictionary<string, int> weaponsOnUnit)
+    {
+        return weaponsOnUnit
+            .SelectMany(weaponQuantity =>
+            {
+                var weaponConfiguration = weapons[weaponQuantity.Key];
+                var createdWeapons = new List<IWeapon>();
+                for (var i = 0; i < weaponQuantity.Value; i++)
+                {
+                    createdWeapons.Add(
+                        new Weapon
+                        (
+                            weaponQuantity.Key,
+                            weaponConfiguration.Damage,
+                            weaponConfiguration.Cooldown)
+                        );
+                }
+                return createdWeapons;
+            }).ToList();
     }
 
     private IUnit CreatePeacefulUnit(

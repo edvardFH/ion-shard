@@ -23,7 +23,11 @@ public class UnitsController : ControllerBase
     private readonly MapRepository _mapRepository;
     private readonly IClock _clock;
 
-    public UnitsController(UserRepository usersRepository, MapRepository mapRepository, IClock clock, IConfiguration configuration)
+    public UnitsController(
+        UserRepository usersRepository, 
+        MapRepository mapRepository,
+        IClock clock,
+        IConfiguration configuration)
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;

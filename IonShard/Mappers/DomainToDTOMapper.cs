@@ -46,7 +46,7 @@ public static class DomainToDTOMapper
 
         return new UnitDTO(
             unit.Id,
-            unit.Type,
+            unit.Type.ToLower(),
             unitSystem,
             unitPlanet,
             unit.Destination?.System.Name ?? unitSystem,
