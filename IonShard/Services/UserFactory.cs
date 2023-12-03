@@ -12,10 +12,12 @@ public class UserFactory
 {
     private Random random = new Random();
     private MapRepository map;
+    private UnitFactory _unitFactory;
 
-    public UserFactory(MapRepository map)
+    public UserFactory(MapRepository map, UnitFactory unitFactory)
     {
         this.map = map;
+        this._unitFactory = unitFactory;
     }
 
     public IUser GetNewUser(string id, string pseudo)
@@ -34,8 +36,8 @@ public class UserFactory
         StarSystem starSystem = GetRandomStarSystem();
         Planet? planet = GetRandomPlanet(starSystem);
 
-        yield return new ScoutUnit(owner, starSystem, planet);
-        yield return new BuilderUnit(owner, starSystem, planet);
+        yield return _unitFactory.GetNewUnit(owner, starSystem, planet, "Scout");
+        yield return _unitFactory.GetNewUnit(owner, starSystem, planet, "Builder");
     }
 
     private StarSystem GetRandomStarSystem() => map.Systems[random.Next(map.Systems.Count)];

@@ -7,25 +7,26 @@ using Shard.Shared.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration configuration = new ConfigurationBuilder()
+builder.Configuration
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("Configuration/gamerules.json", optional: false, reloadOnChange: true)
-            .Build();
+            .AddJsonFile("Configuration/gamerules.json", optional: false, reloadOnChange: true);
 
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<GameRulesConfigurationService>();
 
 builder.Services.AddSingleton<MapGenerator>();
-builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGeneratorOptions"));
+builder.Services.Configure<MapGeneratorOptions>(
+    builder.Configuration.GetSection("MapGeneratorOptions"));
 
 builder.Services.AddSingleton<MapBuilder>();
 builder.Services.AddSingleton<MapRepository>();
 
+builder.Services.AddSingleton<UnitFactory>();
+
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserFactory>();
 
-builder.Services.AddSingleton<UnitFactory>();
 
 builder.Services.AddSingleton<SystemClock>();
 
@@ -36,12 +37,12 @@ builder.Services.AddSwaggerGen(c =>
     c.DocumentFilter<RequestBodiesDocumentFilter>();
     c.EnableAnnotations();
     c.SwaggerDoc(
-        configuration.GetValue<string>("AppSettings:Version"),
+        builder.Configuration.GetValue<string>("AppSettings:Version"),
         new OpenApiInfo
         {
-            Version = configuration.GetValue<string>("AppSettings:Version"),
-            Title = configuration.GetValue<string>("AppSettings:Title"),
-            Description = configuration.GetValue<string>("AppSettings:Description")
+            Version = builder.Configuration.GetValue<string>("AppSettings:Version"),
+            Title = builder.Configuration.GetValue<string>("AppSettings:Title"),
+            Description = builder.Configuration.GetValue<string>("AppSettings:Description")
         });
 });
 
@@ -52,8 +53,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint(
-            $"/swagger/{configuration.GetValue<string>("AppSettings:Version")}/swagger.json",
-            configuration.GetValue<string>("AppSettings:Title")));
+            $"/swagger/{builder.Configuration.GetValue<string>("AppSettings:Version")}/swagger.json",
+            builder.Configuration
+                .GetValue<string>("AppSettings:Title")));
 }
 
 app.UseAuthorization();

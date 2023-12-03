@@ -27,7 +27,8 @@ public class UnitFactory
                 $"Incorrect unit type : {type} is not contained in configuration.");
 
         var unitStats = _units[type];
-        var unit = unitStats switch
+
+        return unitStats switch
         {
             CombatUnitConfiguration combatUnitStats => new CombatUnit(
                 owner,
@@ -39,8 +40,6 @@ public class UnitFactory
                 new List<string>()),
             _ => CreatePeacefulUnit(owner, system, planet, type)
         };
-
-        return null;
     }
 
     private IUnit CreatePeacefulUnit(

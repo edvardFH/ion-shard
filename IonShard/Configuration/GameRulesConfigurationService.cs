@@ -1,4 +1,5 @@
 ﻿using IonShard.Configuration.Units;
+using System.Collections.ObjectModel;
 
 namespace IonShard.Configuration;
 
@@ -14,8 +15,9 @@ public class GameRulesConfigurationService
     public IReadOnlyDictionary<string, WeaponConfiguration> GetWeapons()
     {
         const string key = "Weapons";
-        var weapons =
-            _configuration.GetValue<IReadOnlyDictionary<string, WeaponConfiguration>>(key);
+        var weapons = _configuration
+            .GetSection(key)
+            .Get<IReadOnlyDictionary<string, WeaponConfiguration>>();
 
         if (weapons is null)
             throw new ConfigurationFormatException(key);
@@ -25,24 +27,83 @@ public class GameRulesConfigurationService
 
     public IReadOnlyDictionary<string, IUnitConfiguration> GetUnits()
     {
-        const string key1 = "Units::PeacefulUnit";
-        var units = _configuration
-            .GetValue<IDictionary<string, IUnitConfiguration>>(key1);
+        const string peacefulUnitSectionKey = "Units:PeacefulUnit";
+        var peacefulUnitSectionChildren = _configuration
+            .GetSection(peacefulUnitSectionKey)
+            .GetChildren();
 
-        if (units is null)
-            throw new ConfigurationFormatException(key1);
+        if (peacefulUnitSectionChildren is null)
+            throw new ConfigurationFormatException(peacefulUnitSectionKey);
+
+        Dictionary<string, IUnitConfiguration> units =
+            peacefulUnitSectionChildren
+            .Select(unit =>
+                (
+                    unit.Key,
+                    Value: new UnitConfiguration
+                    (
+                        GetAsIntDictionnary(unit, "ResourceCost"),
+                        GetAsInt(unit, "BuildingDuration")
+                    )
+                )
+            ).ToDictionary(
+                keyValuePair => keyValuePair.Key,
+                keyValuePair => (IUnitConfiguration)keyValuePair.Value);
 
 
-        const string key2 = "Units::CombatUnit";
-        var combatUnit = _configuration
-            .GetValue<IReadOnlyDictionary<string, CombatUnitConfiguration>>(key2);
-
-        if (combatUnit is null)
-            throw new ConfigurationFormatException(key2);
-
-        combatUnit.ToList().ForEach(combatUnit => units.Add(combatUnit.Key, combatUnit.Value));
+        if (units is null) // TODO : check if enumerable only contains not null value
+            throw new ConfigurationFormatException(peacefulUnitSectionKey);
 
 
-        return (IReadOnlyDictionary<string, IUnitConfiguration>)units;
+        const string combatUnitSectionKey = "Units:CombatUnit";
+        var combatUnitSectionChildren = _configuration
+            .GetSection(combatUnitSectionKey)
+            .GetChildren();
+
+        if (combatUnitSectionChildren is null)
+            throw new ConfigurationFormatException(combatUnitSectionKey);
+
+        List<(string Key, IUnitConfiguration Value)> combatUnits =
+             combatUnitSectionChildren
+             .Select(unit =>
+                 (
+                     unit.Key,
+                     Value: (IUnitConfiguration) new CombatUnitConfiguration
+                     (
+                         GetAsIntDictionnary(unit, "ResourceCost"),
+                         GetAsInt(unit, "BuildingDuration"),
+                         GetAsInt(unit, "HealthPoints"),
+                         GetAsIntDictionnary(unit, "Weapons"),
+                         GetAsStringList(unit, "CombatPriorities"),
+                         GetAsFloatDictionnary(unit, "ShieldDamageReductionMultiplier")
+                     )
+                 )
+             ).ToList<(string, IUnitConfiguration)>();
+
+
+        if (combatUnits is null)
+            throw new ConfigurationFormatException(combatUnitSectionKey);
+
+        combatUnits.ForEach(keyValuePair => units.Add(keyValuePair.Key, keyValuePair.Value));
+
+        return units;
     }
+
+    private int GetAsInt(IConfigurationSection unit, string key) => 
+        unit.GetSection(key).Get<int>();
+
+    private IReadOnlyDictionary<string,int> GetAsIntDictionnary(IConfigurationSection section, string key) =>
+        section.GetSection(key)
+            .Get<IReadOnlyDictionary<string, int>>()
+            ?? new Dictionary<string, int>();
+    
+    private IReadOnlyDictionary<string,float> GetAsFloatDictionnary(IConfigurationSection section, string key) =>
+        section.GetSection(key)
+            .Get<IReadOnlyDictionary<string, float>>()
+            ?? new Dictionary<string, float>();
+
+    private IReadOnlyList<string> GetAsStringList(IConfigurationSection section, string key) =>
+        section.GetSection(key)
+            .Get<IReadOnlyList<string>>()
+            ?? new List<string>();
 }
