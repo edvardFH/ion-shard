@@ -1,5 +1,6 @@
 ﻿using IonShard.Configuration;
 using IonShard.Configuration.Units;
+using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Units.Combat;
@@ -11,18 +12,24 @@ namespace IonShard.Domain.Units;
 
 public class UnitFactory : IUnitFactory
 {
-    private IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
-    private IReadOnlyDictionary<string, IUnitConfiguration> _units;
+    private readonly IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
+    private readonly IReadOnlyDictionary<string, IUnitConfiguration> _units;
+    private readonly IBuildingFactory _buildingFactory;
 
 
-    public UnitFactory(IGameRulesService gameRulesService)
+    public UnitFactory
+        (
+            IGameRulesService gameRulesService,
+            IBuildingFactory buildingFactory
+        )
     {
         _weapons = gameRulesService.GetWeapons();
         _units = gameRulesService.GetUnits();
+        _buildingFactory = buildingFactory;
     }
 
 
-    public IUnit GetNewUnit
+    public IUnit CreateUnit
         (
             IUser owner,
             StarSystem system,
@@ -30,11 +37,13 @@ public class UnitFactory : IUnitFactory
             string type
         )
     {
-        if (!DoesTypeExist(type))
-            throw new ArgumentException(
-                $"Incorrect unit type : {type} is not contained in game rules.");
+        var formattedType = type.UppercaseFirstWord();
 
-        var unitStats = _units[type];
+        if (!DoesTypeExist(formattedType))
+            throw new ArgumentException(
+                $"Incorrect unit type : {formattedType} is not contained in game rules.");
+
+        var unitStats = _units[formattedType];
 
         return unitStats switch
         {
@@ -44,17 +53,18 @@ public class UnitFactory : IUnitFactory
                     owner,
                     system,
                     planet,
-                    type,
+                    formattedType,
                     combatUnitStats.HealthPoints,
                     CreateWeapons(_weapons, combatUnitStats.Weapons),
                     combatUnitStats.CombatPriorities
                 ),
-            _ => CreatePeacefulUnit(owner, system, planet, type)
+            _ => CreatePeacefulUnit(owner, system, planet, formattedType)
         };
     }
 
 
-    public bool DoesTypeExist(string type) => _units.ContainsKey(type);
+    public bool DoesTypeExist(string type) =>
+        _units.ContainsKey(type.UppercaseFirstWord());
 
 
     private IReadOnlyList<IWeapon> CreateWeapons
@@ -95,7 +105,7 @@ public class UnitFactory : IUnitFactory
         return type switch
         {
             "Scout" => new ScoutUnit(owner, starSystem, planet),
-            "Builder" => new BuilderUnit(owner, starSystem, planet),
+            "Builder" => new BuilderUnit(_buildingFactory, owner, starSystem, planet),
             _ => throw new ArgumentException(
                 $"Incorrect unit type : {type} is unknown.")
         };

@@ -6,7 +6,7 @@ namespace IonShard.Domain.Buildings;
 
 public interface IBuildingFactory
 {
-    public IBuilding GetBuildingWith
+    public IBuilding CreateBuilding
         (
             string type,
             IBuilderUnit builder,

@@ -4,5 +4,5 @@ namespace IonShard.Services;
 
 public interface IUserFactory
 {
-    public IUser GetNewUser(string id, string pseudo);
+    public IUser CreateUser(string id, string pseudo);
 }

@@ -5,7 +5,7 @@ namespace IonShard.Domain.Units;
 
 public interface IUnitFactory
 {
-    public IUnit GetNewUnit
+    public IUnit CreateUnit
         (
             IUser owner,
             StarSystem system,

@@ -18,12 +18,18 @@ public class BuilderUnit : Unit, IBuilderUnit
     private CancellationTokenSource? _cancellationTokenSource;
     private IBuilding? _buildingBeingBuilt;
 
-    public BuilderUnit(
-        IUser owner,
-        StarSystem starSystem,
-        Planet? planet)
+    private readonly IBuildingFactory _buildingFactory;
+
+    public BuilderUnit
+        (
+            IBuildingFactory buildingFactory,
+            IUser owner,
+            StarSystem starSystem,
+            Planet? planet
+        )
         : base(owner, starSystem, planet, "builder")
     {
+        _buildingFactory = buildingFactory;
         BuildTask = Task.CompletedTask;
     }
 
@@ -42,18 +48,18 @@ public class BuilderUnit : Unit, IBuilderUnit
         if (Location.Planet is null)
             throw new InvalidOperationException("Builder must be on a planet to build but its planet location is null.");
 
-        if (resourceCategory is null)
-            throw new ArgumentException("Mine must have a resource category but the provided one is null");
-
 
         EstimatedBuildTime = clock.Now.AddSeconds(BuildBuildingDuration);
-        _buildingBeingBuilt = new MineBuilding(
-            this,
-            Location.System,
-            Location.Planet,
-            (ResourceCategory)resourceCategory,
-            clock,
-            EstimatedBuildTime);
+        _buildingBeingBuilt = _buildingFactory.CreateBuilding
+            (
+                buildingType,
+                this,
+                Location.System,
+                Location.Planet,
+                false,
+                EstimatedBuildTime,
+                resourceCategory
+            );
 
         Owner.AddBuilding(_buildingBeingBuilt);
 

@@ -4,24 +4,29 @@ using IonShard.Domain.Buildings.Statioport;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units.Builder;
+using IonShard.Utils;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Buildings;
 
 public class BuildingFactory : IBuildingFactory
 {
-    private IReadOnlyDictionary<string, BuildingConfiguration> _buildings;
-    private IClock _clock;
+    private readonly IReadOnlyDictionary<string, BuildingConfiguration> _buildings;
+    private readonly IClock _clock;
 
 
-    public BuildingFactory(IGameRulesService gameRuleService, IClock clock)
+    public BuildingFactory
+        (
+            IGameRulesService gameRuleService,
+            IClock clock
+        )
     {
         _buildings = gameRuleService.GetBuildings();
         _clock = clock;
     }
 
 
-    public IBuilding GetBuildingWith
+    public IBuilding CreateBuilding
         (
             string type,
             IBuilderUnit builder,
@@ -32,13 +37,15 @@ public class BuildingFactory : IBuildingFactory
             ResourceCategory? resourceCategory = null
         )
     {
-        if (!DoesTypeExist(type))
+        var formattedType = type.UppercaseFirstWord();
+
+        if (!DoesTypeExist(formattedType))
             throw new ArgumentException(
-                $"Incorrect building type : {type} is not contained in game rules.");
+                $"Incorrect building type : {formattedType} is not contained in game rules.");
 
-        var buildingStats = _buildings[type];
+        var buildingStats = _buildings[formattedType];
 
-        return type switch
+        return formattedType switch
         {
             "Mine" when (resourceCategory is null) =>
                 throw new ArgumentException
@@ -68,11 +75,12 @@ public class BuildingFactory : IBuildingFactory
             _ =>
                 throw new NotImplementedException
                 (
-                    $"{type} exists in game rules but is not implemented."
+                    $"{formattedType} exists in game rules but is not implemented."
                 )
         };
     }
 
 
-    public bool DoesTypeExist(string type) => _buildings.ContainsKey(type);
+    public bool DoesTypeExist(string type) =>
+        _buildings.ContainsKey(type.UppercaseFirstWord());
 }

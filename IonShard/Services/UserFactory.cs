@@ -8,9 +8,9 @@ namespace IonShard.Services;
 
 public class UserFactory : IUserFactory
 {
-    private Random _random = new Random();
-    private MapRepository _map;
-    private IUnitFactory _unitFactory;
+    private readonly Random _random = new Random();
+    private readonly MapRepository _map;
+    private readonly IUnitFactory _unitFactory;
 
     public UserFactory(MapRepository map, IUnitFactory unitFactory)
     {
@@ -18,7 +18,7 @@ public class UserFactory : IUserFactory
         _unitFactory = unitFactory;
     }
 
-    public IUser GetNewUser(string id, string pseudo)
+    public IUser CreateUser(string id, string pseudo)
     {
         IUser newUser = new User(id, pseudo, DateTime.Now);
 
@@ -34,8 +34,8 @@ public class UserFactory : IUserFactory
         StarSystem starSystem = GetRandomStarSystem();
         Planet? planet = GetRandomPlanet(starSystem);
 
-        yield return _unitFactory.GetNewUnit(owner, starSystem, planet, "Scout");
-        yield return _unitFactory.GetNewUnit(owner, starSystem, planet, "Builder");
+        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Scout");
+        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Builder");
     }
 
     private StarSystem GetRandomStarSystem() => _map.Systems[_random.Next(_map.Systems.Count)];
