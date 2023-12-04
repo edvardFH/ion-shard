@@ -12,6 +12,7 @@ public class GameRulesService : IGameRulesService
         _configuration = configuration;
     }
 
+
     public IReadOnlyDictionary<string, WeaponConfiguration> GetWeapons()
     {
         const string key = "Weapons";
@@ -24,6 +25,7 @@ public class GameRulesService : IGameRulesService
 
         return weapons;
     }
+
 
     public IReadOnlyDictionary<string, IUnitConfiguration> GetUnits()
     {
@@ -88,6 +90,21 @@ public class GameRulesService : IGameRulesService
 
         return units;
     }
+
+
+    public IReadOnlyDictionary<string, BuildingConfiguration> GetBuildings()
+    {
+        const string key = "Buildings";
+        var buildings = _configuration
+            .GetSection(key)
+            .Get<IReadOnlyDictionary<string, BuildingConfiguration>>();
+
+        if (buildings is null)
+            throw new ConfigurationFormatException(key);
+
+        return buildings;
+    }
+
 
     private int GetAsInt(IConfigurationSection unit, string key) => 
         unit.GetSection(key).Get<int>();

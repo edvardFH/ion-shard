@@ -1,4 +1,5 @@
 ﻿using IonShard.Domain.Buildings;
+using IonShard.Domain.Buildings.Mine;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;

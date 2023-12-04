@@ -18,9 +18,13 @@ public class UsersController : ControllerBase
 {
 
     private readonly UserRepository _usersRepository;
-    private readonly UserFactory _userFactory;
+    private readonly IUserFactory _userFactory;
 
-    public UsersController(UserRepository usersRepository, UserFactory userFactory)
+    public UsersController
+        (
+            UserRepository usersRepository,
+            IUserFactory userFactory
+        )
     {
         _usersRepository = usersRepository;
         _userFactory = userFactory;

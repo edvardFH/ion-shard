@@ -1,30 +1,38 @@
 ﻿using IonShard.Configuration;
 using IonShard.Configuration.Units;
 using IonShard.Domain.Map;
-using IonShard.Domain.Units;
 using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Units.Scout;
 using IonShard.Domain.Users;
 using IonShard.Utils;
 
-namespace IonShard.Services;
+namespace IonShard.Domain.Units;
 
-public class UnitFactory
+public class UnitFactory : IUnitFactory
 {
     private IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
     private IReadOnlyDictionary<string, IUnitConfiguration> _units;
+
+
     public UnitFactory(IGameRulesService gameRulesService)
     {
         _weapons = gameRulesService.GetWeapons();
         _units = gameRulesService.GetUnits();
     }
 
-    public IUnit GetNewUnit(IUser owner, StarSystem system, Planet? planet, string type)
+
+    public IUnit GetNewUnit
+        (
+            IUser owner,
+            StarSystem system,
+            Planet? planet,
+            string type
+        )
     {
-        if (!_units.ContainsKey(type))
+        if (!DoesTypeExist(type))
             throw new ArgumentException(
-                $"Incorrect unit type : {type} is not contained in configuration.");
+                $"Incorrect unit type : {type} is not contained in game rules.");
 
         var unitStats = _units[type];
 
@@ -45,11 +53,15 @@ public class UnitFactory
         };
     }
 
-    public bool TypeExists(string type) => _units.ContainsKey(type);
 
-    private IReadOnlyList<IWeapon> CreateWeapons(
-        IReadOnlyDictionary<string, WeaponConfiguration> weapons,
-        IReadOnlyDictionary<string, int> weaponsOnUnit)
+    public bool DoesTypeExist(string type) => _units.ContainsKey(type);
+
+
+    private IReadOnlyList<IWeapon> CreateWeapons
+        (
+            IReadOnlyDictionary<string, WeaponConfiguration> weapons,
+            IReadOnlyDictionary<string, int> weaponsOnUnit
+        )
     {
         return weaponsOnUnit
             .SelectMany(weaponQuantity =>
@@ -63,25 +75,29 @@ public class UnitFactory
                         (
                             weaponQuantity.Key,
                             weaponConfiguration.Damage,
-                            weaponConfiguration.Cooldown)
-                        );
+                            weaponConfiguration.Cooldown
+                        ));
                 }
                 return createdWeapons;
             }).ToList();
     }
 
-    private IUnit CreatePeacefulUnit(
-        IUser owner,
-        StarSystem starSystem,
-        Planet? planet,
-        string type)
+
+    private IUnit CreatePeacefulUnit
+        (
+            IUser owner,
+            StarSystem starSystem,
+            Planet? planet,
+            string type
+        )
     {
         var unitStats = _units[type];
         return type switch
         {
             "Scout" => new ScoutUnit(owner, starSystem, planet),
             "Builder" => new BuilderUnit(owner, starSystem, planet),
-            _ => throw new ArgumentException($"Incorrect unit type : {type} is unknown.")
+            _ => throw new ArgumentException(
+                $"Incorrect unit type : {type} is unknown.")
         };
     }
 }

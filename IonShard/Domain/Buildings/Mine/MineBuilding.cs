@@ -3,7 +3,7 @@ using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units.Builder;
 using Shard.Shared.Core;
 
-namespace IonShard.Domain.Buildings;
+namespace IonShard.Domain.Buildings.Mine;
 
 public class MineBuilding : Building, IMineBuilding
 {

@@ -3,12 +3,12 @@ using IonShard.Domain.Units;
 using IonShard.Domain.Units.Builder;
 using Shard.Shared.Core;
 
-namespace IonShard.Domain.Buildings;
+namespace IonShard.Domain.Buildings.Statioport;
 
-public class StatioportBuilding: Building, IStatioportBuilding
+public class StatioportBuilding : Building, IStatioportBuilding
 {
     public Queue<IUnit> BuildQueue { get; }
-   
+
     public Task BuildTask { get; private set; }
 
     private IUnit? _unitBeingBuilt = null;
@@ -21,7 +21,7 @@ public class StatioportBuilding: Building, IStatioportBuilding
         Planet planet,
         DateTime? estimatedBuildTime = null,
         bool isBuilt = false)
-        : base(builder, starSystem, planet, "starPort", estimatedBuildTime, isBuilt)
+        : base(builder, starSystem, planet, "Statioport", estimatedBuildTime, isBuilt)
     {
         BuildQueue = new Queue<IUnit>();
         BuildTask = Task.CompletedTask;
