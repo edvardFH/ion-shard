@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 using IonShard.Utils;
 using Shard.Shared.Core;
@@ -17,17 +18,27 @@ public abstract class Unit : IUnit
     public IUser Owner { get; }
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
+    public IReadOnlyDictionary<Resource, int> ResourceCost {  get; }
     public Task TravelTask { get; private set; }
+
     private CancellationTokenSource? _cancellationTokenSource;
 
 
-    public Unit(IUser owner, StarSystem system, Planet? planet, string type)
+    public Unit
+        (
+            IUser owner,
+            StarSystem system,
+            Planet? planet,
+            string type,
+            IReadOnlyDictionary<Resource, int> resourceCost
+        )
     {
         Id = new Random().NextGuid().ToString();
         Owner = owner;
         Location = new Location(system, planet);
         TravelTask = Task.CompletedTask;
         Type = type;
+        ResourceCost = resourceCost;
     }
 
 

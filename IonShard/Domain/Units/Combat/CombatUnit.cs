@@ -1,4 +1,5 @@
 ﻿using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 
 namespace IonShard.Domain.Units.Combat;
@@ -9,15 +10,18 @@ public class CombatUnit : Unit, ICombatUnit
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
 
-    public CombatUnit(
-        IUser owner,
-        StarSystem system,
-        Planet? planet,
-        string type,
-        int healthPoint,
-        IEnumerable<IWeapon> weapons,
-        IEnumerable<string> combatPriorities)
-        : base(owner, system, planet, type)
+    public CombatUnit
+        (
+            IUser owner,
+            StarSystem system,
+            Planet? planet,
+            IReadOnlyDictionary<Resource, int> resourceCost,
+            string type,
+            int healthPoint,
+            IEnumerable<IWeapon> weapons,
+            IEnumerable<string> combatPriorities
+        )
+        : base(owner, system, planet, type, resourceCost)
     {
         HealthPoints = healthPoint;
         Weapons = new List<IWeapon>(weapons);

@@ -3,6 +3,7 @@ using IonShard.Domain.Buildings.Mine;
 using IonShard.Domain.Buildings.Statioport;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
+using IonShard.Domain.Units;
 using IonShard.Domain.Units.Builder;
 using IonShard.Utils;
 using Shard.Shared.Core;
@@ -13,16 +14,19 @@ public class BuildingFactory : IBuildingFactory
 {
     private readonly IReadOnlyDictionary<string, BuildingConfiguration> _buildings;
     private readonly IClock _clock;
+    private IUnitFactory _unitFactory;
 
 
     public BuildingFactory
         (
             IGameRulesService gameRuleService,
-            IClock clock
+            IClock clock,
+            IUnitFactory unitFactory
         )
     {
         _buildings = gameRuleService.GetBuildings();
         _clock = clock;
+        _unitFactory = unitFactory;
     }
 
 
@@ -69,6 +73,8 @@ public class BuildingFactory : IBuildingFactory
                     builder,
                     starSystem,
                     planet,
+                    _clock,
+                    _unitFactory,
                     estimatedBuildTime,
                     isBuilt
                 ),

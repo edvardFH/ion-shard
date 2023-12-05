@@ -1,4 +1,5 @@
-﻿using IonShard.Domain.Map;
+﻿using IonShard.Domain.Buildings;
+using IonShard.Domain.Map;
 using IonShard.Domain.Users;
 
 namespace IonShard.Domain.Units;
@@ -10,7 +11,8 @@ public interface IUnitFactory
             IUser owner,
             StarSystem system,
             Planet? planet,
-            string type
+            string type,
+            IBuildingFactory? buildingFactory
         );
 
     public bool DoesTypeExist(string type);

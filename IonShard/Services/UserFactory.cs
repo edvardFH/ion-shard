@@ -1,4 +1,5 @@
-﻿using IonShard.Domain.Map;
+﻿using IonShard.Domain.Buildings;
+using IonShard.Domain.Map;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Persistence.Repositories;
@@ -11,11 +12,18 @@ public class UserFactory : IUserFactory
     private readonly Random _random = new Random();
     private readonly MapRepository _map;
     private readonly IUnitFactory _unitFactory;
+    private readonly IBuildingFactory _buildingFactory;
 
-    public UserFactory(MapRepository map, IUnitFactory unitFactory)
+    public UserFactory
+        (
+            MapRepository map,
+            IUnitFactory unitFactory,
+            IBuildingFactory buildingFactory
+        )
     {
         _map = map;
         _unitFactory = unitFactory;
+        _buildingFactory = buildingFactory;
     }
 
     public IUser CreateUser(string id, string pseudo)
@@ -34,8 +42,8 @@ public class UserFactory : IUserFactory
         StarSystem starSystem = GetRandomStarSystem();
         Planet? planet = GetRandomPlanet(starSystem);
 
-        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Scout");
-        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Builder");
+        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Scout", null);
+        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Builder", _buildingFactory);
     }
 
     private StarSystem GetRandomStarSystem() => _map.Systems[_random.Next(_map.Systems.Count)];
