@@ -20,4 +20,6 @@ public interface IUser
     public void AddBuilding(IBuilding building);
     public void RemoveBuilding(string buildingId);
     public void AddOneResource(IResource resource);
+
+    public bool HasResourcesFor(IUnit unit);
 }

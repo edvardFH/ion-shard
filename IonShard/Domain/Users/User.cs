@@ -57,4 +57,20 @@ public class User : IUser
         else
             _resourcesQuantity.Add(resource, 1);
     }
+
+    public bool HasResourcesFor(IUnit unit)
+    {
+        var resourcesCost = unit.ResourceCost;
+
+        foreach (var resourceCost in resourcesCost)
+        {
+            if (
+                !_resourcesQuantity.ContainsKey(resourceCost.Key)
+                || resourceCost.Value > _resourcesQuantity[resourceCost.Key]
+                )
+                return false;
+        }
+
+        return true;
+    }
 }
