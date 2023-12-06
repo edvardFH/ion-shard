@@ -1,6 +1,4 @@
-﻿using IonShard.Domain.Map.Resources;
-using IonShard.Domain.Units;
-using Shard.Shared.Core;
+﻿using IonShard.Domain.Units;
 
 namespace IonShard.Domain.Buildings.Starport;
 

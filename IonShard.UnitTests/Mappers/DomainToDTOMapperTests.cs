@@ -93,7 +93,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void Building_ToDTO()
     {
-        IBuilderUnit builderUnit = new BuilderUnit(_userJohn, _sol, _earth);
+        IBuilderUnit builderUnit = new BuilderUnit(null, _userJohn, _sol, _earth, null);
         IBuilding building = new MineBuilding(builderUnit, _sol, _earth, ResourceCategory.Solid, _clock);
         BuildingDTO buildingDTO = building.ToDTO();
 
@@ -107,7 +107,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void Unit_ToDTO()
     {
-        IUnit builderUnit = new BuilderUnit(_userJohn, _sol, _earth);
+        IUnit builderUnit = new BuilderUnit(null, _userJohn, _sol, _earth, null);
         UnitDTO builderUnitDTO = builderUnit.ToDTO();
 
         Assert.NotNull(builderUnitDTO);

@@ -1,4 +1,5 @@
-﻿using IonShard.Contracts.DTO.Buildings;
+﻿using System.Reflection.Metadata.Ecma335;
+using IonShard.Contracts.DTO.Buildings;
 using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
@@ -63,7 +64,7 @@ public class BuildingsController : ControllerBase
                 body.ResourceCategory?.UppercaseFirstWord(),
                 out ResourceCategory category) && body.Type is "mine")
             return BadRequest("Invalid resource category");
-
+        
         IUnit? unit = user.Units.ContainsKey(body.BuilderId)
             ? user.Units[body.BuilderId]
             : null;
