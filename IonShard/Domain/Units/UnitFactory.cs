@@ -20,7 +20,7 @@ public class UnitFactory : IUnitFactory
     public UnitFactory(IGameRulesService gameRulesService)
     {
         _weapons = gameRulesService.GetWeapons();
-        _units = gameRulesService.GetUnits();
+        _units = gameRulesService.Units;
     }
 
 
@@ -41,7 +41,7 @@ public class UnitFactory : IUnitFactory
 
         var unitConfig = _units[formattedType];
 
-        return unitConfig switch
+        var newUnit = unitConfig switch
         {
             CombatUnitConfiguration combatUnitStats =>
                 new CombatUnit
@@ -55,7 +55,7 @@ public class UnitFactory : IUnitFactory
                     CreateWeapons(_weapons, combatUnitStats.Weapons),
                     combatUnitStats.CombatPriorities
                 ),
-            _ => 
+            _ =>
                 CreatePeacefulUnit
                 (
                     owner,
@@ -66,6 +66,10 @@ public class UnitFactory : IUnitFactory
                     buildingFactory
                 )
         };
+
+        owner.AddUnit(newUnit);
+
+        return newUnit;
     }
 
 

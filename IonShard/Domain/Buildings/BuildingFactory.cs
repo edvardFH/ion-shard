@@ -1,6 +1,6 @@
 ﻿using IonShard.Configuration;
 using IonShard.Domain.Buildings.Mine;
-using IonShard.Domain.Buildings.Statioport;
+using IonShard.Domain.Buildings.Starport;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
@@ -67,14 +67,15 @@ public class BuildingFactory : IBuildingFactory
                     estimatedBuildTime,
                     isBuilt
                 ),
-            "Statioport" =>
-                new StatioportBuilding
+            "Starport" =>
+                new StarportBuilding
                 (
                     builder,
                     starSystem,
                     planet,
                     _clock,
                     _unitFactory,
+                    this,
                     estimatedBuildTime,
                     isBuilt
                 ),

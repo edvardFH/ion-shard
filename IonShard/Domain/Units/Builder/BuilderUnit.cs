@@ -71,17 +71,6 @@ public class BuilderUnit : Unit, IBuilderUnit
     }
 
 
-    private async Task BuildAsync(IClock clock, CancellationToken cancellationToken)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        await clock.Delay(TimeSpan.FromSeconds(BuildBuildingDuration), cancellationToken);
-        cancellationToken.ThrowIfCancellationRequested();
-
-        _buildingBeingBuilt?.FinishBuild();
-
-        ResetBuildStatus();
-    }
-
     public bool TryRequestBuildStop()
     {
         if (BuildTask.IsCompleted || _cancellationTokenSource is null || _buildingBeingBuilt is null)
@@ -94,6 +83,23 @@ public class BuilderUnit : Unit, IBuilderUnit
 
         return true;
     }
+
+
+    public bool DoesBuildingTypeExists(string buildingType) =>
+        _buildingFactory.DoesTypeExist(buildingType);
+
+
+    private async Task BuildAsync(IClock clock, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        await clock.Delay(TimeSpan.FromSeconds(BuildBuildingDuration), cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        _buildingBeingBuilt?.FinishBuild();
+
+        ResetBuildStatus();
+    }
+
 
     private void ResetBuildStatus()
     {

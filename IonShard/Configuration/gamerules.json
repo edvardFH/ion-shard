@@ -46,8 +46,9 @@
       "BuildingDuration": 300,
       "ExtractionPeriode": 60
     },
-    "Statioport": {
-      "BuildingDuration": 300
+    "Starport": {
+      "BuildingDuration": 300,
+      "ExtractionPeriode": 0
     }
   },
 

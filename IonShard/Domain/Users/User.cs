@@ -2,6 +2,7 @@
 using IonShard.Domain.Units;
 using System.ComponentModel.DataAnnotations;
 using IonShard.Domain.Map.Resources;
+using IonShard.Configuration;
 
 namespace IonShard.Domain.Users;
 
@@ -24,8 +25,16 @@ public class User : IUser
     public IReadOnlyDictionary<IResource, int> ResourcesQuantity
         => (IReadOnlyDictionary<IResource, int>)_resourcesQuantity;
 
+    private readonly IGameRulesService _gameRulesService;
 
-    public User(string id, string pseudo, DateTime dateOfCreation)
+
+    public User
+        (
+            string id,
+            string pseudo,
+            DateTime dateOfCreation,
+            IGameRulesService gameRulesService
+        )
     {
         Id = id;
         Pseudo = pseudo;
@@ -42,6 +51,7 @@ public class User : IUser
             { new Resource(ResourceName.Gold), 0 },
             { new Resource(ResourceName.Titanium), 0 }
         };
+        _gameRulesService = gameRulesService;
     }
 
 
@@ -58,16 +68,22 @@ public class User : IUser
             _resourcesQuantity.Add(resource, 1);
     }
 
-    public bool HasResourcesFor(IUnit unit)
+    public bool HasResourcesFor(string unitType)
     {
-        var resourcesCost = unit.ResourceCost;
+        var units = _gameRulesService.Units;
 
-        foreach (var resourceCost in resourcesCost)
+        if (!units.ContainsKey(unitType))
+            throw new ArgumentException($"{unitType} is not a valid unit type");
+
+        
+
+        foreach (var resourceCost in units[unitType].ResourceCost)
         {
-            if (
-                !_resourcesQuantity.ContainsKey(resourceCost.Key)
-                || resourceCost.Value > _resourcesQuantity[resourceCost.Key]
-                )
+            Enum.TryParse(resourceCost.Key, out ResourceName resourceName);
+            var resource = new Resource(resourceName);
+
+            if (!_resourcesQuantity.ContainsKey(resource)
+                || resourceCost.Value > _resourcesQuantity[resource])
                 return false;
         }
 

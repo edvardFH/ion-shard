@@ -10,4 +10,7 @@ public interface IBuilderUnit : IUnit
     public Task BuildTask { get; }
     public bool IsBuilding { get; }
     public DateTime? EstimatedBuildTime { get; }
+
+    public bool TryRequestBuildStop();
+    public bool DoesBuildingTypeExists(string buildingType);
 }

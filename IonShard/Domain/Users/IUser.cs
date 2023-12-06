@@ -21,5 +21,5 @@ public interface IUser
     public void RemoveBuilding(string buildingId);
     public void AddOneResource(IResource resource);
 
-    public bool HasResourcesFor(IUnit unit);
+    public bool HasResourcesFor(string unitType);
 }

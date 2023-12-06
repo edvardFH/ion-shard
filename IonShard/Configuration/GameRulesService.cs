@@ -5,11 +5,14 @@ namespace IonShard.Configuration;
 
 public class GameRulesService : IGameRulesService
 {
-    private IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
+    public IReadOnlyDictionary<string, IUnitConfiguration> Units { get; private set; }
+
 
     public GameRulesService(IConfiguration configuration)
     {
         _configuration = configuration;
+        Units = InitUnits();
     }
 
 
@@ -26,8 +29,8 @@ public class GameRulesService : IGameRulesService
         return weapons;
     }
 
-
-    public IReadOnlyDictionary<string, IUnitConfiguration> GetUnits()
+    
+    public IReadOnlyDictionary<string, IUnitConfiguration> InitUnits()
     {
         const string peacefulUnitSectionKey = "Units:PeacefulUnit";
         var peacefulUnitSectionChildren = _configuration

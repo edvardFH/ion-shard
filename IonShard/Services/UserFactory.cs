@@ -1,4 +1,5 @@
-﻿using IonShard.Domain.Buildings;
+﻿using IonShard.Configuration;
+using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
@@ -13,37 +14,37 @@ public class UserFactory : IUserFactory
     private readonly MapRepository _map;
     private readonly IUnitFactory _unitFactory;
     private readonly IBuildingFactory _buildingFactory;
+    private readonly IGameRulesService _gameRulesService;
 
     public UserFactory
         (
             MapRepository map,
             IUnitFactory unitFactory,
-            IBuildingFactory buildingFactory
+            IBuildingFactory buildingFactory,
+            IGameRulesService gameRuleService
         )
     {
         _map = map;
         _unitFactory = unitFactory;
         _buildingFactory = buildingFactory;
+        _gameRulesService = gameRuleService;
     }
 
     public IUser CreateUser(string id, string pseudo)
     {
-        IUser newUser = new User(id, pseudo, DateTime.Now);
-
-        GetDefaultUnits(newUser)
-            .ToList()
-            .ForEach(unit => newUser.AddUnit(unit));
+        IUser newUser = new User(id, pseudo, DateTime.Now, _gameRulesService);
+        AddDefaultUnitsToUser(newUser);
 
         return newUser;
     }
 
-    private IEnumerable<IUnit> GetDefaultUnits(IUser owner)
+    private void AddDefaultUnitsToUser(IUser owner)
     {
         StarSystem starSystem = GetRandomStarSystem();
         Planet? planet = GetRandomPlanet(starSystem);
 
-        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Scout", null);
-        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Builder", _buildingFactory);
+        _unitFactory.CreateUnit(owner, starSystem, planet, "Scout", null);
+        _unitFactory.CreateUnit(owner, starSystem, planet, "Builder", _buildingFactory);
     }
 
     private StarSystem GetRandomStarSystem() => _map.Systems[_random.Next(_map.Systems.Count)];
