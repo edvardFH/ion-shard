@@ -3,9 +3,9 @@ using IonShard.Domain.Units;
 using IonShard.Domain.Units.Builder;
 using Shard.Shared.Core;
 
-namespace IonShard.Domain.Buildings.Statioport;
+namespace IonShard.Domain.Buildings.Starport;
 
-public class StatioportBuilding : Building, IStatioportBuilding
+public class StarportBuilding : Building, IStarportBuilding
 {
     public Queue<IUnit> BuildQueue { get; }
 
@@ -17,7 +17,7 @@ public class StatioportBuilding : Building, IStatioportBuilding
     public bool IsBuilding => _unitBeingBuilt is not null;
     public DateTime? EstimatedCurrentUnitBuildTime { get; }
 
-    public StatioportBuilding
+    public StarportBuilding
         (
             IBuilderUnit builder,
             StarSystem starSystem,
@@ -32,7 +32,7 @@ public class StatioportBuilding : Building, IStatioportBuilding
             builder,
             starSystem,
             planet,
-            "Statioport",
+            "starport",
             estimatedBuildTime,
             isBuilt
         )

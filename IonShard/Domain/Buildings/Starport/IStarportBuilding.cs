@@ -1,10 +1,8 @@
-﻿using IonShard.Domain.Map.Resources;
-using IonShard.Domain.Units;
-using Shard.Shared.Core;
+﻿using IonShard.Domain.Units;
 
-namespace IonShard.Domain.Buildings.Statioport;
+namespace IonShard.Domain.Buildings.Starport;
 
-public interface IStatioportBuilding : IBuilding
+public interface IStarportBuilding : IBuilding
 {
     public Queue<IUnit> BuildQueue { get; }
     public IUnit AddToQueue(string unitType);

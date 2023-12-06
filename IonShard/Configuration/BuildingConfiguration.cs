@@ -2,4 +2,4 @@
 
 public record BuildingConfiguration(
     int BuildingDuration,
-    int ExtractionPeriode);
+    int? ExtractionPeriode);

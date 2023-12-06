@@ -4,5 +4,6 @@ public enum ResourceCategory
 {
     Liquid,
     Solid,
-    Gaseous
+    Gaseous,
+    None
 }

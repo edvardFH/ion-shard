@@ -1,4 +1,5 @@
-﻿using IonShard.Contracts.DTO.Buildings;
+﻿using System.Reflection.Metadata.Ecma335;
+using IonShard.Contracts.DTO.Buildings;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map.Resources;
@@ -50,22 +51,22 @@ public class BuildingsController : ControllerBase
         if (user is null)
             return NotFound();
 
-        if (body is null || body.BuilderId is null || body.Type != "mine" || body.ResourceCategory is null)
+        if (body?.BuilderId is null || body is not {Type : "mine" or "starport"})
             return BadRequest();
 
-
-        if (!Enum.TryParse(
-                body.ResourceCategory.UppercaseFirstWord(),
-                out ResourceCategory category))
+        ResourceCategory category = ResourceCategory.None;
+        if (body.Type == "mine" && !Enum.TryParse(
+                body.ResourceCategory?.UppercaseFirstWord(),
+                out category))
             return BadRequest("Invalid resource category");
-
+        
         IUnit? unit = user.Units.ContainsKey(body.BuilderId)
             ? user.Units[body.BuilderId]
             : null;
 
         if (unit is not IBuilderUnit builder || unit.Location.Planet is null)
             return BadRequest();
-
+        
         IBuilding building = builder.StartBuild(_clock, body.Type, category);
 
         return building.ToDTO();
