@@ -1,26 +1,32 @@
-﻿using IonShard.Domain.Map;
+﻿using IonShard.Domain.Buildings;
+using IonShard.Domain.Map;
 using IonShard.Domain.Units;
-using IonShard.Domain.Units.Builder;
-using IonShard.Domain.Units.Scout;
 using IonShard.Domain.Users;
 using IonShard.Persistence.Repositories;
 
 namespace IonShard.Services;
 
 
-public class UserFactory
+public class UserFactory : IUserFactory
 {
-    private Random random = new Random();
-    private MapRepository map;
-    private UnitFactory _unitFactory;
+    private readonly Random _random = new Random();
+    private readonly MapRepository _map;
+    private readonly IUnitFactory _unitFactory;
+    private readonly IBuildingFactory _buildingFactory;
 
-    public UserFactory(MapRepository map, UnitFactory unitFactory)
+    public UserFactory
+        (
+            MapRepository map,
+            IUnitFactory unitFactory,
+            IBuildingFactory buildingFactory
+        )
     {
-        this.map = map;
-        this._unitFactory = unitFactory;
+        _map = map;
+        _unitFactory = unitFactory;
+        _buildingFactory = buildingFactory;
     }
 
-    public IUser GetNewUser(string id, string pseudo)
+    public IUser CreateUser(string id, string pseudo)
     {
         IUser newUser = new User(id, pseudo, DateTime.Now);
 
@@ -36,21 +42,21 @@ public class UserFactory
         StarSystem starSystem = GetRandomStarSystem();
         Planet? planet = GetRandomPlanet(starSystem);
 
-        yield return _unitFactory.GetNewUnit(owner, starSystem, planet, "Scout");
-        yield return _unitFactory.GetNewUnit(owner, starSystem, planet, "Builder");
+        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Scout", null);
+        yield return _unitFactory.CreateUnit(owner, starSystem, planet, "Builder", _buildingFactory);
     }
 
-    private StarSystem GetRandomStarSystem() => map.Systems[random.Next(map.Systems.Count)];
+    private StarSystem GetRandomStarSystem() => _map.Systems[_random.Next(_map.Systems.Count)];
 
     private Planet? GetRandomPlanet(StarSystem starSystem)
     {
         Planet? randomPlanet = null;
-        var returnANotNullPlanet = random.Next(1) == 1;
+        var returnANotNullPlanet = _random.Next(1) == 1;
 
         if (returnANotNullPlanet)
         {
             var starSystemSize = starSystem.Planets.Count();
-            randomPlanet = starSystem.Planets[random.Next(starSystemSize)];
+            randomPlanet = starSystem.Planets[_random.Next(starSystemSize)];
         }
 
         return randomPlanet;

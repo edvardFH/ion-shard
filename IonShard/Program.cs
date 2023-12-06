@@ -1,4 +1,6 @@
 using IonShard.Configuration;
+using IonShard.Domain.Buildings;
+using IonShard.Domain.Units;
 using IonShard.Persistence.Repositories;
 using IonShard.Services;
 using IonShard.Swagger;
@@ -13,7 +15,7 @@ builder.Configuration
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<GameRulesConfigurationService>();
+builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(
@@ -22,13 +24,14 @@ builder.Services.Configure<MapGeneratorOptions>(
 builder.Services.AddSingleton<MapBuilder>();
 builder.Services.AddSingleton<MapRepository>();
 
-builder.Services.AddSingleton<UnitFactory>();
+builder.Services.AddSingleton<IUnitFactory, UnitFactory>();
+builder.Services.AddSingleton<IBuildingFactory, BuildingFactory>();
 
 builder.Services.AddSingleton<UserRepository>();
-builder.Services.AddSingleton<UserFactory>();
+builder.Services.AddSingleton<IUserFactory, UserFactory>();
 
 
-builder.Services.AddSingleton<SystemClock>();
+builder.Services.AddSingleton<IClock, SystemClock>();
 
 
 builder.Services.AddEndpointsApiExplorer();

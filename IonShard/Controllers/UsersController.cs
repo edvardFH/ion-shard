@@ -18,9 +18,13 @@ public class UsersController : ControllerBase
 {
 
     private readonly UserRepository _usersRepository;
-    private readonly UserFactory _userFactory;
+    private readonly IUserFactory _userFactory;
 
-    public UsersController(UserRepository usersRepository, UserFactory userFactory)
+    public UsersController
+        (
+            UserRepository usersRepository,
+            IUserFactory userFactory
+        )
     {
         _usersRepository = usersRepository;
         _userFactory = userFactory;
@@ -41,7 +45,7 @@ public class UsersController : ControllerBase
         if (_usersRepository.Users.ContainsKey(userId))
             return BadRequest("This functionality is WIP."); // TODO: handle admin request
 
-        IUser newUser = _userFactory.GetNewUser(userId, body.Pseudo);
+        IUser newUser = _userFactory.CreateUser(userId, body.Pseudo);
         _usersRepository.Users.Add(newUser.Id, newUser);
 
         return newUser.ToDTO();

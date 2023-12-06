@@ -3,6 +3,7 @@ using IonShard.Contracts.DTO.Map;
 using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.DTO.Users;
 using IonShard.Domain.Buildings;
+using IonShard.Domain.Buildings.Mine;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Map.Resources;
@@ -46,7 +47,7 @@ public static class DomainToDTOMapper
 
         return new UnitDTO(
             unit.Id,
-            unit.Type,
+            unit.Type.ToLower(),
             unitSystem,
             unitPlanet,
             unit.Destination?.System.Name ?? unitSystem,

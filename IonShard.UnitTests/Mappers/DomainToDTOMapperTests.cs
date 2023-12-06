@@ -13,6 +13,7 @@ using IonShard.Domain.Map.Resources;
 using Shard.Shared.Core;
 using Shard.Shared.Web.IntegrationTests.Clock;
 using IonShard.Domain.Units.Builder;
+using IonShard.Domain.Buildings.Mine;
 
 namespace IonShard.UnitTests.Mappers;
 

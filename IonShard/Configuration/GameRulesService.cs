@@ -3,14 +3,15 @@ using System.Collections.ObjectModel;
 
 namespace IonShard.Configuration;
 
-public class GameRulesConfigurationService
+public class GameRulesService : IGameRulesService
 {
     private IConfiguration _configuration;
 
-    public GameRulesConfigurationService(IConfiguration configuration)
+    public GameRulesService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
+
 
     public IReadOnlyDictionary<string, WeaponConfiguration> GetWeapons()
     {
@@ -24,6 +25,7 @@ public class GameRulesConfigurationService
 
         return weapons;
     }
+
 
     public IReadOnlyDictionary<string, IUnitConfiguration> GetUnits()
     {
@@ -88,6 +90,21 @@ public class GameRulesConfigurationService
 
         return units;
     }
+
+
+    public IReadOnlyDictionary<string, BuildingConfiguration> GetBuildings()
+    {
+        const string key = "Buildings";
+        var buildings = _configuration
+            .GetSection(key)
+            .Get<IReadOnlyDictionary<string, BuildingConfiguration>>();
+
+        if (buildings is null)
+            throw new ConfigurationFormatException(key);
+
+        return buildings;
+    }
+
 
     private int GetAsInt(IConfigurationSection unit, string key) => 
         unit.GetSection(key).Get<int>();

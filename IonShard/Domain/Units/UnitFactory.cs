@@ -1,0 +1,139 @@
+﻿using IonShard.Configuration;
+using IonShard.Configuration.Units;
+using IonShard.Domain.Buildings;
+using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
+using IonShard.Domain.Units.Builder;
+using IonShard.Domain.Units.Combat;
+using IonShard.Domain.Units.Scout;
+using IonShard.Domain.Users;
+using IonShard.Utils;
+
+namespace IonShard.Domain.Units;
+
+public class UnitFactory : IUnitFactory
+{
+    private readonly IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
+    private readonly IReadOnlyDictionary<string, IUnitConfiguration> _units;
+
+
+    public UnitFactory(IGameRulesService gameRulesService)
+    {
+        _weapons = gameRulesService.GetWeapons();
+        _units = gameRulesService.GetUnits();
+    }
+
+
+    public IUnit CreateUnit
+        (
+            IUser owner,
+            StarSystem system,
+            Planet? planet,
+            string type,
+            IBuildingFactory? buildingFactory
+        )
+    {
+        var formattedType = type.UppercaseFirstWord();
+
+        if (!DoesTypeExist(formattedType))
+            throw new ArgumentException(
+                $"Incorrect unit type : {formattedType} is not contained in game rules.");
+
+        var unitConfig = _units[formattedType];
+
+        return unitConfig switch
+        {
+            CombatUnitConfiguration combatUnitStats =>
+                new CombatUnit
+                (
+                    owner,
+                    system,
+                    planet,
+                    CreateResourceCost(unitConfig),
+                    formattedType,
+                    combatUnitStats.HealthPoints,
+                    CreateWeapons(_weapons, combatUnitStats.Weapons),
+                    combatUnitStats.CombatPriorities
+                ),
+            _ => 
+                CreatePeacefulUnit
+                (
+                    owner,
+                    system,
+                    planet,
+                    CreateResourceCost(unitConfig),
+                    formattedType,
+                    buildingFactory
+                )
+        };
+    }
+
+
+    public bool DoesTypeExist(string type) =>
+        _units.ContainsKey(type.UppercaseFirstWord());
+
+
+    private IReadOnlyDictionary<Resource, int> CreateResourceCost(IUnitConfiguration unitConfiguration)
+    {
+        return unitConfiguration.ResourceCost
+            .Select(resourceCost =>
+            {
+                if (!Enum.TryParse(resourceCost.Key, out ResourceName resource))
+                    throw new ConfigurationFormatException(resourceCost.Key);
+
+                return (Resource: new Resource(resource), Cost: resourceCost.Value);
+            })
+            .ToDictionary(resourceCost => resourceCost.Resource, resourceCost => resourceCost.Cost);
+    }
+
+
+    private IReadOnlyList<IWeapon> CreateWeapons
+        (
+            IReadOnlyDictionary<string, WeaponConfiguration> weapons,
+            IReadOnlyDictionary<string, int> weaponsOnUnit
+        )
+    {
+        return weaponsOnUnit
+            .SelectMany(weaponQuantity =>
+            {
+                var weaponConfiguration = weapons[weaponQuantity.Key];
+                var createdWeapons = new List<IWeapon>();
+                for (var i = 0; i < weaponQuantity.Value; i++)
+                {
+                    createdWeapons.Add(
+                        new Weapon
+                        (
+                            weaponQuantity.Key,
+                            weaponConfiguration.Damage,
+                            weaponConfiguration.Cooldown
+                        ));
+                }
+                return createdWeapons;
+            }).ToList();
+    }
+
+
+    private IUnit CreatePeacefulUnit
+        (
+            IUser owner,
+            StarSystem starSystem,
+            Planet? planet,
+            IReadOnlyDictionary<Resource, int> resourceCost,
+            string type,
+            IBuildingFactory? buildingFactory
+        )
+    {
+        var unitStats = _units[type];
+        return type switch
+        {
+            "Scout" =>
+                new ScoutUnit(owner, starSystem, planet, resourceCost),
+            "Builder" when (buildingFactory is null) =>
+                throw new ArgumentException("Builder unit require a BuildingFactory to be built."),
+            "Builder" =>
+                new BuilderUnit(buildingFactory, owner, starSystem, planet, resourceCost),
+            _ =>
+                throw new ArgumentException($"Incorrect unit type : {type} is unknown.")
+        };
+    }
+}

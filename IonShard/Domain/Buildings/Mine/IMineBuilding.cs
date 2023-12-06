@@ -1,6 +1,6 @@
 ﻿using IonShard.Domain.Map.Resources;
 
-namespace IonShard.Domain.Buildings;
+namespace IonShard.Domain.Buildings.Mine;
 
 public interface IMineBuilding : IBuilding
 {
