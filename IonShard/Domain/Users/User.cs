@@ -68,6 +68,7 @@ public class User : IUser
             _resourcesQuantity.Add(resource, 1);
     }
 
+
     public bool HasResourcesFor(string unitType)
     {
         var units = _gameRulesService.Units;
@@ -88,5 +89,14 @@ public class User : IUser
         }
 
         return true;
+    }
+
+
+    public void UseResource(IResource resource, int quantity)
+    {
+        if (_resourcesQuantity[resource] < quantity)
+            throw new ArgumentException("User cannot use more resources that he has.");
+
+        _resourcesQuantity[resource] -= quantity;
     }
 }

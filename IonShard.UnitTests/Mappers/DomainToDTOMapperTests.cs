@@ -82,7 +82,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void User_ToDTO()
     {
-        IUser user = new User("1", "john_doe", DateTime.Now);
+        IUser user = new User("1", "john_doe", DateTime.Now, null);
         UserDTO userDTO = user.ToDTO();
 
         Assert.NotNull(userDTO);

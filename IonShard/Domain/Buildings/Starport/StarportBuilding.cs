@@ -52,11 +52,19 @@ public class StarportBuilding : Building, IStarportBuilding
             throw new InvalidOperationException(
                 $"User {Builder.Owner.Id} does not have enough resources to create {unitType}");
 
-        return _unitFactory.CreateUnit(
+
+
+        var newUnit = _unitFactory.CreateUnit(
             Builder.Owner,
             Location.System,
             Location.Planet,
             unitType,
             _buildingFactory);
+
+        newUnit.ResourceCost
+            .ToList()
+            .ForEach(resourceCost => Builder.Owner.UseResource(resourceCost.Key, resourceCost.Value));
+
+        return newUnit;
     }
 }

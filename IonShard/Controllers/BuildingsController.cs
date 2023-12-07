@@ -26,18 +26,22 @@ public class BuildingsController : ControllerBase
 
     private readonly UserRepository _usersRepository;
     private readonly IClock _clock;
+    private readonly IUnitFactory _unitFactory;
 
 
     public BuildingsController(
         UserRepository usersRepository,
         IClock clock,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IUnitFactory unitFactory
+        )
     {
         _usersRepository = usersRepository;
         _clock = clock;
         MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(
             configuration.GetValue<int>(
                 "Controllers:MaximumWaitingTimeBeforeResponse"));
+        _unitFactory = unitFactory;
     }
 
 
@@ -162,12 +166,20 @@ public class BuildingsController : ControllerBase
         if (building is not IStarportBuilding starport)
             return BadRequest("Unit must be a starport");
 
+        if (!starport.IsBuilt)
+            return BadRequest("Starport is not built.");
+
         if (unitBlueprint?.Type is not string unitType)
             return BadRequest("Body should contains a unit type.");
 
-        if (!user.HasResourcesFor(unitType))
-            return BadRequest($"User does not have enough resources to create {unitType}.");
+        var formattedType = unitType.UppercaseFirstWord();
 
-        return starport.AddToQueue(unitType).ToDTO();
+        if (!_unitFactory.DoesTypeExist(formattedType))
+            return BadRequest($"{formattedType} does not exists.");
+
+        if (!user.HasResourcesFor(formattedType))
+            return BadRequest($"User does not have enough resources to create {formattedType}.");
+
+        return starport.AddToQueue(formattedType).ToDTO();
     }
 }
