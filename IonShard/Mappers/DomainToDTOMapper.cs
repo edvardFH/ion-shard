@@ -24,7 +24,7 @@ public static class DomainToDTOMapper
 
         return new BuildingDTO(
             building.Id,
-            building.Type,
+            building.Type.ToLower(),
             building.Location.System.Name,
             building.Location.Planet?.Name,
             building.IsBuilt,
