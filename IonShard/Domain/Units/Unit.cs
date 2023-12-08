@@ -82,7 +82,10 @@ public abstract class Unit : IUnit
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            Location.Planet?.Units.Remove(this);
             Location = new Location(Location.System, null);
+            Location.System.Units.Add(this);
         }
 
 
@@ -93,7 +96,10 @@ public abstract class Unit : IUnit
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            Location.System.Units.Remove(this);
             Location = new Location(Destination.System, null);
+            Location.System.Units.Add(this);
         }
 
         if (Location.IsPlanetEntered(Destination.Planet))
@@ -103,7 +109,10 @@ public abstract class Unit : IUnit
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            Location.System.Units.Remove(this);
             Location = new Location(Destination.System, Destination.Planet);
+            Location.Planet?.Units.Add(this);
         }
 
         Destination = null;

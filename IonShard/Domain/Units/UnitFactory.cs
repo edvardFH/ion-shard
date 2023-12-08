@@ -69,6 +69,11 @@ public class UnitFactory : IUnitFactory
 
         owner.AddUnit(newUnit);
 
+        if (planet is null)
+            system.Units.Add(newUnit);
+        else
+            planet.Units.Add(newUnit);
+
         return newUnit;
     }
 
