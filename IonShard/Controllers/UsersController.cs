@@ -7,6 +7,7 @@ using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Text.RegularExpressions;
+using IonShard.Configuration.Auth;
 
 
 namespace IonShard.Controllers;
@@ -43,7 +44,11 @@ public class UsersController : ControllerBase
             return BadRequest();
 
         if (_usersRepository.Users.ContainsKey(userId))
-            return BadRequest("This functionality is WIP."); // TODO: handle admin request
+        {
+            if (HttpContext.User.IsInRole("Admin")) 
+                return BadRequest("Admin user : WIP functionality"); // TODO: handle admin request
+            return BadRequest("Non-admin user : WIP functionality"); // TODO: handle admin request
+        }
 
         IUser newUser = _userFactory.CreateUser(userId, body.Pseudo);
         _usersRepository.Users.Add(newUser.Id, newUser);
