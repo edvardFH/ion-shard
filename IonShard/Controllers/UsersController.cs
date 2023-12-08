@@ -45,9 +45,12 @@ public class UsersController : ControllerBase
 
         if (_usersRepository.Users.ContainsKey(userId))
         {
-            if (HttpContext.User.IsInRole("Admin")) 
-                return BadRequest("Admin user : WIP functionality"); // TODO: handle admin request
-            return BadRequest("Non-admin user : WIP functionality"); // TODO: handle admin request
+            var user = _usersRepository[userId];
+            if (HttpContext.User.IsInRole("Admin") && body.ResourcesQuantity is not null)
+            {
+                user?.UpdateResources(body.GetParsedResources()!);
+            }
+            return user?.ToDTO();
         }
 
         IUser newUser = _userFactory.CreateUser(userId, body.Pseudo);
