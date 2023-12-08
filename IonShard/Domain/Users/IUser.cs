@@ -17,8 +17,9 @@ public interface IUser
 
 
     public void AddUnit(IUnit unit);
+    public bool RemoveUnit(IUnit unit);
     public void AddBuilding(IBuilding building);
-    public void RemoveBuilding(string buildingId);
+    public bool RemoveBuilding(IBuilding building);
 
     public void AddOneResource(IResource resource);
     public bool HasResourcesFor(string unitType);

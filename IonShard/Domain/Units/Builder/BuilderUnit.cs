@@ -26,9 +26,10 @@ public class BuilderUnit : Unit, IBuilderUnit
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost
+            IReadOnlyDictionary<Resource, int> resourceCost,
+            IClock clock
         )
-        : base(owner, starSystem, planet, "builder", resourceCost)
+        : base(owner, starSystem, planet, "builder", resourceCost, clock)
     {
         _buildingFactory = buildingFactory;
         BuildTask = Task.CompletedTask;
@@ -77,7 +78,7 @@ public class BuilderUnit : Unit, IBuilderUnit
             return false;
 
         _cancellationTokenSource.Cancel();
-        Owner.RemoveBuilding(_buildingBeingBuilt.Id);
+        Owner.RemoveBuilding(_buildingBeingBuilt);
 
         ResetBuildStatus();
 

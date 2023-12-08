@@ -13,6 +13,8 @@ public abstract class Unit : IUnit
     private const int ChangeSystemManeuverDuration = 60;
     private const int EnterPlanetManeuverDuration = 15;
 
+    protected const int UnitBuildDuration = 0;
+
     public string Id { get; }
     public string Type { get; }
     public IUser Owner { get; }
@@ -22,6 +24,7 @@ public abstract class Unit : IUnit
     public Task TravelTask { get; private set; }
 
     private CancellationTokenSource? _cancellationTokenSource;
+    protected readonly IClock _clock;
 
 
     public Unit
@@ -30,7 +33,8 @@ public abstract class Unit : IUnit
             StarSystem system,
             Planet? planet,
             string type,
-            IReadOnlyDictionary<Resource, int> resourceCost
+            IReadOnlyDictionary<Resource, int> resourceCost,
+            IClock clock
         )
     {
         Id = new Random().NextGuid().ToString();
@@ -39,6 +43,7 @@ public abstract class Unit : IUnit
         TravelTask = Task.CompletedTask;
         Type = type;
         ResourceCost = resourceCost;
+        _clock = clock;
     }
 
 

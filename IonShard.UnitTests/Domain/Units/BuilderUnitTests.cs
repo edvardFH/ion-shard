@@ -25,7 +25,7 @@ public class BuilderUnitTests
         _clock = new FakeClock();
 
         IUser userJohn = _repository.UserRepository.Users["1"];
-        _builderUnit = new BuilderUnit(null, userJohn, _sol, _earth, null);
+        _builderUnit = new BuilderUnit(null, userJohn, _sol, _earth, null, _clock);
     }
 
     [Fact]

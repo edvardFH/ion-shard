@@ -8,6 +8,7 @@ using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Units.Scout;
 using IonShard.Domain.Users;
 using IonShard.Utils;
+using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
@@ -15,12 +16,14 @@ public class UnitFactory : IUnitFactory
 {
     private readonly IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
     private readonly IReadOnlyDictionary<string, IUnitConfiguration> _units;
+    private readonly IClock _clock;
 
 
-    public UnitFactory(IGameRulesService gameRulesService)
+    public UnitFactory(IGameRulesService gameRulesService, IClock clock)
     {
         _weapons = gameRulesService.GetWeapons();
         _units = gameRulesService.Units;
+        _clock = clock;
     }
 
 
@@ -53,7 +56,8 @@ public class UnitFactory : IUnitFactory
                     formattedType,
                     combatUnitStats.HealthPoints,
                     CreateWeapons(_weapons, combatUnitStats.Weapons),
-                    combatUnitStats.CombatPriorities
+                    combatUnitStats.CombatPriorities,
+                    _clock
                 ),
             _ =>
                 CreatePeacefulUnit
@@ -136,11 +140,11 @@ public class UnitFactory : IUnitFactory
         return type switch
         {
             "Scout" =>
-                new ScoutUnit(owner, starSystem, planet, resourceCost),
+                new ScoutUnit(owner, starSystem, planet, resourceCost, _clock),
             "Builder" when (buildingFactory is null) =>
                 throw new ArgumentException("Builder unit require a BuildingFactory to be built."),
             "Builder" =>
-                new BuilderUnit(buildingFactory, owner, starSystem, planet, resourceCost),
+                new BuilderUnit(buildingFactory, owner, starSystem, planet, resourceCost, _clock),
             _ =>
                 throw new ArgumentException($"Incorrect unit type : {type} is unknown.")
         };

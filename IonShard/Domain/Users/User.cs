@@ -56,9 +56,10 @@ public class User : IUser
 
 
     public void AddUnit(IUnit unit) => _units.Add(unit.Id, unit);
+    public bool RemoveUnit(IUnit unit) => _units.Remove(unit.Id);
 
     public void AddBuilding(IBuilding building) => _buildings.Add(building.Id, building);
-    public void RemoveBuilding(string buildingId) => _buildings.Remove(buildingId);
+    public bool RemoveBuilding(IBuilding buildingId) => _buildings.Remove(buildingId.Id);
 
     public void AddOneResource(IResource resource)
     {
