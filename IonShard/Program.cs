@@ -3,19 +3,27 @@ using IonShard.Domain.Buildings;
 using IonShard.Domain.Units;
 using IonShard.Persistence.Repositories;
 using IonShard.Services;
+using IonShard.Services.Auth;
 using IonShard.Swagger;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
 using Shard.Shared.Core;
+using SystemClock = Shard.Shared.Core.SystemClock;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("Configuration/gamerules.json", optional: false, reloadOnChange: true);
+            .AddJsonFile("Configuration/gamerules.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("Configuration/users.json", optional: false, reloadOnChange: true);
 
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
+
+builder.Services
+    .AddAuthentication("Basic")
+    .AddScheme<AuthenticationSchemeOptions, ShardAuthenticationHandler>("Basic", null);
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(
@@ -61,6 +69,7 @@ if (app.Environment.IsDevelopment())
                 .GetValue<string>("AppSettings:Title")));
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

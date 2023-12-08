@@ -1,0 +1,9 @@
+﻿{
+  "authUsers": {
+    "admin": {
+      "Username": "admin",
+      "Password": "password",
+      "Role": "Admin"
+    }
+  }
+}
