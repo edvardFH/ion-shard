@@ -24,4 +24,5 @@ public interface IUser
     public void AddOneResource(IResource resource);
     public bool HasResourcesFor(string unitType);
     public void UseResource(IResource resource, int quantity);
+    public void UpdateResources(IReadOnlyDictionary<IResource, int> resources);
 }

@@ -1,3 +1,11 @@
-﻿namespace IonShard.Contracts.RequestBodies;
+﻿using IonShard.Domain.Map.Resources;
 
-public record CreateUserPutRequestBody(string Id, string Pseudo);
+namespace IonShard.Contracts.RequestBodies;
+
+public record CreateUserPutRequestBody(string Id, string Pseudo, IReadOnlyDictionary<ResourceName, int>? ResourcesQuantity)
+{
+    public IReadOnlyDictionary<IResource, int>? GetParsedResources()
+        => ResourcesQuantity?
+            .ToDictionary(x => (IResource) new Resource(x.Key), x => x.Value)
+            .AsReadOnly();
+}

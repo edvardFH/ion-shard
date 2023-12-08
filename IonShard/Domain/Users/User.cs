@@ -100,4 +100,10 @@ public class User : IUser
 
         _resourcesQuantity[resource] -= quantity;
     }
+
+    public void UpdateResources(IReadOnlyDictionary<IResource, int> resources)
+    {
+        foreach (var keyValuePair in resources)
+            _resourcesQuantity[keyValuePair.Key] = keyValuePair.Value;
+    }
 }
