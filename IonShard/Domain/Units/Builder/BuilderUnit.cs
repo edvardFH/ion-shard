@@ -22,6 +22,7 @@ public class BuilderUnit : Unit, IBuilderUnit
 
     public BuilderUnit
         (
+            string id,
             IBuildingFactory buildingFactory,
             IUser owner,
             StarSystem starSystem,
@@ -29,7 +30,7 @@ public class BuilderUnit : Unit, IBuilderUnit
             IReadOnlyDictionary<Resource, int> resourceCost,
             IClock clock
         )
-        : base(owner, starSystem, planet, "builder", resourceCost, clock)
+        : base(id, owner, starSystem, planet, "builder", resourceCost, clock)
     {
         _buildingFactory = buildingFactory;
         BuildTask = Task.CompletedTask;

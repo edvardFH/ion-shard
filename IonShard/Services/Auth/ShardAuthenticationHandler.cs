@@ -28,8 +28,8 @@ public class ShardAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         if (!Request.Headers.ContainsKey("Authorization"))
             return AuthenticateResult.Fail("Authorization header is missing");
         
-        var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
-        var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+        var authenticationHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
+        var credentialBytes = Convert.FromBase64String(authenticationHeader.Parameter ?? "");
         var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
 
         var user = Authenticate(credentials[0], credentials[1]);

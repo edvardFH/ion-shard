@@ -27,8 +27,9 @@ public class UnitFactory : IUnitFactory
     }
 
 
-    public IUnit CreateUnit
+    public IUnit CreateUnitWithId
         (
+            string id,
             IUser owner,
             StarSystem system,
             Planet? planet,
@@ -49,6 +50,7 @@ public class UnitFactory : IUnitFactory
             CombatUnitConfiguration combatUnitStats =>
                 new CombatUnit
                 (
+                    id,
                     owner,
                     system,
                     planet,
@@ -62,6 +64,7 @@ public class UnitFactory : IUnitFactory
             _ =>
                 CreatePeacefulUnit
                 (
+                    id,
                     owner,
                     system,
                     planet,
@@ -81,8 +84,28 @@ public class UnitFactory : IUnitFactory
         return newUnit;
     }
 
+    public IUnit CreateUnit
+        (
+            IUser owner,
+            StarSystem system,
+            Planet? planet,
+            string type,
+            IBuildingFactory? buildingFactory
+        )
+    {
+        return CreateUnitWithId
+            (
+                new Random().NextGuid().ToString(),
+                owner,
+                system,
+                planet,
+                type,
+                buildingFactory
+            );
+    }
 
-    public bool DoesTypeExist(string type) =>
+
+        public bool DoesTypeExist(string type) =>
         _units.ContainsKey(type.UppercaseFirstWord());
 
 
@@ -128,6 +151,7 @@ public class UnitFactory : IUnitFactory
 
     private IUnit CreatePeacefulUnit
         (
+            string id,
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
@@ -140,11 +164,11 @@ public class UnitFactory : IUnitFactory
         return type switch
         {
             "Scout" =>
-                new ScoutUnit(owner, starSystem, planet, resourceCost, _clock),
+                new ScoutUnit(id, owner, starSystem, planet, resourceCost, _clock),
             "Builder" when (buildingFactory is null) =>
                 throw new ArgumentException("Builder unit require a BuildingFactory to be built."),
             "Builder" =>
-                new BuilderUnit(buildingFactory, owner, starSystem, planet, resourceCost, _clock),
+                new BuilderUnit(id, buildingFactory, owner, starSystem, planet, resourceCost, _clock),
             _ =>
                 throw new ArgumentException($"Incorrect unit type : {type} is unknown.")
         };

@@ -1,5 +1,6 @@
 ﻿using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
+using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
@@ -22,12 +23,16 @@ public class UnitsController : ControllerBase
     private readonly UserRepository _usersRepository;
     private readonly MapRepository _mapRepository;
     private readonly IClock _clock;
+    private readonly IUnitFactory _unitFactory;
+    private readonly IBuildingFactory _buildingFactory;
 
     public UnitsController(
         UserRepository usersRepository, 
         MapRepository mapRepository,
         IClock clock,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IUnitFactory unitFactory,
+        IBuildingFactory buildingFactory)
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;
@@ -35,6 +40,8 @@ public class UnitsController : ControllerBase
         MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(
             configuration.GetValue<int>(
                 "Controllers:MaximumWaitingTimeBeforeResponse"));
+        _unitFactory = unitFactory;
+        _buildingFactory = buildingFactory;
     }
 
 
@@ -74,26 +81,63 @@ public class UnitsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
     public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
-        if (unitId != body.Id || body.Id is null || body.System is null || body.DestinationSystem is null)
+        if (unitId != body.Id || body.Id is null || body.System is null)
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
-        StarSystem? system = _mapRepository[body.DestinationSystem];
+        
+        if(unit is null)
+        {
+            if (!HttpContext.User.IsInRole("Admin"))
+                return Unauthorized();
 
-        if (unit is null || system is null)
+            if (body.Type is null || !_unitFactory.DoesTypeExist(body.Type))
+                return BadRequest();
+
+            IUser? user = _usersRepository[userId];
+            StarSystem? starSystem = _mapRepository[body.System];
+
+            if (starSystem is null || user is null)
+                return NotFound();
+
+            Planet? planet = body.Planet is null
+                ? null
+                : _mapRepository[body.System, body.Planet];
+
+            return _unitFactory.CreateUnitWithId
+                (
+                    body.Id,
+                    user,
+                    starSystem,
+                    planet,
+                    body.Type,
+                    _buildingFactory
+                )
+                .ToDTO();
+        }
+
+
+        if (body.DestinationSystem is null)
+            return BadRequest();
+
+
+        StarSystem? destinationSystem = _mapRepository[body.DestinationSystem];
+
+        if (unit is null || destinationSystem is null)
             return NotFound();
 
-        Planet? planet = body.DestinationPlanet is not null
-            ? system[body.DestinationPlanet]
+        Planet? destinationPlanet = body.DestinationPlanet is not null
+            ? destinationSystem[body.DestinationPlanet]
             : null;
 
-        if (planet is null && body.DestinationPlanet is not null)
+        if (destinationPlanet is null && body.DestinationPlanet is not null)
             return NotFound();
 
-        unit.StartTravel(_clock, system, planet);
+        unit.StartTravel(_clock, destinationSystem, destinationPlanet);
 
         return unit.ToDTO();
     }

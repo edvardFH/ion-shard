@@ -26,9 +26,10 @@ public abstract class Unit : IUnit
     private CancellationTokenSource? _cancellationTokenSource;
     protected readonly IClock _clock;
 
-
+    
     public Unit
         (
+            string id,
             IUser owner,
             StarSystem system,
             Planet? planet,
@@ -37,7 +38,7 @@ public abstract class Unit : IUnit
             IClock clock
         )
     {
-        Id = new Random().NextGuid().ToString();
+        Id = id;
         Owner = owner;
         Location = new Location(system, planet);
         TravelTask = Task.CompletedTask;

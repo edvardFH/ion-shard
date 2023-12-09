@@ -7,7 +7,6 @@ using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Text.RegularExpressions;
-using IonShard.Configuration.Auth;
 
 
 namespace IonShard.Controllers;

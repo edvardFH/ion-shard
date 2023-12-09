@@ -14,6 +14,7 @@ public class CombatUnit : Unit, ICombatUnit
 
     public CombatUnit
         (
+            string id,
             IUser owner,
             StarSystem system,
             Planet? planet,
@@ -24,7 +25,7 @@ public class CombatUnit : Unit, ICombatUnit
             IEnumerable<string> combatPriorities,
             IClock clock
         )
-        : base(owner, system, planet, type, resourceCost, clock)
+        : base(id, owner, system, planet, type, resourceCost, clock)
     {
         HealthPoints = healthPoint;
         Weapons = new List<IWeapon>(weapons);

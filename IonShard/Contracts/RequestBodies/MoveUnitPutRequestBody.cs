@@ -6,4 +6,5 @@ public record MoveUnitPutRequestBody(
     string? Planet, 
     string? DestinationSystem, 
     string? DestinationPlanet, 
-    string? type = null);
+    string? Type = null,
+    int Health = 0);
