@@ -3,6 +3,7 @@ using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
@@ -27,7 +28,7 @@ public class UnitsController : ControllerBase
     private readonly IBuildingFactory _buildingFactory;
 
     public UnitsController(
-        UserRepository usersRepository, 
+        UserRepository usersRepository,
         MapRepository mapRepository,
         IClock clock,
         IConfiguration configuration,
@@ -89,8 +90,8 @@ public class UnitsController : ControllerBase
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
-        
-        if(unit is null)
+
+        if (unit is null)
         {
             if (!HttpContext.User.IsInRole("Admin"))
                 return Unauthorized();

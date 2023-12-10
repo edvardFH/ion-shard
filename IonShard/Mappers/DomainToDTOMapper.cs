@@ -8,6 +8,7 @@ using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Users;
 
 namespace IonShard.Mappers;
@@ -52,7 +53,8 @@ public static class DomainToDTOMapper
             unitPlanet,
             unit.Destination?.System.Name ?? unitSystem,
             unit.Destination?.Planet?.Name ?? unitPlanet,
-            unit.Destination?.EstimatedTimeOfArrival.ToString());
+            unit.Destination?.EstimatedTimeOfArrival.ToString(),
+            unit is ICombatUnit combatUnit ? combatUnit.HealthPoints : 0);
     }
 
 

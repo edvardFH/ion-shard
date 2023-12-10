@@ -105,8 +105,8 @@ public class UnitFactory : IUnitFactory
     }
 
 
-        public bool DoesTypeExist(string type) =>
-        _units.ContainsKey(type.UppercaseFirstWord());
+    public bool DoesTypeExist(string type) =>
+    _units.ContainsKey(type.UppercaseFirstWord());
 
 
     private IReadOnlyDictionary<Resource, int> CreateResourceCost(IUnitConfiguration unitConfiguration)

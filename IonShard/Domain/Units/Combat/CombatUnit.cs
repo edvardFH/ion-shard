@@ -10,6 +10,7 @@ public class CombatUnit : Unit, ICombatUnit
     public int HealthPoints { get; private set; }
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
+    public bool IsFighting { get; private set; }
     private ITimer _timer;
 
     public CombatUnit
@@ -30,19 +31,20 @@ public class CombatUnit : Unit, ICombatUnit
         HealthPoints = healthPoint;
         Weapons = new List<IWeapon>(weapons);
         CombatPriorities = new List<string>(combatPriorities);
+        IsFighting = false;
 
-
-        _timer = _clock.CreateTimer(
-            Attack,
-            this,
-            TimeSpan.FromSeconds(UnitBuildDuration),
-            GetTimeUntilNextAttack(_clock.Now.AddSeconds(UnitBuildDuration)));
+        _timer = CreateTimer(TimeSpan.FromSeconds(UnitBuildDuration + 1));
     }
 
-    public int ApplyDamage(int damage)
+    public int ApplyDamage(ICombatUnit damageSource, int damage)
     {
-        if (HealthPoints >= damage)
-            return (HealthPoints -= damage);
+        var damageReceived = damage;
+
+        if (Type == "Bomber" && damageSource.Type == "Cruiser")
+            damageReceived /= 10;
+
+        if (HealthPoints > damageReceived)
+            return (HealthPoints -= damageReceived);
 
         Destroy();
 
@@ -67,26 +69,36 @@ public class CombatUnit : Unit, ICombatUnit
 
     private void Attack(object? state)
     {
+        _timer = CreateTimer(GetTimeUntilNextAttack(_clock.Now));
         var choosenTarget = ChooseTarget();
 
         if (choosenTarget is null)
             return;
 
-        (from weapon in Weapons
-         where _clock.Now.Second % weapon.Cooldown == 0
-         select weapon)
-         .ToList()
-         .ForEach(weapon => choosenTarget.ApplyDamage(weapon.Damage));
 
-        _timer.Change(GetTimeUntilNextAttack(_clock.Now), TimeSpan.MaxValue);
+        var totalDamage =
+            (from weapon in Weapons
+             where _clock.Now.Second % weapon.Cooldown == 0
+             select weapon.Damage)
+             .Sum();
+
+
+        choosenTarget.ApplyDamage(this, totalDamage);
     }
 
     private void Destroy()
     {
-        var nearUnits = GetUnitsInLocation();
-
-        nearUnits.Remove(this);
         Owner.RemoveUnit(this);
+
+        _ = RemoveFromLocationAfterFight();
+    }
+
+    private async Task RemoveFromLocationAfterFight()
+    {
+        await _clock.Delay(500);
+
+        var nearUnits = GetUnitsInLocation();
+        nearUnits.Remove(this);
     }
 
     private IList<IUnit> GetUnitsInLocation() => Location.Planet is null
@@ -101,13 +113,14 @@ public class CombatUnit : Unit, ICombatUnit
             let delta = sec - (dateTime.Second % sec)
             let nextMultiple = dateTime.AddSeconds(delta)
             orderby (nextMultiple - dateTime).TotalSeconds
-            select nextMultiple - DateTime.Now
+            select nextMultiple - _clock.Now
             ).First();
     }
 
-    private bool DoesAttackAt(DateTime dateTime) =>
-        (from weapon in Weapons
-         where dateTime.Second % weapon.Cooldown == 0
-         select weapon)
-        .Any();
+    private ITimer CreateTimer(TimeSpan dueTime) =>
+       _clock.CreateTimer(
+            Attack,
+            this,
+            dueTime,
+            TimeSpan.FromSeconds(0));
 }

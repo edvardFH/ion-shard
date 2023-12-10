@@ -7,5 +7,6 @@ public interface ICombatUnit : IUnit
     public int HealthPoints { get; }
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
-    public int ApplyDamage(int damage);
+    public bool IsFighting { get; }
+    public int ApplyDamage(ICombatUnit damageSource, int damage);
 }
