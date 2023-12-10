@@ -19,6 +19,7 @@ builder.Configuration
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
 
 builder.Services
