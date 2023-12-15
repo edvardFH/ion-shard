@@ -1,4 +1,4 @@
-﻿using IonShard.Configuration;
+﻿using IonShard.Configuration.Gamerules;
 using IonShard.Domain.Buildings.Mine;
 using IonShard.Domain.Buildings.Starport;
 using IonShard.Domain.Map;

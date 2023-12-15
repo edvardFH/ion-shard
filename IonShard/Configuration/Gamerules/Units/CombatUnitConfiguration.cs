@@ -1,4 +1,4 @@
-﻿namespace IonShard.Configuration.Units;
+﻿namespace IonShard.Configuration.Gamerules.Units;
 
 public record CombatUnitConfiguration(
     IReadOnlyDictionary<string, int> ResourceCost,
@@ -6,4 +6,4 @@ public record CombatUnitConfiguration(
     int HealthPoints,
     IReadOnlyDictionary<string, int> Weapons,
     IReadOnlyList<string> CombatPriorities,
-    IReadOnlyDictionary<string, float> ShieldDamageReductionMultiplier): IUnitConfiguration;
+    IReadOnlyDictionary<string, float> ShieldDamageReductionMultiplier) : IUnitConfiguration;

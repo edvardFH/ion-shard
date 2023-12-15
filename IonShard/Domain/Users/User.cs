@@ -2,7 +2,7 @@
 using IonShard.Domain.Units;
 using System.ComponentModel.DataAnnotations;
 using IonShard.Domain.Map.Resources;
-using IonShard.Configuration;
+using IonShard.Configuration.Gamerules;
 
 namespace IonShard.Domain.Users;
 

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Extensions;
 
-namespace IonShard.Services.Auth;
+namespace IonShard.Services.Authication;
 
 public class ShardAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {

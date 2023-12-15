@@ -1,6 +1,6 @@
-﻿using IonShard.Configuration.Units;
+﻿using IonShard.Configuration.Gamerules.Units;
 
-namespace IonShard.Configuration;
+namespace IonShard.Configuration.Gamerules;
 
 public interface IGameRulesService
 {

@@ -1,5 +1,6 @@
 ﻿using IonShard.Configuration;
-using IonShard.Configuration.Units;
+using IonShard.Configuration.Gamerules;
+using IonShard.Configuration.Gamerules.Units;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;

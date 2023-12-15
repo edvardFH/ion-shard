@@ -1,7 +1,7 @@
-﻿using IonShard.Configuration.Units;
+﻿using IonShard.Configuration.Gamerules.Units;
 using System.Collections.ObjectModel;
 
-namespace IonShard.Configuration;
+namespace IonShard.Configuration.Gamerules;
 
 public class GameRulesService : IGameRulesService
 {
@@ -29,7 +29,7 @@ public class GameRulesService : IGameRulesService
         return weapons;
     }
 
-    
+
     public IReadOnlyDictionary<string, IUnitConfiguration> InitUnits()
     {
         const string peacefulUnitSectionKey = "Units:PeacefulUnit";
@@ -73,7 +73,7 @@ public class GameRulesService : IGameRulesService
              .Select(unit =>
                  (
                      unit.Key,
-                     Value: (IUnitConfiguration) new CombatUnitConfiguration
+                     Value: (IUnitConfiguration)new CombatUnitConfiguration
                      (
                          GetAsIntDictionnary(unit, "ResourceCost"),
                          GetAsInt(unit, "BuildingDuration"),
@@ -109,15 +109,15 @@ public class GameRulesService : IGameRulesService
     }
 
 
-    private int GetAsInt(IConfigurationSection unit, string key) => 
+    private int GetAsInt(IConfigurationSection unit, string key) =>
         unit.GetSection(key).Get<int>();
 
-    private IReadOnlyDictionary<string,int> GetAsIntDictionnary(IConfigurationSection section, string key) =>
+    private IReadOnlyDictionary<string, int> GetAsIntDictionnary(IConfigurationSection section, string key) =>
         section.GetSection(key)
             .Get<IReadOnlyDictionary<string, int>>()
             ?? new Dictionary<string, int>();
-    
-    private IReadOnlyDictionary<string,float> GetAsFloatDictionnary(IConfigurationSection section, string key) =>
+
+    private IReadOnlyDictionary<string, float> GetAsFloatDictionnary(IConfigurationSection section, string key) =>
         section.GetSection(key)
             .Get<IReadOnlyDictionary<string, float>>()
             ?? new Dictionary<string, float>();

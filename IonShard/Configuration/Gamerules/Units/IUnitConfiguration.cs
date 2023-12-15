@@ -1,4 +1,4 @@
-﻿namespace IonShard.Configuration.Units;
+﻿namespace IonShard.Configuration.Gamerules.Units;
 
 public interface IUnitConfiguration
 {

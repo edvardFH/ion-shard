@@ -1,4 +1,4 @@
-﻿namespace IonShard.Configuration;
+﻿namespace IonShard.Configuration.Gamerules;
 
 public record BuildingConfiguration(
     int BuildingDuration,

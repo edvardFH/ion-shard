@@ -1,9 +1,9 @@
-using IonShard.Configuration;
+using IonShard.Configuration.Gamerules;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Units;
 using IonShard.Persistence.Repositories;
 using IonShard.Services;
-using IonShard.Services.Auth;
+using IonShard.Services.Authication;
 using IonShard.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
@@ -14,8 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("Configuration/gamerules.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("Configuration/users.json", optional: false, reloadOnChange: true);
+            .AddJsonFile("Configuration/Gamerules/gamerules.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("Configuration/Authentication/users.json", optional: false, reloadOnChange: true);
 
 builder.Services.AddControllers();
 
