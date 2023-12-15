@@ -1,46 +1,72 @@
-﻿using IonShard.Configuration.Gamerules.Units;
-using IonShard.Domain.Units;
-using System.Collections.ObjectModel;
+﻿using IonShard.Configuration.Gamerules.Buildings;
+using IonShard.Configuration.Gamerules.Resources;
+using IonShard.Configuration.Gamerules.Units;
+using IonShard.Configuration.Gamerules.Users;
 
 namespace IonShard.Configuration.Gamerules;
 
 public class GameRulesService : IGameRulesService
 {
     private const float DefaultDamageReductionMutliplier = 1;
+    private const int DefaultResourceQuantity = 0;
 
     private readonly IConfiguration _configuration;
+    public IReadOnlyDictionary<string, ResourceConfiguration> Resources { get; private set; }
     public IReadOnlyDictionary<string, IUnitConfiguration> Units { get; private set; }
+    public IReadOnlyDictionary<string, WeaponConfiguration> Weapons { get; private set; }
+    public IReadOnlyDictionary<string, BuildingConfiguration> Buildings { get; private set; }
+    public UserConfiguration User {  get; private set; }
 
 
     public GameRulesService(IConfiguration configuration)
     {
         _configuration = configuration;
+        Resources = InitResources();
         Units = InitUnits();
+        Weapons = InitWeapons();
+        Buildings = InitBuildings();
+        User = InitUser();
     }
 
 
-    public IReadOnlyDictionary<string, WeaponConfiguration> GetWeapons()
+    private IReadOnlyDictionary<string, ResourceConfiguration> InitResources()
+    {
+        const string key = "Resources";
+        var resources = _configuration
+            .GetSection(key)
+            .Get<IReadOnlyDictionary<string, ResourceConfiguration>>();
+
+        if (resources is null || resources.Count == 0)
+            throw new ConfigurationFormatException(key);
+
+        return resources;
+    }
+
+
+
+    private IReadOnlyDictionary<string, WeaponConfiguration> InitWeapons()
     {
         const string key = "Weapons";
         var weapons = _configuration
             .GetSection(key)
             .Get<IReadOnlyDictionary<string, WeaponConfiguration>>();
 
-        if (weapons is null)
+        if (weapons is null || weapons.Count == 0)
             throw new ConfigurationFormatException(key);
 
         return weapons;
     }
 
 
-    public IReadOnlyDictionary<string, BuildingConfiguration> GetBuildings()
+
+    private IReadOnlyDictionary<string, BuildingConfiguration> InitBuildings()
     {
         const string key = "Buildings";
         var buildings = _configuration
             .GetSection(key)
             .Get<IReadOnlyDictionary<string, BuildingConfiguration>>();
 
-        if (buildings is null)
+        if (buildings is null || buildings.Count == 0)
             throw new ConfigurationFormatException(key);
 
         return buildings;
@@ -65,8 +91,8 @@ public class GameRulesService : IGameRulesService
                     unit.Key,
                     Value: new UnitConfiguration
                     (
-                        GetAsIntDictionnary(unit, "ResourceCost"),
-                        GetAsInt(unit, "BuildingDuration")
+                        unit.GetSectionAsIntDictionnary("ResourceCost"),
+                        unit.GetSectionAsInt("BuildingDuration")
                     )
                 )
             ).ToDictionary(
@@ -108,11 +134,11 @@ public class GameRulesService : IGameRulesService
                      unit.Key,
                      Value: (IUnitConfiguration)new CombatUnitConfiguration
                      (
-                         GetAsIntDictionnary(unit, "ResourceCost"),
-                         GetAsInt(unit, "BuildingDuration"),
-                         GetAsInt(unit, "HealthPoints"),
-                         GetAsIntDictionnary(unit, "Weapons"),
-                         GetAsStringList(unit, "CombatPriorities"),
+                         unit.GetSectionAsIntDictionnary("ResourceCost"),
+                         unit.GetSectionAsInt("BuildingDuration"),
+                         unit.GetSectionAsInt("HealthPoints"),
+                         unit.GetSectionAsIntDictionnary("Weapons"),
+                         unit.GetSectionAsStringList("CombatPriorities"),
                          GetDamageReductionMultipliers(combatUnitTypes, unit)
                      )
                  );
@@ -136,7 +162,7 @@ public class GameRulesService : IGameRulesService
     {
         var damageReductionMutipliers = new Dictionary<string, float>
             (
-                GetAsFloatDictionnary(unit, "DamageReductionMultipliers")
+                unit.GetSectionAsFloatDictionnary("DamageReductionMultipliers")
             );
 
         combatUnitTypes.ToList().ForEach(type =>
@@ -148,21 +174,27 @@ public class GameRulesService : IGameRulesService
         return damageReductionMutipliers;
     }
 
-    private int GetAsInt(IConfigurationSection unit, string key) =>
-        unit.GetSection(key).Get<int>();
 
-    private IReadOnlyDictionary<string, int> GetAsIntDictionnary(IConfigurationSection section, string key) =>
-        section.GetSection(key)
-            .Get<IReadOnlyDictionary<string, int>>()
-            ?? new Dictionary<string, int>();
+    private UserConfiguration InitUser()
+    {
+        const string key = "Users";
+        var userSection = _configuration
+            .GetSection(key);
 
-    private IReadOnlyDictionary<string, float> GetAsFloatDictionnary(IConfigurationSection section, string key) =>
-        section.GetSection(key)
-            .Get<IReadOnlyDictionary<string, float>>()
-            ?? new Dictionary<string, float>();
+        if (userSection is null)
+            throw new ConfigurationFormatException(key);
 
-    private IReadOnlyList<string> GetAsStringList(IConfigurationSection section, string key) =>
-        section.GetSection(key)
-            .Get<IReadOnlyList<string>>()
-            ?? new List<string>();
+        var startingResources = new Dictionary<string, int>(userSection.GetSectionAsIntDictionnary("StartingResources"));
+
+        if (startingResources.Count == 0)
+            throw new ConfigurationFormatException("StartingResources");
+
+        Resources.ToList().ForEach(resource =>
+        {
+            if (!startingResources.ContainsKey(resource.Key))
+                startingResources.Add(resource.Key, DefaultResourceQuantity);
+        });
+
+        return new UserConfiguration(startingResources);
+    }
 }

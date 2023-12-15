@@ -1,4 +1,5 @@
 ﻿using IonShard.Configuration.Gamerules;
+using IonShard.Configuration.Gamerules.Buildings;
 using IonShard.Domain.Buildings.Mine;
 using IonShard.Domain.Buildings.Starport;
 using IonShard.Domain.Map;
@@ -24,7 +25,7 @@ public class BuildingFactory : IBuildingFactory
             IUnitFactory unitFactory
         )
     {
-        _buildings = gameRuleService.GetBuildings();
+        _buildings = gameRuleService.Buildings;
         _clock = clock;
         _unitFactory = unitFactory;
     }

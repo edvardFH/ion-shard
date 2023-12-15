@@ -22,7 +22,7 @@ public class UnitFactory : IUnitFactory
 
     public UnitFactory(IGameRulesService gameRulesService, IClock clock)
     {
-        _weapons = gameRulesService.GetWeapons();
+        _weapons = gameRulesService.Weapons;
         _units = gameRulesService.Units;
         _clock = clock;
     }
