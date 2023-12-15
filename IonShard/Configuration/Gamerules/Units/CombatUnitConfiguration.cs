@@ -6,4 +6,4 @@ public record CombatUnitConfiguration(
     int HealthPoints,
     IReadOnlyDictionary<string, int> Weapons,
     IReadOnlyList<string> CombatPriorities,
-    IReadOnlyDictionary<string, float> ShieldDamageReductionMultiplier) : IUnitConfiguration;
+    IReadOnlyDictionary<string, float> DamageReductionMultipliers) : IUnitConfiguration;

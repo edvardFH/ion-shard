@@ -60,6 +60,7 @@ public class UnitFactory : IUnitFactory
                     combatUnitStats.HealthPoints,
                     CreateWeapons(_weapons, combatUnitStats.Weapons),
                     combatUnitStats.CombatPriorities,
+                    combatUnitStats.DamageReductionMultipliers,
                     _clock
                 ),
             _ =>

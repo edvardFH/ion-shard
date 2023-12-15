@@ -1,10 +1,13 @@
 ﻿using IonShard.Configuration.Gamerules.Units;
+using IonShard.Domain.Units;
 using System.Collections.ObjectModel;
 
 namespace IonShard.Configuration.Gamerules;
 
 public class GameRulesService : IGameRulesService
 {
+    private const float DefaultDamageReductionMutliplier = 1;
+
     private readonly IConfiguration _configuration;
     public IReadOnlyDictionary<string, IUnitConfiguration> Units { get; private set; }
 
@@ -30,7 +33,22 @@ public class GameRulesService : IGameRulesService
     }
 
 
-    public IReadOnlyDictionary<string, IUnitConfiguration> InitUnits()
+    public IReadOnlyDictionary<string, BuildingConfiguration> GetBuildings()
+    {
+        const string key = "Buildings";
+        var buildings = _configuration
+            .GetSection(key)
+            .Get<IReadOnlyDictionary<string, BuildingConfiguration>>();
+
+        if (buildings is null)
+            throw new ConfigurationFormatException(key);
+
+        return buildings;
+    }
+
+
+
+    private IReadOnlyDictionary<string, IUnitConfiguration> InitUnits()
     {
         const string peacefulUnitSectionKey = "Units:PeacefulUnit";
         var peacefulUnitSectionChildren = _configuration
@@ -60,10 +78,23 @@ public class GameRulesService : IGameRulesService
             throw new ConfigurationFormatException(peacefulUnitSectionKey);
 
 
+        var combatUnits = CreateCombatUnitsConfiguration();
+
+        combatUnits.ForEach(keyValuePair => units.Add(keyValuePair.Key, keyValuePair.Value));
+
+        return units;
+    }
+
+
+    private List<(string Key, IUnitConfiguration Value)> CreateCombatUnitsConfiguration()
+    {
         const string combatUnitSectionKey = "Units:CombatUnit";
         var combatUnitSectionChildren = _configuration
             .GetSection(combatUnitSectionKey)
             .GetChildren();
+
+        var combatUnitTypes = combatUnitSectionChildren.Select(unit => unit.Key);
+
 
         if (combatUnitSectionChildren is null)
             throw new ConfigurationFormatException(combatUnitSectionKey);
@@ -71,6 +102,8 @@ public class GameRulesService : IGameRulesService
         List<(string Key, IUnitConfiguration Value)> combatUnits =
              combatUnitSectionChildren
              .Select(unit =>
+             {
+                 return
                  (
                      unit.Key,
                      Value: (IUnitConfiguration)new CombatUnitConfiguration
@@ -80,34 +113,40 @@ public class GameRulesService : IGameRulesService
                          GetAsInt(unit, "HealthPoints"),
                          GetAsIntDictionnary(unit, "Weapons"),
                          GetAsStringList(unit, "CombatPriorities"),
-                         GetAsFloatDictionnary(unit, "ShieldDamageReductionMultiplier")
+                         GetDamageReductionMultipliers(combatUnitTypes, unit)
                      )
-                 )
+                 );
+             }
+
              ).ToList<(string, IUnitConfiguration)>();
 
 
         if (combatUnits is null)
             throw new ConfigurationFormatException(combatUnitSectionKey);
 
-        combatUnits.ForEach(keyValuePair => units.Add(keyValuePair.Key, keyValuePair.Value));
-
-        return units;
+        return combatUnits;
     }
 
 
-    public IReadOnlyDictionary<string, BuildingConfiguration> GetBuildings()
+    private IReadOnlyDictionary<string, float> GetDamageReductionMultipliers
+        (
+            IEnumerable<string> combatUnitTypes,
+            IConfigurationSection unit
+        )
     {
-        const string key = "Buildings";
-        var buildings = _configuration
-            .GetSection(key)
-            .Get<IReadOnlyDictionary<string, BuildingConfiguration>>();
+        var damageReductionMutipliers = new Dictionary<string, float>
+            (
+                GetAsFloatDictionnary(unit, "DamageReductionMultipliers")
+            );
 
-        if (buildings is null)
-            throw new ConfigurationFormatException(key);
+        combatUnitTypes.ToList().ForEach(type =>
+        {
+            if (!damageReductionMutipliers.ContainsKey(type))
+                damageReductionMutipliers.Add(type, DefaultDamageReductionMutliplier);
+        });
 
-        return buildings;
+        return damageReductionMutipliers;
     }
-
 
     private int GetAsInt(IConfigurationSection unit, string key) =>
         unit.GetSection(key).Get<int>();
