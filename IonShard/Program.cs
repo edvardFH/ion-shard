@@ -1,5 +1,6 @@
 using IonShard.Configuration.Gamerules;
 using IonShard.Domain.Buildings;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Persistence.Repositories;
 using IonShard.Services;
@@ -25,6 +26,8 @@ builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
 builder.Services
     .AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, ShardAuthenticationHandler>("Basic", null);
+
+builder.Services.AddSingleton<IResourceFactory, ResourceFactory>();
 
 builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(

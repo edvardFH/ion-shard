@@ -15,7 +15,7 @@ public class ScoutUnit : Unit, IScoutUnit
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
             IClock clock
         )
         : base(id, owner, starSystem, planet, "Scout", resourceCost, clock) { }

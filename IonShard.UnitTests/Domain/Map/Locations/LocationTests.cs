@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using IonShard.Domain.Map.Resources;
 using IonShard.UnitTests.Repository;
 
 namespace IonShard.UnitTests.Domain.Map.Locations;

@@ -27,7 +27,7 @@ public class BuilderUnit : Unit, IBuilderUnit
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
             IClock clock
         )
         : base(id, owner, starSystem, planet, "builder", resourceCost, clock)

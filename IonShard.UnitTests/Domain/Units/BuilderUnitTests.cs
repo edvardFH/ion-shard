@@ -1,4 +1,5 @@
 ﻿using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Users;
@@ -15,7 +16,6 @@ public class BuilderUnitTests
     private readonly Planet _earth;
     private readonly FakeClock _clock;
     private readonly IUnit _builderUnit;
-    private readonly IUnitFactory _unitFactory;
 
     public BuilderUnitTests()
     {

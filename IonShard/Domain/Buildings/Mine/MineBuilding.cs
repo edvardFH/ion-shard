@@ -1,4 +1,5 @@
-﻿using IonShard.Domain.Map;
+﻿using IonShard.Configuration.Gamerules;
+using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units.Builder;
 using Shard.Shared.Core;
@@ -57,15 +58,7 @@ public class MineBuilding : Building, IMineBuilding
              where resourceQuantity.Value > 0
              where resourceQuantity.Key.Category == ResourceCategory.Solid
              orderby resourceQuantity.Value descending,
-                     resourceQuantity.Key.Name switch
-                     {
-                         ResourceName.Titanium => 5,
-                         ResourceName.Gold => 4,
-                         ResourceName.Aluminium => 3,
-                         ResourceName.Iron => 2,
-                         ResourceName.Carbon => 1,
-                         _ => 0
-                     } descending
+                     resourceQuantity.Key.Rarity descending
              select resourceQuantity.Key
          )
          .FirstOrDefault();

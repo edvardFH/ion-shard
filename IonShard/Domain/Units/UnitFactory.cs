@@ -18,13 +18,15 @@ public class UnitFactory : IUnitFactory
     private readonly IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
     private readonly IReadOnlyDictionary<string, IUnitConfiguration> _units;
     private readonly IClock _clock;
+    private readonly IResourceFactory _resourceFactory;
 
 
-    public UnitFactory(IGameRulesService gameRulesService, IClock clock)
+    public UnitFactory(IGameRulesService gameRulesService, IClock clock, IResourceFactory resourceFactory)
     {
         _weapons = gameRulesService.Weapons;
         _units = gameRulesService.Units;
         _clock = clock;
+        _resourceFactory = resourceFactory;
     }
 
 
@@ -111,15 +113,14 @@ public class UnitFactory : IUnitFactory
     _units.ContainsKey(type.UppercaseFirstWord());
 
 
-    private IReadOnlyDictionary<Resource, int> CreateResourceCost(IUnitConfiguration unitConfiguration)
+    private IReadOnlyDictionary<IResource, int> CreateResourceCost(IUnitConfiguration unitConfiguration)
     {
         return unitConfiguration.ResourceCost
             .Select(resourceCost =>
             {
-                if (!Enum.TryParse(resourceCost.Key, out ResourceName resource))
-                    throw new ConfigurationFormatException(resourceCost.Key);
+               
 
-                return (Resource: new Resource(resource), Cost: resourceCost.Value);
+                return (Resource: _resourceFactory.GetResource(resourceCost.Key), Cost: resourceCost.Value);
             })
             .ToDictionary(resourceCost => resourceCost.Resource, resourceCost => resourceCost.Cost);
     }
@@ -157,7 +158,7 @@ public class UnitFactory : IUnitFactory
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
             string type,
             IBuildingFactory? buildingFactory
         )

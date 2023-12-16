@@ -26,14 +26,16 @@ public class User : IUser
         => (IReadOnlyDictionary<IResource, int>)_resourcesQuantity;
 
     private readonly IGameRulesService _gameRulesService;
-
+    private readonly IResourceFactory _resourceFactory;
+        
 
     public User
         (
             string id,
             string pseudo,
             DateTime dateOfCreation,
-            IGameRulesService gameRulesService
+            IGameRulesService gameRulesService,
+            IResourceFactory resourceFactory
         )
     {
         Id = id;
@@ -41,17 +43,10 @@ public class User : IUser
         DateOfCreation = dateOfCreation;
         _units = new Dictionary<string, IUnit>();
         _buildings = new Dictionary<string, IBuilding>();
-        _resourcesQuantity = new Dictionary<IResource, int>
-        {
-            { new Resource(ResourceName.Carbon), 20 },
-            { new Resource(ResourceName.Iron), 10 },
-            { new Resource(ResourceName.Oxygen), 50 },
-            { new Resource(ResourceName.Water), 50 },
-            { new Resource(ResourceName.Aluminium), 0 },
-            { new Resource(ResourceName.Gold), 0 },
-            { new Resource(ResourceName.Titanium), 0 }
-        };
+        _resourcesQuantity = resourceFactory.TryParseToResourceQuantity(gameRulesService.User.StartingResources);
+
         _gameRulesService = gameRulesService;
+        _resourceFactory = resourceFactory;
     }
 
 
@@ -77,12 +72,10 @@ public class User : IUser
         if (!units.ContainsKey(unitType))
             throw new ArgumentException($"{unitType} is not a valid unit type");
 
-        
 
         foreach (var resourceCost in units[unitType].ResourceCost)
         {
-            Enum.TryParse(resourceCost.Key, out ResourceName resourceName);
-            var resource = new Resource(resourceName);
+            var resource = _resourceFactory.GetResource(resourceCost.Key);
 
             if (!_resourcesQuantity.ContainsKey(resource)
                 || resourceCost.Value > _resourcesQuantity[resource])

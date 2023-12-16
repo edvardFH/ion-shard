@@ -20,7 +20,7 @@ public abstract class Unit : IUnit
     public IUser Owner { get; }
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
-    public IReadOnlyDictionary<Resource, int> ResourceCost {  get; }
+    public IReadOnlyDictionary<IResource, int> ResourceCost {  get; }
     public Task TravelTask { get; private set; }
 
     private CancellationTokenSource? _cancellationTokenSource;
@@ -34,7 +34,7 @@ public abstract class Unit : IUnit
             StarSystem system,
             Planet? planet,
             string type,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
             IClock clock
         )
     {

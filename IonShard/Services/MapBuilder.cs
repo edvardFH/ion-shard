@@ -6,11 +6,13 @@ namespace IonShard.Services;
 
 public class MapBuilder
 {
+    private readonly IResourceFactory _resourceFactory;
+
     public Universe Map { get; }
 
-    public MapBuilder(MapGenerator mapGenerator)
+    public MapBuilder(MapGenerator mapGenerator, IResourceFactory resourceFactory)
     {
-
+        _resourceFactory = resourceFactory;
         IReadOnlyList<StarSystem> systems = mapGenerator
             .Generate()
             .Systems
@@ -31,6 +33,6 @@ public class MapBuilder
     private IReadOnlyDictionary<IResource, int> ResourceKindToResource(IReadOnlyDictionary<ResourceKind, int> resourceQuantity)
         => resourceQuantity
             .ToDictionary(
-                resource => (IResource) new Resource((ResourceName)resource.Key),
+                resource => _resourceFactory.GetResource(resource.Key.ToString()),
                 resource => resource.Value);
 }

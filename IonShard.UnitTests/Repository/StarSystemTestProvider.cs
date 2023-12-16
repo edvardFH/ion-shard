@@ -35,13 +35,13 @@ public static class StarSystemTestProvider
         if (_resources is not null) return _resources;
         var dictionary = new Dictionary<IResource, int>
         {
-            { new Resource(ResourceName.Carbon), 3 },
-            { new Resource(ResourceName.Iron), 9 },
-            { new Resource(ResourceName.Gold), 7 },
-            { new Resource(ResourceName.Aluminium), 5 },
-            { new Resource(ResourceName.Titanium), 10 },
-            { new Resource(ResourceName.Water), 70 },
-            { new Resource(ResourceName.Oxygen), 20 }
+            { new Resource("Carbon", ResourceCategory.Solid, 10), 3 },
+            { new Resource("Iron", ResourceCategory.Solid, 20), 9 },
+            { new Resource("Gold", ResourceCategory.Solid, 40), 7 },
+            { new Resource("Aluminium", ResourceCategory.Solid, 30), 5 },
+            { new Resource("Titanium", ResourceCategory.Solid, 50), 10 },
+            { new Resource("Water", ResourceCategory.Liquid, 10), 70 },
+            { new Resource("Oxygen", ResourceCategory.Gaseous, 10), 20 }
         };
 
         _resources = new ReadOnlyDictionary<IResource, int>(dictionary);

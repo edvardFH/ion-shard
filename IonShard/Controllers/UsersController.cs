@@ -1,5 +1,6 @@
 ﻿using IonShard.Contracts.DTO.Users;
 using IonShard.Contracts.RequestBodies;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
@@ -19,15 +20,18 @@ public class UsersController : ControllerBase
 
     private readonly UserRepository _usersRepository;
     private readonly IUserFactory _userFactory;
+    private readonly IResourceFactory _resourceFactory;
 
     public UsersController
         (
             UserRepository usersRepository,
-            IUserFactory userFactory
+            IUserFactory userFactory,
+            IResourceFactory resourceFactory
         )
     {
         _usersRepository = usersRepository;
         _userFactory = userFactory;
+        _resourceFactory = resourceFactory;
     }
 
 
@@ -47,7 +51,15 @@ public class UsersController : ControllerBase
             var user = _usersRepository[userId];
             if (HttpContext.User.IsInRole("Admin") && body.ResourcesQuantity is not null)
             {
-                user?.UpdateResources(body.GetParsedResources()!);
+                try
+                {
+                    user?.UpdateResources(
+                        _resourceFactory.TryParseToResourceQuantity(body.ResourcesQuantity).AsReadOnly());
+                }
+                catch(ArgumentException)
+                {
+                    return BadRequest();
+                }
             }
             return user?.ToDTO();
         }

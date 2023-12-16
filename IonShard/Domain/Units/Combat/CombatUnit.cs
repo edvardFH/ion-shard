@@ -20,7 +20,7 @@ public class CombatUnit : Unit, ICombatUnit
             IUser owner,
             StarSystem system,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
             string type,
             int healthPoint,
             IEnumerable<IWeapon> weapons,
