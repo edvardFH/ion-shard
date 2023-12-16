@@ -7,4 +7,5 @@ public record MoveUnitPutRequestBody(
     string? DestinationSystem, 
     string? DestinationPlanet, 
     string? Type = null,
-    int Health = 0);
+    int Health = 0,
+    IReadOnlyDictionary<string, int>? ResourcesQuantity = null);

@@ -8,4 +8,5 @@ public record UnitDTO(
     string? DestinationSystem,
     string? DestinationPlanet,
     string? EstimatedTimeOfArrival,
-    int Health);
+    int Health,
+    IReadOnlyDictionary<string, int>? ResourcesQuantity);

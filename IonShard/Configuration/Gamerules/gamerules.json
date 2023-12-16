@@ -88,6 +88,15 @@
           "Iron": 10
         },
         "BuildingDuration": 0
+      },
+
+      "Cargo": {
+        "ResourceCost": {
+          "Carbon": 10,
+          "Iron": 10,
+          "Gold": 5
+        },
+        "BuildingDuration":  0
       }
     },
 

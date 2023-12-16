@@ -31,6 +31,8 @@ public abstract class Building : IBuilding
         Type = type;
         IsBuilt = isBuilt;
         EstimatedBuildTime = estimatedBuildTime;
+
+        planet.Buildings.Add(this);
     }
 
     public void FinishBuild()

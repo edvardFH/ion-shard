@@ -45,6 +45,13 @@ public abstract class Unit : IUnit
         Type = type;
         ResourceCost = resourceCost;
         _clock = clock;
+
+        if(planet is null)
+            system.Units.Add(this);
+        else
+            planet.Units.Add(this);
+
+        owner.AddUnit(this);
     }
 
 

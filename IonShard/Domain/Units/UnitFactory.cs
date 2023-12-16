@@ -5,6 +5,7 @@ using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units.Builder;
+using IonShard.Domain.Units.Cargo;
 using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Units.Scout;
 using IonShard.Domain.Users;
@@ -77,13 +78,6 @@ public class UnitFactory : IUnitFactory
                     buildingFactory
                 )
         };
-
-        owner.AddUnit(newUnit);
-
-        if (planet is null)
-            system.Units.Add(newUnit);
-        else
-            planet.Units.Add(newUnit);
 
         return newUnit;
     }
@@ -172,6 +166,8 @@ public class UnitFactory : IUnitFactory
                 throw new ArgumentException("Builder unit require a BuildingFactory to be built."),
             "Builder" =>
                 new BuilderUnit(id, buildingFactory, owner, starSystem, planet, resourceCost, _clock),
+            "Cargo" =>
+                new CargoUnit(id, owner, starSystem, planet, type, resourceCost, new Dictionary<IResource, int>(), _clock),
             _ =>
                 throw new ArgumentException($"Incorrect unit type : {type} is unknown.")
         };

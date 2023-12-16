@@ -48,7 +48,7 @@ public class MineBuilding : Building, IMineBuilding
         if (!Location.Planet.TakeOneResource(resourceToExtract))
             return;
 
-        Builder.Owner.AddOneResource(resourceToExtract);
+        Builder.Owner.AddResource(resourceToExtract, 1);
     }
 
     private IResource? GetSolidResourceToExtract() =>

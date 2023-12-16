@@ -2,7 +2,9 @@
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Cargo;
 using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
@@ -26,6 +28,7 @@ public class UnitsController : ControllerBase
     private readonly IClock _clock;
     private readonly IUnitFactory _unitFactory;
     private readonly IBuildingFactory _buildingFactory;
+    private readonly IResourceFactory _resourceFactory;
 
     public UnitsController(
         UserRepository usersRepository,
@@ -33,7 +36,8 @@ public class UnitsController : ControllerBase
         IClock clock,
         IConfiguration configuration,
         IUnitFactory unitFactory,
-        IBuildingFactory buildingFactory)
+        IBuildingFactory buildingFactory,
+        IResourceFactory resourceFactory)
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;
@@ -43,6 +47,7 @@ public class UnitsController : ControllerBase
                 "Controllers:MaximumWaitingTimeBeforeResponse"));
         _unitFactory = unitFactory;
         _buildingFactory = buildingFactory;
+        _resourceFactory = resourceFactory;
     }
 
 
@@ -121,7 +126,6 @@ public class UnitsController : ControllerBase
                 .ToDTO();
         }
 
-
         if (body.DestinationSystem is null)
             return BadRequest();
 
@@ -140,7 +144,23 @@ public class UnitsController : ControllerBase
 
         unit.StartTravel(_clock, destinationSystem, destinationPlanet);
 
-        return unit.ToDTO();
+        if (unit is not ICargoUnit cargo)
+            return unit.ToDTO();
+
+        if (body.ResourcesQuantity is null)
+            return BadRequest();
+
+        try
+        {
+            var resourcesQuantity = _resourceFactory.TryParseToResourceQuantity(body.ResourcesQuantity);
+            LoadCargo(cargo, resourcesQuantity.AsReadOnly());
+        }
+        catch(Exception exception)
+        {
+            return BadRequest(exception.ToString()); // TODO: remove exception from response
+        }
+
+        return cargo.ToDTO();
     }
 
 
@@ -190,5 +210,26 @@ public class UnitsController : ControllerBase
             unit = user.Units[unitId];
 
         return unit;
+    }
+
+
+    private bool ResourcesQuantityChange(IReadOnlyDictionary<IResource, int> ressourcesQuantityA, IReadOnlyDictionary<IResource, int> resourceQuantityB) => false;  // TODO: finish
+
+
+    private void LoadCargo(ICargoUnit cargo, IReadOnlyDictionary<IResource, int> resourcesQuantity)
+    {
+        resourcesQuantity.ToList().ForEach(resource =>
+        {
+            var cargoResource = cargo.LoadedResources.ContainsKey(resource.Key)
+                ? cargo.LoadedResources[resource.Key]
+                : 0;
+
+            var difference = resource.Value - cargoResource;
+
+            if (difference < 0)
+                cargo.Unload(resource.Key, -difference);
+            else
+                cargo.Load(resource.Key, difference);
+        });
     }
 }

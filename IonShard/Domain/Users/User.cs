@@ -15,15 +15,15 @@ public class User : IUser
 
     private readonly IDictionary<string, IUnit> _units;
     public IReadOnlyDictionary<string, IUnit> Units
-        => (IReadOnlyDictionary<string, IUnit>)_units;
+        => _units.AsReadOnly();
 
     private readonly IDictionary<string, IBuilding> _buildings;
     public IReadOnlyDictionary<string, IBuilding> Buildings
-        => (IReadOnlyDictionary<string, IBuilding>)_buildings;
+        => _buildings.AsReadOnly();
 
     private readonly IDictionary<IResource, int> _resourcesQuantity;
     public IReadOnlyDictionary<IResource, int> ResourcesQuantity
-        => (IReadOnlyDictionary<IResource, int>)_resourcesQuantity;
+        => _resourcesQuantity.AsReadOnly();
 
     private readonly IGameRulesService _gameRulesService;
     private readonly IResourceFactory _resourceFactory;
@@ -56,12 +56,12 @@ public class User : IUser
     public void AddBuilding(IBuilding building) => _buildings.Add(building.Id, building);
     public bool RemoveBuilding(IBuilding buildingId) => _buildings.Remove(buildingId.Id);
 
-    public void AddOneResource(IResource resource)
+    public void AddResource(IResource resource, int quantity)
     {
         if (_resourcesQuantity.ContainsKey(resource))
-            _resourcesQuantity[resource]++;
+            _resourcesQuantity[resource] += quantity;
         else
-            _resourcesQuantity.Add(resource, 1);
+            _resourcesQuantity.Add(resource, quantity);
     }
 
 
