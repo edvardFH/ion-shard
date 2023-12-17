@@ -145,7 +145,9 @@ public class UnitsController : ControllerBase
         unit.StartTravel(_clock, destinationSystem, destinationPlanet);
 
         if (unit is not ICargoUnit cargo)
-            return unit.ToDTO();
+            return body.ResourcesQuantity is null || body.ResourcesQuantity.Count == 0
+                ? unit.ToDTO()
+                : BadRequest(body.ResourcesQuantity);
 
         if (body.ResourcesQuantity is null)
             return BadRequest();
@@ -153,6 +155,10 @@ public class UnitsController : ControllerBase
         try
         {
             var resourcesQuantity = _resourceFactory.TryParseToResourceQuantity(body.ResourcesQuantity);
+
+            if (SameQuantity(resourcesQuantity.AsReadOnly(), cargo.LoadedResources))
+                return cargo.ToDTO();
+
             LoadCargo(cargo, resourcesQuantity.AsReadOnly());
         }
         catch(Exception exception)
@@ -213,7 +219,8 @@ public class UnitsController : ControllerBase
     }
 
 
-    private bool ResourcesQuantityChange(IReadOnlyDictionary<IResource, int> ressourcesQuantityA, IReadOnlyDictionary<IResource, int> resourceQuantityB) => false;  // TODO: finish
+    private bool SameQuantity(IReadOnlyDictionary<IResource, int> resourcesQuantityA, IReadOnlyDictionary<IResource, int> resourcesQuantityB)
+        => resourcesQuantityA.All(resourcesQuantityB.Contains) && resourcesQuantityA.Count == resourcesQuantityB.Count;
 
 
     private void LoadCargo(ICargoUnit cargo, IReadOnlyDictionary<IResource, int> resourcesQuantity)

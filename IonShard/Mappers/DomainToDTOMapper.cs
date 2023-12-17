@@ -60,7 +60,7 @@ public static class DomainToDTOMapper
                 ? cargoUnit.LoadedResources.ToDictionary(
                     resource => resource.Key.Name.ToString().ToLower(),
                     resource => resource.Value)
-                : null);
+                : new Dictionary<string, int>());
     }
 
 
