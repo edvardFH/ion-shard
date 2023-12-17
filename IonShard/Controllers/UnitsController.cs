@@ -5,7 +5,6 @@ using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Domain.Units.Cargo;
-using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
@@ -30,14 +29,16 @@ public class UnitsController : ControllerBase
     private readonly IBuildingFactory _buildingFactory;
     private readonly IResourceFactory _resourceFactory;
 
-    public UnitsController(
-        UserRepository usersRepository,
-        MapRepository mapRepository,
-        IClock clock,
-        IConfiguration configuration,
-        IUnitFactory unitFactory,
-        IBuildingFactory buildingFactory,
-        IResourceFactory resourceFactory)
+    public UnitsController
+        (
+            UserRepository usersRepository,
+            MapRepository mapRepository,
+            IClock clock,
+            IConfiguration configuration,
+            IUnitFactory unitFactory,
+            IBuildingFactory buildingFactory,
+            IResourceFactory resourceFactory
+        )
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;
@@ -161,7 +162,7 @@ public class UnitsController : ControllerBase
 
             LoadCargo(cargo, resourcesQuantity.AsReadOnly());
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
             return BadRequest(exception.ToString()); // TODO: remove exception from response
         }
@@ -219,7 +220,9 @@ public class UnitsController : ControllerBase
     }
 
 
-    private bool SameQuantity(IReadOnlyDictionary<IResource, int> resourcesQuantityA, IReadOnlyDictionary<IResource, int> resourcesQuantityB)
+    private bool SameQuantity(
+            IReadOnlyDictionary<IResource, int> resourcesQuantityA,
+            IReadOnlyDictionary<IResource, int> resourcesQuantityB)
         => resourcesQuantityA.All(resourcesQuantityB.Contains) && resourcesQuantityA.Count == resourcesQuantityB.Count;
 
 

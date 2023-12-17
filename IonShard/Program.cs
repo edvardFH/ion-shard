@@ -14,7 +14,7 @@ using SystemClock = Shard.Shared.Core.SystemClock;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("Configuration/appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile("Configuration/Gamerules/gamerules.json", optional: false, reloadOnChange: true)
             .AddJsonFile("Configuration/Authentication/users.json", optional: false, reloadOnChange: true);
 
