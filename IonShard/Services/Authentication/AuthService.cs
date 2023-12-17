@@ -5,20 +5,20 @@ namespace IonShard.Services.Authication;
 
 public class AuthService : IAuthService
 {
+    private const string AdminSection = "authUsers";
+    private const string ServerSection = "Wormholes";
+    private const string ShardNameStart = "shard-";
+
     private readonly IReadOnlyDictionary<string, AuthUserEntity> _users;
 
     public AuthService(IConfiguration configuration)
     {
-        const string adminSection = "authUsers";
         var users = configuration
-                     .GetSection(adminSection)
+                     .GetSection(AdminSection)
                      .Get<IDictionary<string, AuthUserEntity>>()
-                 ?? throw new ConfigurationFormatException(adminSection);
+                 ?? throw new ConfigurationFormatException(AdminSection);
 
-
-        const string serverSection = "Wormholes";
-
-        GetServersFromConfig(configuration, serverSection)
+        GetServersFromConfig(configuration, ServerSection)
             .ToList()
             .ForEach(server => users.Add(
                 server.Key,
@@ -33,19 +33,25 @@ public class AuthService : IAuthService
 
     public AuthUserEntity? Authenticate(string username, string password)
     {
-        return _users.TryGetValue(username, out var user) && user.Password.Equals(password) ? user : null;
+        var formattedUserName = IsShard(username)
+            ? username.Substring(ShardNameStart.Length)
+            : username;
+
+        return _users.TryGetValue(formattedUserName, out var user) && user.Password.Equals(password) ? user : null;
     }
 
 
+    private bool IsShard(string username) => username.StartsWith(ShardNameStart);
 
-    private IReadOnlyDictionary<string, AuthServerEntity> GetServersFromConfig(IConfiguration configuration, string serverSection) =>
+
+    private IReadOnlyDictionary<string, ServerConfig> GetServersFromConfig(IConfiguration configuration, string serverSection) =>
         configuration
             .GetSection(serverSection)
             .GetChildren()
             .Select(server =>
             (
                 server.Key,
-                Value: server.Get<AuthServerEntity>() ?? throw new ConfigurationFormatException(serverSection)
+                Value: server.Get<ServerConfig>() ?? throw new ConfigurationFormatException(serverSection)
             ))
             .ToDictionary(server => server.Key, server => server.Value);
 }

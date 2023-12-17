@@ -92,39 +92,27 @@ public class UnitsController : ControllerBase
     [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
     public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
-        if (unitId != body.Id || body.Id is null || body.System is null)
+        if (unitId != body.Id || body.Id is null)
             return BadRequest();
 
         IUnit? unit = GetUnitFromRepository(userId, unitId);
 
         if (unit is null)
         {
-            if (!HttpContext.User.IsInRole("Admin"))
-                return Unauthorized();
-
-            if (body.Type is null || !_unitFactory.DoesTypeExist(body.Type))
+            if(body.Type is null || !_unitFactory.DoesTypeExist(body.Type))
                 return BadRequest();
 
             IUser? user = _usersRepository[userId];
-            StarSystem? starSystem = _mapRepository[body.System];
 
-            if (starSystem is null || user is null)
+            if(user is null)
                 return NotFound();
 
-            Planet? planet = body.Planet is null
-                ? null
-                : _mapRepository[body.System, body.Planet];
-
-            return _unitFactory.CreateUnitWithId
-                (
-                    body.Id,
-                    user,
-                    starSystem,
-                    planet,
-                    body.Type,
-                    _buildingFactory
-                )
-                .ToDTO();
+            if (HttpContext.User.IsInRole("Admin"))
+                return HandleAdminRequest(user, body);
+            else if (HttpContext.User.IsInRole("Shard"))
+                return HandleAdminRequest(user, body);
+            else
+                return Unauthorized();
         }
 
         if (body.DestinationSystem is null)
@@ -182,6 +170,38 @@ public class UnitsController : ControllerBase
         return unit is null
             ? NotFound()
             : unit.Location.ToDTO();
+    }
+
+
+    private ActionResult<UnitDTO?> HandleAdminRequest(IUser user, MoveUnitPutRequestBody body)
+    {
+        StarSystem? starSystem = _mapRepository[body.System];
+
+        if (starSystem is null)
+            return NotFound();
+
+        Planet? planet = body.Planet is null
+            ? null
+            : _mapRepository[body.System, body.Planet];
+
+        return _unitFactory.CreateUnitWithId
+            (
+                body.Id,
+                user,
+                starSystem,
+                planet,
+                body.Type,
+                _buildingFactory
+            )
+            .ToDTO();
+    }
+
+    private ActionResult<UnitDTO?> HandleShardRequest(IUser user, MoveUnitPutRequestBody body)
+    {
+        // TODO: get wormhole system from config
+        StarSystem? starSystem = _mapRepository[body.System];
+
+        return null;
     }
 
 

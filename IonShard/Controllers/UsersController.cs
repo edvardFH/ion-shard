@@ -39,7 +39,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [SwaggerOperation(Summary = "Create a new user")]
-    public ActionResult<UserDTO?> CreateNewUser(string userId, [FromBody] CreateUserPutRequestBody body)
+    public ActionResult<UserDTO?> CreateNewUser(string userId, [FromBody] UserPutRequestBody body)
     {
         if (body is not { Id: string, Pseudo: string }
          || body.Id != userId
@@ -56,7 +56,7 @@ public class UsersController : ControllerBase
                     user?.UpdateResources(
                         _resourceFactory.TryParseToResourceQuantity(body.ResourcesQuantity).AsReadOnly());
                 }
-                catch(ArgumentException)
+                catch (ArgumentException)
                 {
                     return BadRequest();
                 }
@@ -64,7 +64,20 @@ public class UsersController : ControllerBase
             return user?.ToDTO();
         }
 
-        IUser newUser = _userFactory.CreateUser(userId, body.Pseudo);
+
+        IUser newUser;
+
+        if (HttpContext.User.IsInRole("Shard") && body.DateOfCreation is DateTime dateOfCreation)
+            newUser = _userFactory.CreateUser
+                (
+                    userId,
+                    body.Pseudo,
+                    dateOfCreation,
+                    new Dictionary<IResource, int>()
+                );
+        else
+            newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
+
         _usersRepository.Users.Add(newUser.Id, newUser);
 
         return newUser.ToDTO();

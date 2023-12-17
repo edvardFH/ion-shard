@@ -35,13 +35,45 @@ public class UserFactory : IUserFactory
         _resourceFactory = resourceFactory;
     }
 
-    public IUser CreateUser(string id, string pseudo)
+    public IUser CreateNewUser(string id, string pseudo)
     {
-        IUser newUser = new User(id, pseudo, DateTime.Now, _gameRulesService, _resourceFactory);
+        var resourcesQuantity = _resourceFactory.TryParseToResourceQuantity(_gameRulesService.User.StartingResources);
+
+        IUser newUser = new User
+            (
+                id,
+                pseudo,
+                DateTime.Now,
+                resourcesQuantity.AsReadOnly(),
+                _gameRulesService,
+                _resourceFactory
+            );
         AddDefaultUnitsToUser(newUser);
 
         return newUser;
     }
+
+    public IUser CreateUser
+        (
+            string id,
+            string pseudo,
+            DateTime dateOfCreation,
+            IReadOnlyDictionary<IResource, int> resourcesQuantity
+        )
+    {
+        var completeResourcesQuantity = _resourceFactory.CompleteWithMissingResources(resourcesQuantity);
+
+        return new User
+            (
+                id,
+                pseudo,
+                dateOfCreation,
+                completeResourcesQuantity.AsReadOnly(),
+                _gameRulesService,
+                _resourceFactory
+            );
+    }
+    
 
     private void AddDefaultUnitsToUser(IUser owner)
     {

@@ -57,6 +57,20 @@ public class ResourceFactory : IResourceFactory
                 );
     }
 
+    public IDictionary<IResource, int> CompleteWithMissingResources(IReadOnlyDictionary<IResource, int> quantity)
+    {
+        var resourcesQuantity = new Dictionary<IResource, int>(quantity);
+
+        _resources.ToList()
+            .ForEach(resource =>
+            {
+                if (!resourcesQuantity.ContainsKey(resource.Value))
+                    resourcesQuantity.Add(resource.Value, 0);
+            });
+
+        return resourcesQuantity;
+    }
+
 
     public bool DoesResourceExists(string name) => _resources.ContainsKey(name);
 }

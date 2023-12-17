@@ -27,13 +27,14 @@ public class User : IUser
 
     private readonly IGameRulesService _gameRulesService;
     private readonly IResourceFactory _resourceFactory;
-        
+
 
     public User
         (
             string id,
             string pseudo,
             DateTime dateOfCreation,
+            IReadOnlyDictionary<IResource, int> resourcesQuantity,
             IGameRulesService gameRulesService,
             IResourceFactory resourceFactory
         )
@@ -43,11 +44,31 @@ public class User : IUser
         DateOfCreation = dateOfCreation;
         _units = new Dictionary<string, IUnit>();
         _buildings = new Dictionary<string, IBuilding>();
-        _resourcesQuantity = resourceFactory.TryParseToResourceQuantity(gameRulesService.User.StartingResources);
+        _resourcesQuantity = new Dictionary<IResource, int>(resourcesQuantity);
 
         _gameRulesService = gameRulesService;
         _resourceFactory = resourceFactory;
     }
+
+
+    public User
+        (
+            string id,
+            string pseudo,
+            DateTime dateOfCreation,
+            IGameRulesService gameRulesService,
+            IResourceFactory resourceFactory
+        )
+        : this
+        (
+            id,
+            pseudo,
+            dateOfCreation,
+            new Dictionary<IResource, int>(),
+            gameRulesService,
+            resourceFactory
+        )
+    { }
 
 
     public void AddUnit(IUnit unit) => _units.Add(unit.Id, unit);
