@@ -2,7 +2,7 @@
 
 public record MoveUnitPutRequestBody(
     string Id, 
-    string System, 
+    string? System, 
     string? Planet, 
     string? DestinationSystem, 
     string? DestinationPlanet, 

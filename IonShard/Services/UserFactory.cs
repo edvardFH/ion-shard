@@ -80,8 +80,8 @@ public class UserFactory : IUserFactory
         StarSystem starSystem = GetRandomStarSystem();
         Planet? planet = GetRandomPlanet(starSystem);
 
-        _unitFactory.CreateUnit(owner, starSystem, planet, "Scout", null);
-        _unitFactory.CreateUnit(owner, starSystem, planet, "Builder", _buildingFactory);
+        _unitFactory.CreateNewUnit(owner, starSystem, planet, "Scout", null);
+        _unitFactory.CreateNewUnit(owner, starSystem, planet, "Builder", _buildingFactory);
     }
 
     private StarSystem GetRandomStarSystem() => _map.Systems[_random.Next(_map.Systems.Count)];

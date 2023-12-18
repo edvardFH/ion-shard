@@ -1,29 +1,29 @@
 ﻿using IonShard.Configuration;
 using IonShard.Configuration.Authentication;
+using IonShard.Configuration.Wormholes;
 
 namespace IonShard.Services.Authication;
 
 public class AuthService : IAuthService
 {
     private const string AdminSection = "authUsers";
-    private const string ServerSection = "Wormholes";
     private const string ShardNameStart = "shard-";
 
     private readonly IReadOnlyDictionary<string, AuthUserEntity> _users;
 
-    public AuthService(IConfiguration configuration)
+    public AuthService(IConfiguration configuration, IWormholesService wormholesService)
     {
         var users = configuration
                      .GetSection(AdminSection)
                      .Get<IDictionary<string, AuthUserEntity>>()
                  ?? throw new ConfigurationFormatException(AdminSection);
 
-        GetServersFromConfig(configuration, ServerSection)
+        wormholesService.Wormholes
             .ToList()
             .ForEach(server => users.Add(
                 server.Key,
                 new AuthUserEntity(
-                        server.Value.User,
+                        server.Key,
                         server.Value.SharedPassword,
                         "Shard")));
 
@@ -42,16 +42,4 @@ public class AuthService : IAuthService
 
 
     private bool IsShard(string username) => username.StartsWith(ShardNameStart);
-
-
-    private IReadOnlyDictionary<string, ServerConfig> GetServersFromConfig(IConfiguration configuration, string serverSection) =>
-        configuration
-            .GetSection(serverSection)
-            .GetChildren()
-            .Select(server =>
-            (
-                server.Key,
-                Value: server.Get<ServerConfig>() ?? throw new ConfigurationFormatException(serverSection)
-            ))
-            .ToDictionary(server => server.Key, server => server.Value);
 }

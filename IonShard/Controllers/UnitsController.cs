@@ -1,4 +1,5 @@
-﻿using IonShard.Contracts.DTO.Units;
+﻿using IonShard.Configuration.Wormholes;
+using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
@@ -28,6 +29,7 @@ public class UnitsController : ControllerBase
     private readonly IUnitFactory _unitFactory;
     private readonly IBuildingFactory _buildingFactory;
     private readonly IResourceFactory _resourceFactory;
+    private readonly IWormholesService _wormholesService;
 
     public UnitsController
         (
@@ -37,7 +39,8 @@ public class UnitsController : ControllerBase
             IConfiguration configuration,
             IUnitFactory unitFactory,
             IBuildingFactory buildingFactory,
-            IResourceFactory resourceFactory
+            IResourceFactory resourceFactory,
+            IWormholesService wormholesService
         )
     {
         _usersRepository = usersRepository;
@@ -49,6 +52,7 @@ public class UnitsController : ControllerBase
         _unitFactory = unitFactory;
         _buildingFactory = buildingFactory;
         _resourceFactory = resourceFactory;
+        _wormholesService = wormholesService;
     }
 
 
@@ -99,18 +103,18 @@ public class UnitsController : ControllerBase
 
         if (unit is null)
         {
-            if(body.Type is null || !_unitFactory.DoesTypeExist(body.Type))
+            if (body.Type is null || !_unitFactory.DoesTypeExist(body.Type))
                 return BadRequest();
 
             IUser? user = _usersRepository[userId];
 
-            if(user is null)
+            if (user is null)
                 return NotFound();
 
             if (HttpContext.User.IsInRole("Admin"))
                 return HandleAdminRequest(user, body);
             else if (HttpContext.User.IsInRole("Shard"))
-                return HandleAdminRequest(user, body);
+                return HandleShardRequest(user, body);
             else
                 return Unauthorized();
         }
@@ -175,6 +179,9 @@ public class UnitsController : ControllerBase
 
     private ActionResult<UnitDTO?> HandleAdminRequest(IUser user, MoveUnitPutRequestBody body)
     {
+        if (body.System is null)
+            return BadRequest();
+
         StarSystem? starSystem = _mapRepository[body.System];
 
         if (starSystem is null)
@@ -198,10 +205,46 @@ public class UnitsController : ControllerBase
 
     private ActionResult<UnitDTO?> HandleShardRequest(IUser user, MoveUnitPutRequestBody body)
     {
-        // TODO: get wormhole system from config
-        StarSystem? starSystem = _mapRepository[body.System];
+        var shardName = HttpContext.User.Identities.First().Name ?? "";
+        var starSystemName = _wormholesService[shardName]?.System ?? "";
+        var starSystem = _mapRepository[starSystemName];
 
-        return null;
+        if (body.Type is null || starSystem is null)
+            return BadRequest();
+
+        Planet? planet = body.Planet is null
+            ? null
+            : _mapRepository[starSystem.Name, body.Planet];
+
+        IReadOnlyDictionary<IResource, int>? loadedResources = null;
+
+        if (body.Type is "cargo")
+        {
+            if (body.ResourcesQuantity is null)
+                return BadRequest();
+            else
+                try
+                {
+                    loadedResources = _resourceFactory.TryParseToResourceQuantity(body.ResourcesQuantity).AsReadOnly();
+                }
+                catch
+                {
+                    return BadRequest();
+                }
+        }
+
+        // TODO: handle hp for cargo (wainting for Mr Pineau answer)
+
+        return _unitFactory.CreateUnitWithId
+            (
+                body.Id,
+                user,
+                starSystem,
+                planet,
+                body.Type,
+                _buildingFactory,
+                loadedResources
+            ).ToDTO();
     }
 
 

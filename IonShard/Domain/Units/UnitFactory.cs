@@ -38,7 +38,8 @@ public class UnitFactory : IUnitFactory
             StarSystem system,
             Planet? planet,
             string type,
-            IBuildingFactory? buildingFactory
+            IBuildingFactory? buildingFactory,
+            IReadOnlyDictionary<IResource, int>? loadedResources = null
         )
     {
         var formattedType = type.UppercaseFirstWord();
@@ -75,14 +76,15 @@ public class UnitFactory : IUnitFactory
                     planet,
                     CreateResourceCost(unitConfig),
                     formattedType,
-                    buildingFactory
+                    buildingFactory,
+                    loadedResources
                 )
         };
 
         return newUnit;
     }
 
-    public IUnit CreateUnit
+    public IUnit CreateNewUnit
         (
             IUser owner,
             StarSystem system,
@@ -111,11 +113,10 @@ public class UnitFactory : IUnitFactory
     {
         return unitConfiguration.ResourceCost
             .Select(resourceCost =>
-            {
-               
-
-                return (Resource: _resourceFactory.GetResource(resourceCost.Key), Cost: resourceCost.Value);
-            })
+            (
+                Resource: _resourceFactory.GetResource(resourceCost.Key),
+                Cost: resourceCost.Value)
+            )
             .ToDictionary(resourceCost => resourceCost.Resource, resourceCost => resourceCost.Cost);
     }
 
@@ -154,10 +155,11 @@ public class UnitFactory : IUnitFactory
             Planet? planet,
             IReadOnlyDictionary<IResource, int> resourceCost,
             string type,
-            IBuildingFactory? buildingFactory
+            IBuildingFactory? buildingFactory,
+            IReadOnlyDictionary<IResource, int>? loadedResources
         )
     {
-        var unitStats = _units[type];
+        var completeResources = _resourceFactory.CompleteWithMissingResources(loadedResources ?? new Dictionary<IResource, int>());
         return type switch
         {
             "Scout" =>
@@ -167,7 +169,7 @@ public class UnitFactory : IUnitFactory
             "Builder" =>
                 new BuilderUnit(id, buildingFactory, owner, starSystem, planet, resourceCost, _clock),
             "Cargo" =>
-                new CargoUnit(id, owner, starSystem, planet, type, resourceCost, new Dictionary<IResource, int>(), _clock),
+                new CargoUnit(id, owner, starSystem, planet, type, resourceCost, completeResources.AsReadOnly(), _clock),
             _ =>
                 throw new ArgumentException($"Incorrect unit type : {type} is unknown.")
         };

@@ -1,4 +1,5 @@
 using IonShard.Configuration.Gamerules;
+using IonShard.Configuration.Wormholes;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
@@ -20,6 +21,7 @@ builder.Configuration
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<IWormholesService, WormholesConfigService>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
 
