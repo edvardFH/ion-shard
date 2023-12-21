@@ -4,7 +4,7 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
-          <Include>[Shard.*]*</Include>
+          <Include>*</Include>
           <Exclude>[Shard.Shared.*]*</Exclude>
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
           <UseSourceLink>true</UseSourceLink>
