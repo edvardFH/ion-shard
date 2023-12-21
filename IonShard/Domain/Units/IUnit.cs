@@ -14,6 +14,7 @@ public interface IUnit
     public ILocation Location { get; }
     public IDestination? Destination { get; }
     public IReadOnlyDictionary<IResource, int> ResourceCost { get; }
+    public int HealthPoints { get; }
 
     public Task TravelTask { get; }
     public void StartTravel(IClock clock, StarSystem starSystem, Planet? planet);

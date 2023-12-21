@@ -4,7 +4,6 @@ namespace IonShard.Domain.Units.Combat;
 
 public interface ICombatUnit : IUnit
 {
-    public int HealthPoints { get; }
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
     public IReadOnlyDictionary<string, float> DamageReductionMultipliers { get; }

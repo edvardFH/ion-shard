@@ -243,6 +243,7 @@ public class UnitsController : ControllerBase
                 planet,
                 body.Type,
                 _buildingFactory,
+                body.Health,
                 loadedResources
             ).ToDTO();
     }

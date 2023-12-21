@@ -15,6 +15,7 @@ public interface IUnitFactory
             Planet? planet,
             string type,
             IBuildingFactory? buildingFactory,
+            int healthPoints = -1,
             IReadOnlyDictionary<IResource, int>? loadedResources = null
         ); 
     

@@ -92,7 +92,8 @@ public class GameRulesService : IGameRulesService
                     Value: new UnitConfiguration
                     (
                         unit.GetSectionAsIntDictionnary("ResourceCost"),
-                        unit.GetSectionAsInt("BuildingDuration")
+                        unit.GetSectionAsInt("BuildingDuration"),
+                        unit.GetSectionAsInt("HealthPoints")
                     )
                 )
             ).ToDictionary(

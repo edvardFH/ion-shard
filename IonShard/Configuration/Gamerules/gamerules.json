@@ -79,7 +79,8 @@
           "Carbon": 5,
           "Iron": 5
         },
-        "BuildingDuration": 0
+        "BuildingDuration": 0,
+        "HealthPoints": 100
       },
 
       "Builder": {
@@ -87,7 +88,8 @@
           "Carbon": 5,
           "Iron": 10
         },
-        "BuildingDuration": 0
+        "BuildingDuration": 0,
+        "HealthPoints": 100
       },
 
       "Cargo": {
@@ -96,7 +98,8 @@
           "Iron": 10,
           "Gold": 5
         },
-        "BuildingDuration":  0
+        "BuildingDuration": 0,
+        "HealthPoints": 100
       }
     },
 

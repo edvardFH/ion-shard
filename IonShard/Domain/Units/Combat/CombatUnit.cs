@@ -7,7 +7,6 @@ namespace IonShard.Domain.Units.Combat;
 
 public class CombatUnit : Unit, ICombatUnit
 {
-    public int HealthPoints { get; private set; }
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
     public IReadOnlyDictionary<string, float> DamageReductionMultipliers { get; }
@@ -22,15 +21,14 @@ public class CombatUnit : Unit, ICombatUnit
             Planet? planet,
             IReadOnlyDictionary<IResource, int> resourceCost,
             string type,
-            int healthPoint,
+            int healthPoints,
             IEnumerable<IWeapon> weapons,
             IEnumerable<string> combatPriorities,
             IReadOnlyDictionary<string, float> damageReductionMultipliers,
             IClock clock
         )
-        : base(id, owner, system, planet, type, resourceCost, clock)
+        : base(id, owner, system, planet, type, resourceCost, healthPoints, clock)
     {
-        HealthPoints = healthPoint;
         Weapons = new List<IWeapon>(weapons);
         CombatPriorities = new List<string>(combatPriorities);
         DamageReductionMultipliers = damageReductionMultipliers;

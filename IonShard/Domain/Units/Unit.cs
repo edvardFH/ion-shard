@@ -21,6 +21,7 @@ public abstract class Unit : IUnit
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
     public IReadOnlyDictionary<IResource, int> ResourceCost {  get; }
+    public int HealthPoints { get; protected set; }
     public Task TravelTask { get; private set; }
 
     private CancellationTokenSource? _cancellationTokenSource;
@@ -35,6 +36,7 @@ public abstract class Unit : IUnit
             Planet? planet,
             string type,
             IReadOnlyDictionary<IResource, int> resourceCost,
+            int healthPoints,
             IClock clock
         )
     {
@@ -44,6 +46,7 @@ public abstract class Unit : IUnit
         TravelTask = Task.CompletedTask;
         Type = type;
         ResourceCost = resourceCost;
+        HealthPoints = healthPoints;
         _clock = clock;
 
         if(planet is null)

@@ -21,10 +21,11 @@ public class CargoUnit : Unit, ICargoUnit
             Planet? planet,
             string type,
             IReadOnlyDictionary<IResource, int> resourceCost,
+            int healthPoints,
             IReadOnlyDictionary<IResource, int> loadedResources,
             IClock clock
         )
-        : base(id, owner, system, planet, type, resourceCost, clock)
+        : base(id, owner, system, planet, type, resourceCost, healthPoints, clock)
     {
         _loadedResources = new Dictionary<IResource, int>(loadedResources);
     }

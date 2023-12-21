@@ -2,5 +2,6 @@
 
 public record UnitConfiguration(
     IReadOnlyDictionary<string, int> ResourceCost,
-    int BuildingDuration)
+    int BuildingDuration,
+    int HealthPoints)
     : IUnitConfiguration;

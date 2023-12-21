@@ -55,7 +55,7 @@ public static class DomainToDTOMapper
             unit.Destination?.System.Name ?? unitSystem,
             unit.Destination?.Planet?.Name ?? unitPlanet,
             unit.Destination?.EstimatedTimeOfArrival.ToString(),
-            unit is ICombatUnit combatUnit ? combatUnit.HealthPoints : 0,
+            unit.HealthPoints,
             unit is ICargoUnit cargoUnit
                 ? cargoUnit.LoadedResources.ToDictionary(
                     resource => resource.Key.Name.ToString().ToLower(),
