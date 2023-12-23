@@ -19,7 +19,7 @@ public class Planet
     {
         Name = name;
         Size = size;
-        _resourceQuantity = (IDictionary<IResource, int>) resourcesQuantity;
+        _resourceQuantity =  new Dictionary<IResource, int>(resourcesQuantity);
         Units = new List<IUnit>();
         Buildings = new List<IBuilding>();
     }

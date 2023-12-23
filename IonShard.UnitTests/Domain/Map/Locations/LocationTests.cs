@@ -6,16 +6,15 @@ namespace IonShard.UnitTests.Domain.Map.Locations;
 
 public class LocationTests
 {
-    private readonly LocalTestRepository _repository;
     private readonly StarSystem _sol;
     private readonly Planet _earth;
     private readonly ILocation _location;
     
     public LocationTests()
     {
-        _repository = LocalTestRepository.GetInstance();
-        _sol = _repository["sol"]!;
-        _earth = _sol["earth"]!;
+        _earth = new Planet("earth", 12742, ResourcesTestProvider.GetResources());
+        var mars = new Planet("mars", 6779, ResourcesTestProvider.GetResources());
+        _sol = new StarSystem("sol", new [] { _earth, mars });
         _location = new Location(_sol, _earth);
     }
     
@@ -50,7 +49,8 @@ public class LocationTests
     [Fact]
     public void IsSystemChanged_differentSystem()
     {
-        bool result = _location.IsSystemChanged(_repository["alpha-centauri"]!);
+        var alphaCentauri = new StarSystem("alpha-centauri", new List<Planet>());
+        bool result = _location.IsSystemChanged(alphaCentauri);
         Assert.True(result);
     }
 
