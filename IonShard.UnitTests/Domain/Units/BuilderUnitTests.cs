@@ -1,17 +1,17 @@
-﻿using IonShard.Domain.Map;
+﻿using IonShard.Configuration.Gamerules;
+using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Users;
 using IonShard.UnitTests.Repository;
-using Shard.Shared.Core;
+using Moq;
 using Shard.Shared.Web.IntegrationTests.Clock;
 
 namespace IonShard.UnitTests.Domain.Units;
 
 public class BuilderUnitTests
 {
-    private readonly LocalTestRepository _repository;
     private readonly StarSystem _sol;
     private readonly Planet _earth;
     private readonly FakeClock _clock;
@@ -19,19 +19,19 @@ public class BuilderUnitTests
 
     public BuilderUnitTests()
     {
-        _repository = LocalTestRepository.GetInstance();
-        _sol = _repository["sol"]!;
-        _earth = _sol["earth"]!;
+        var mockResourceFactory = new Mock<IResourceFactory>();
+        var mockGameRulesService = new Mock<IGameRulesService>();
+        _earth = new Planet("earth", 12742, ResourcesTestProvider.GetResources());
+        _sol = new StarSystem("sol", new [] { _earth });
+        var userJohn = new User("1", "john.doe", DateTime.Now, mockGameRulesService.Object, mockResourceFactory.Object);
         _clock = new FakeClock();
-
-        IUser userJohn = _repository.UserRepository.Users["1"];
         _builderUnit = new BuilderUnit("id1", null, userJohn, _sol, _earth, null, 100, _clock);
     }
 
     [Fact]
     public async Task MoveUnit()
     {
-        StarSystem alphaCentauri = _repository["alpha-centauri"]!;
+        var alphaCentauri = new StarSystem("alpha-centauri", new List<Planet>());
         _builderUnit.StartTravel(_clock, alphaCentauri, null);
         Assert.Equal(_sol, _builderUnit.Location.System);
         Assert.Equal(alphaCentauri, _builderUnit.Destination!.System);
@@ -45,7 +45,7 @@ public class BuilderUnitTests
     [Fact]
     public async Task CancelUnitTravel()
     {
-        StarSystem alphaCentauri = _repository["alpha-centauri"]!;
+        var alphaCentauri = new StarSystem("alpha-centauri", new List<Planet>());
         _builderUnit.StartTravel(_clock, alphaCentauri, null);
         
         await _clock.Advance(TimeSpan.FromSeconds(30));

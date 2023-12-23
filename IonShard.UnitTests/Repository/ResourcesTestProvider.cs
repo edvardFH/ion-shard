@@ -4,33 +4,11 @@ using IonShard.Domain.Map.Resources;
 
 namespace IonShard.UnitTests.Repository;
 
-public static class StarSystemTestProvider
+public static class ResourcesTestProvider
 {
     private static IReadOnlyDictionary<IResource, int>? _resources;
 
-    public static List<StarSystem> ProvideSystems()
-    {
-        var starSystems = new List<StarSystem>();
-        var solPlanets = new[]
-        {
-            new Planet("earth", 12742, GetResources()),
-            new Planet("mars", 6779, GetResources())
-        };
-        var sol = new StarSystem("sol", solPlanets);
-        var alphaCentauriPlanets = new[]
-        {
-            new Planet("proxima", 3540, GetResources()),
-            new Planet("centauri-a", 89202, GetResources())
-        };
-        var alphaCentauri = new StarSystem("alpha-centauri", alphaCentauriPlanets);
-        
-        starSystems.Add(sol);
-        starSystems.Add(alphaCentauri);
-        
-        return starSystems;
-    }
-
-    private static IReadOnlyDictionary<IResource, int> GetResources()
+    public static IReadOnlyDictionary<IResource, int> GetResources()
     {
         if (_resources is not null) return _resources;
         var dictionary = new Dictionary<IResource, int>
