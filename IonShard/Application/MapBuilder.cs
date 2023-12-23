@@ -2,7 +2,7 @@
 using IonShard.Domain.Map.Resources;
 using Shard.Shared.Core;
 
-namespace IonShard.Services;
+namespace IonShard.Application;
 
 public class MapBuilder
 {

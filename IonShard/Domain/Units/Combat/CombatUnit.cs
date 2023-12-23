@@ -44,7 +44,7 @@ public class CombatUnit : Unit, ICombatUnit
         if (HealthPoints > damageReceived)
             return (HealthPoints -= damageReceived);
 
-        Destroy();
+        DestroyDuringCombat();
 
         return (HealthPoints = 0);
     }
@@ -84,7 +84,7 @@ public class CombatUnit : Unit, ICombatUnit
         choosenTarget.ApplyDamage(this, totalDamage);
     }
 
-    private void Destroy()
+    private void DestroyDuringCombat()
     {
         Owner.RemoveUnit(this);
 

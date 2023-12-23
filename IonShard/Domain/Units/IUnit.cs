@@ -19,4 +19,6 @@ public interface IUnit
     public Task TravelTask { get; }
     public void StartTravel(IClock clock, StarSystem starSystem, Planet? planet);
     public bool TryRequestTravelStop();
+
+    public void Destroy();
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 
-namespace IonShard.Controllers;
+namespace IonShard.Adapters.Controllers;
 
 [Route("[controller]")]
 [ApiController]

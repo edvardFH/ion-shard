@@ -2,7 +2,7 @@
 using IonShard.Configuration.Authentication;
 using IonShard.Configuration.Wormholes;
 
-namespace IonShard.Services.Authication;
+namespace IonShard.Application.Authentication;
 
 public class AuthService : IAuthService
 {
@@ -11,7 +11,7 @@ public class AuthService : IAuthService
 
     private readonly IReadOnlyDictionary<string, AuthUserEntity> _users;
 
-    public AuthService(IConfiguration configuration, IWormholesService wormholesService)
+    public AuthService(IConfiguration configuration, IWormholesConfigService wormholesService)
     {
         var users = configuration
                      .GetSection(AdminSection)

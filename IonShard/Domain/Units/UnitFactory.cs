@@ -45,6 +45,8 @@ public class UnitFactory : IUnitFactory
     {
         var unitConfig = GetUnitConfiguration(type);
 
+        var unitHealthPoints = healthPoints >= 0 ? healthPoints : unitConfig.HealthPoints;
+
         var newUnit = unitConfig switch
         {
             CombatUnitConfiguration combatUnitStats =>
@@ -56,7 +58,7 @@ public class UnitFactory : IUnitFactory
                     planet,
                     CreateResourceCost(unitConfig),
                     type.UppercaseFirstWord(),
-                    healthPoints >= 0 ? healthPoints : unitConfig.HealthPoints,
+                    unitHealthPoints,
                     CreateWeapons(_weapons, combatUnitStats.Weapons),
                     combatUnitStats.CombatPriorities,
                     combatUnitStats.DamageReductionMultipliers,
@@ -71,7 +73,7 @@ public class UnitFactory : IUnitFactory
                     planet,
                     CreateResourceCost(unitConfig),
                     type.UppercaseFirstWord(),
-                    healthPoints,
+                    unitHealthPoints,
                     buildingFactory,
                     loadedResources
                 )

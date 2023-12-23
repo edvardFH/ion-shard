@@ -1,6 +1,6 @@
 ﻿namespace IonShard.Configuration.Wormholes;
 
-public class WormholesConfigService : IWormholesService
+public class WormholesConfigService : IWormholesConfigService
 {
     private const string SectionName = "Wormholes";
 
@@ -23,4 +23,12 @@ public class WormholesConfigService : IWormholesService
     public WormholeConfig? this[string key] => Wormholes.ContainsKey(key)
         ? Wormholes[key]
         : null;
+
+    public WormholeConfig? GetByUri(string uri)
+    {
+        return Wormholes
+            .Where(wormhole => wormhole.Value.BaseUri == uri)
+            .Select(wormhole => wormhole.Value)
+            .FirstOrDefault();
+    }
 }

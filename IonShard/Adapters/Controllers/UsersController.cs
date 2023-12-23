@@ -1,10 +1,10 @@
-﻿using IonShard.Contracts.DTO.Users;
+﻿using IonShard.Application;
+using IonShard.Contracts.DTO.Users;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
-using IonShard.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Text.RegularExpressions;

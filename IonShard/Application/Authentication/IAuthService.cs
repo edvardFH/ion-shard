@@ -1,6 +1,6 @@
 ﻿using IonShard.Configuration.Authentication;
 
-namespace IonShard.Services.Authication;
+namespace IonShard.Application.Authentication;
 
 public interface IAuthService
 {

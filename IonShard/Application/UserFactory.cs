@@ -7,7 +7,7 @@ using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Persistence.Repositories;
 
-namespace IonShard.Services;
+namespace IonShard.Application;
 
 
 public class UserFactory : IUserFactory
@@ -73,7 +73,7 @@ public class UserFactory : IUserFactory
                 _resourceFactory
             );
     }
-    
+
 
     private void AddDefaultUnitsToUser(IUser owner)
     {

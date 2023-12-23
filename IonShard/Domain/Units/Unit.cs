@@ -20,14 +20,14 @@ public abstract class Unit : IUnit
     public IUser Owner { get; }
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
-    public IReadOnlyDictionary<IResource, int> ResourceCost {  get; }
+    public IReadOnlyDictionary<IResource, int> ResourceCost { get; }
     public int HealthPoints { get; protected set; }
     public Task TravelTask { get; private set; }
 
     private CancellationTokenSource? _cancellationTokenSource;
     protected readonly IClock _clock;
 
-    
+
     public Unit
         (
             string id,
@@ -49,7 +49,7 @@ public abstract class Unit : IUnit
         HealthPoints = healthPoints;
         _clock = clock;
 
-        if(planet is null)
+        if (planet is null)
             system.Units.Add(this);
         else
             planet.Units.Add(this);
@@ -148,5 +148,15 @@ public abstract class Unit : IUnit
         }
 
         return cancellationSuccessfullyRequested;
+    }
+
+    public void Destroy()
+    {
+        Owner.RemoveUnit(this);
+
+        if (Location.Planet is null)
+            Location.System.Units.Remove(this);
+        else
+            Location.Planet.Units.Remove(this);
     }
 }

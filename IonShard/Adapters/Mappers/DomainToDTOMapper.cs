@@ -9,7 +9,6 @@ using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Domain.Units.Cargo;
-using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Users;
 
 namespace IonShard.Mappers;

@@ -1,7 +1,7 @@
 ﻿using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 
-namespace IonShard.Services;
+namespace IonShard.Application;
 
 public interface IUserFactory
 {

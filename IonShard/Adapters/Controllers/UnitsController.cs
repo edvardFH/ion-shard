@@ -1,4 +1,5 @@
-﻿using IonShard.Configuration.Wormholes;
+﻿using IonShard.Adapters.Client;
+using IonShard.Configuration.Wormholes;
 using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
@@ -12,6 +13,7 @@ using IonShard.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shard.Shared.Core;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 
 namespace IonShard.Controllers;
 
@@ -29,7 +31,8 @@ public class UnitsController : ControllerBase
     private readonly IUnitFactory _unitFactory;
     private readonly IBuildingFactory _buildingFactory;
     private readonly IResourceFactory _resourceFactory;
-    private readonly IWormholesService _wormholesService;
+    private readonly IWormholesConfigService _wormholesService;
+    private readonly IShardService _shardService;
 
     public UnitsController
         (
@@ -40,7 +43,8 @@ public class UnitsController : ControllerBase
             IUnitFactory unitFactory,
             IBuildingFactory buildingFactory,
             IResourceFactory resourceFactory,
-            IWormholesService wormholesService
+            IWormholesConfigService wormholesService,
+            IShardService shardService
         )
     {
         _usersRepository = usersRepository;
@@ -53,6 +57,7 @@ public class UnitsController : ControllerBase
         _buildingFactory = buildingFactory;
         _resourceFactory = resourceFactory;
         _wormholesService = wormholesService;
+        _shardService = shardService;
     }
 
 
@@ -90,11 +95,12 @@ public class UnitsController : ControllerBase
 
     [HttpPut("{userId}/units/{unitId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status308PermanentRedirect)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [SwaggerOperation(Summary = "Change the status of a unit of a user. Right now, only its position (system and planet) can be changed - which is akin to moving it")]
-    public ActionResult<UnitDTO?> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
+    public async Task<ActionResult<UnitDTO?>> MoveUnitOfUser(string userId, string unitId, [FromBody] MoveUnitPutRequestBody body)
     {
         if (unitId != body.Id || body.Id is null)
             return BadRequest();
@@ -118,6 +124,9 @@ public class UnitsController : ControllerBase
             else
                 return Unauthorized();
         }
+
+        if (body.DestinationShard is string)
+            return await HandleUnitJump(unit, body);
 
         if (body.DestinationSystem is null)
             return BadRequest();
@@ -174,6 +183,26 @@ public class UnitsController : ControllerBase
         return unit is null
             ? NotFound()
             : unit.Location.ToDTO();
+    }
+
+
+    private async Task<ActionResult> HandleUnitJump(IUnit unit, MoveUnitPutRequestBody body)
+    {
+        var destinationShard = body.DestinationShard;
+
+        if (destinationShard is null || _wormholesService[destinationShard] is not WormholeConfig wormhole)
+            return BadRequest();
+
+        try
+        {
+            var newUri = await _shardService.PutUnitAsync(wormhole, unit);
+
+            return RedirectPermanentPreserveMethod(newUri.ToString());
+        }
+        catch (HttpRequestException)
+        {
+            return StatusCode(((int)HttpStatusCode.BadGateway));
+        }
     }
 
 
