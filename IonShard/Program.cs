@@ -31,7 +31,7 @@ builder.Services.AddSingleton<IDatabaseConfigurationService, DatabaseConfigurati
 
 builder.Services.AddSingleton<IShardDatabaseContext, ShardDatabaseContext>();
 
-builder.Services.AddHttpClient<IShardService, ShardService>();
+builder.Services.AddHttpClient<IShardGateway, ShardGateway>();
 builder.Services
     .AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, ShardAuthenticationHandler>("Basic", null);

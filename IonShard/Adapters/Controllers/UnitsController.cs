@@ -32,7 +32,7 @@ public class UnitsController : ControllerBase
     private readonly IBuildingFactory _buildingFactory;
     private readonly IResourceFactory _resourceFactory;
     private readonly IWormholesConfigService _wormholesService;
-    private readonly IShardService _shardService;
+    private readonly IShardGateway _shardService;
 
     public UnitsController
         (
@@ -44,7 +44,7 @@ public class UnitsController : ControllerBase
             IBuildingFactory buildingFactory,
             IResourceFactory resourceFactory,
             IWormholesConfigService wormholesService,
-            IShardService shardService
+            IShardGateway shardService
         )
     {
         _usersRepository = usersRepository;

@@ -4,7 +4,7 @@ using IonShard.Domain.Users;
 
 namespace IonShard.Adapters.Client;
 
-public interface IShardService
+public interface IShardGateway
 {
     public Task<Uri> PutUnitAsync(WormholeConfig wormhole, IUnit unit);
 }
