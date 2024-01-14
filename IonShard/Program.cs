@@ -1,11 +1,13 @@
 using IonShard.Adapters.Client;
 using IonShard.Application;
 using IonShard.Application.Authentication;
+using IonShard.Configuration.Database;
 using IonShard.Configuration.Gamerules;
 using IonShard.Configuration.Wormholes;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Persistence.Database;
 using IonShard.Persistence.Repositories;
 using IonShard.Swagger;
 using Microsoft.AspNetCore.Authentication;
@@ -25,8 +27,11 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IWormholesConfigService, WormholesConfigService>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
-builder.Services.AddHttpClient<IShardService, ShardService>();
+builder.Services.AddSingleton<IDatabaseConfigurationService, DatabaseConfigurationService>();
 
+builder.Services.AddSingleton<IShardDatabaseContext, ShardDatabaseContext>();
+
+builder.Services.AddHttpClient<IShardService, ShardService>();
 builder.Services
     .AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, ShardAuthenticationHandler>("Basic", null);
