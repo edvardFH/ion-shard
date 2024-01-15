@@ -86,14 +86,13 @@ if (app.Environment.IsDevelopment())
 }
 
 
-var backupService = app.Services.GetRequiredService<IDataBackupService>();
-
-app.Lifetime.ApplicationStopping.Register(backupService.BackupData);
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var backupService = app.Services.GetRequiredService<IDataBackupService>();
+app.Lifetime.ApplicationStopping.Register(backupService.BackupData);
 
 app.Run();
 

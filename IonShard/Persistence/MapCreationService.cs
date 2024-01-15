@@ -18,7 +18,5 @@ public class MapCreationService: IMapCreationService
             Map = new Universe(storedMap);
         else
             Map = mapMapper.SectorSpecificationToUniverse(mapGenerator.Generate());
-
-        database.UpdateMap(Map.Systems);
     }
 }

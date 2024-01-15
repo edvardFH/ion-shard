@@ -31,7 +31,17 @@ public class ShardDatabaseService: IShardDatabaseService
     }
 
 
-    public async Task UpdateMap(IEnumerable<StarSystem> map)
+    public async Task UpdateMapAsync(IEnumerable<StarSystem> map)
+    {
+        await _mapCollection.BulkWriteAsync(InitBulkOperation(map));
+    }
+
+    public void UpdateMap(IEnumerable<StarSystem> map)
+    {
+        _mapCollection.BulkWrite(InitBulkOperation(map));
+    }
+
+    private List<WriteModel<StarSystemPOCO>> InitBulkOperation(IEnumerable<StarSystem> map)
     {
         var bulkOperation = new List<WriteModel<StarSystemPOCO>>();
 
@@ -44,6 +54,6 @@ public class ShardDatabaseService: IShardDatabaseService
             bulkOperation.Add(upsertOne);
         });
 
-        await _mapCollection.BulkWriteAsync(bulkOperation);
+        return bulkOperation;
     }
 }

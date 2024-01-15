@@ -7,5 +7,7 @@ namespace IonShard.Persistence.Database;
 public interface IShardDatabaseService
 {
     public IReadOnlyList<StarSystem> GetMap();
-    public Task UpdateMap(IEnumerable<StarSystem> map);
+    public Task UpdateMapAsync(IEnumerable<StarSystem> map);
+
+    public void UpdateMap(IEnumerable<StarSystem> map);
 }
