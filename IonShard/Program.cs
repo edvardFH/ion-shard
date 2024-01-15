@@ -55,6 +55,8 @@ builder.Services.AddSingleton<IUserFactory, UserFactory>();
 
 builder.Services.AddSingleton<IClock, SystemClock>();
 
+builder.Services.AddSingleton<IDataBackupService, DataBackupService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -83,11 +85,15 @@ if (app.Environment.IsDevelopment())
                 .GetValue<string>("AppSettings:Title")));
 }
 
+
+var backupService = app.Services.GetRequiredService<IDataBackupService>();
+
+app.Lifetime.ApplicationStopping.Register(backupService.BackupData);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 
 app.Run();
 
