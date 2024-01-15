@@ -3,26 +3,23 @@ using IonShard.Domain.Map.Resources;
 using MongoDB.Driver;
 using Shard.Shared.Core;
 
-namespace IonShard.Application;
+namespace IonShard.Adapters.Mappers;
 
-public class MapFactory
+public class MapMapper
 {
     private readonly IResourceFactory _resourceFactory;
 
-    public Universe Map { get; }
-
-    public MapFactory(MapGenerator mapGenerator, IResourceFactory resourceFactory)
+    public MapMapper(IResourceFactory resourceFactory)
     {
         _resourceFactory = resourceFactory;
-        IReadOnlyList<StarSystem> systems = mapGenerator
-            .Generate()
-            .Systems
-            .ToList()
-            .ConvertAll(system => SystemSpecificationToStarSystem(system));
-
-        Map = new Universe(systems);
     }
 
+    public Universe SectorSpecificationToUniverse(SectorSpecification sectorSpecification)
+        => new Universe(
+                sectorSpecification
+                    .Systems
+                    .ToList()
+                    .ConvertAll(system => SystemSpecificationToStarSystem(system)));
 
     private StarSystem SystemSpecificationToStarSystem(SystemSpecification system)
         => new(system.Name,

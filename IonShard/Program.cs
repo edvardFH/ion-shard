@@ -1,4 +1,5 @@
 using IonShard.Adapters.Client;
+using IonShard.Adapters.Mappers;
 using IonShard.Application;
 using IonShard.Application.Authentication;
 using IonShard.Configuration.Gamerules;
@@ -6,14 +7,13 @@ using IonShard.Configuration.Wormholes;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Persistence;
 using IonShard.Persistence.Database;
 using IonShard.Persistence.Repositories;
 using IonShard.Swagger;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using Shard.Shared.Core;
-using SharpCompress.Common;
 using SystemClock = Shard.Shared.Core.SystemClock;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +29,7 @@ builder.Services.AddSingleton<IWormholesConfigService, WormholesConfigService>()
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
 
-builder.Services.AddSingleton<IShardDatabaseContext, ShardDatabaseContext>();
+builder.Services.AddSingleton<IShardDatabaseService, ShardDatabaseService>();
 
 builder.Services.AddHttpClient<IShardGateway, ShardGateway>();
 builder.Services
@@ -42,7 +42,8 @@ builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(
     builder.Configuration.GetSection("MapGeneratorOptions"));
 
-builder.Services.AddSingleton<MapFactory>();
+builder.Services.AddSingleton<MapMapper>();
+builder.Services.AddSingleton<IMapCreationService, MapCreationService>();
 builder.Services.AddSingleton<MapRepository>();
 
 builder.Services.AddSingleton<IUnitFactory, UnitFactory>();
