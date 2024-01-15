@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Persistence.POCOs;
+using MongoDB.Bson;
 
 namespace IonShard.Adapters.Mappers;
 
@@ -9,6 +10,7 @@ public static class DomainToPOCOMapper
     {
         return new StarSystemPOCO
         {
+            InternalId = ObjectId.Empty,
             Name = starSystem.Name,
             Planets = starSystem.Planets.Select(planet => planet.ToPOCO()).ToList()
         };

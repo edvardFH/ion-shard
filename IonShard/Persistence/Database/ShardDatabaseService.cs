@@ -27,13 +27,6 @@ public class ShardDatabaseService: IShardDatabaseService
 
     public IReadOnlyList<StarSystem> GetMap()
     {
-        _mapCollection.InsertOne(
-            new StarSystem
-            (
-                "13ed60e3-1692-56cd-ae38-b7c02013ce9e",
-                new List<Planet>()
-            ).ToPOCO());
-
         return _mapMapper.SystemPocoToUniverse(_mapCollection.Find(_ => true).ToList());
     }
 
@@ -45,7 +38,7 @@ public class ShardDatabaseService: IShardDatabaseService
         map.ToList().ForEach(starSystem =>
         {
             var starSystemPoco = starSystem.ToPOCO();
-            var filter = Builders<StarSystemPOCO>.Filter.Eq("Id", starSystemPoco.Name);
+            var filter = Builders<StarSystemPOCO>.Filter.Eq("Name", starSystemPoco.Name);
             var upsertOne = new ReplaceOneModel<StarSystemPOCO>(filter, starSystemPoco) { IsUpsert = true };
 
             bulkOperation.Add(upsertOne);
