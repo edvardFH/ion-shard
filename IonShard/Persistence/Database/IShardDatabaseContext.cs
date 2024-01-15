@@ -1,8 +1,11 @@
-﻿using MongoDB.Driver;
+﻿using IonShard.Contracts.DTO.Map;
+using MongoDB.Driver;
 
 namespace IonShard.Persistence.Database;
 
 public interface IShardDatabaseContext
 {
-    IMongoCollection<Object> Objects { get; }
+    IMongoCollection<PlanetDTO> Objects { get; }
+
+    public Task Test();
 }

@@ -7,7 +7,7 @@ public class MapRepository
 {
     private readonly Universe _universe;
 
-    public MapRepository(MapBuilder mapBuilder) => _universe = mapBuilder.Map;
+    public MapRepository(MapFactory mapBuilder) => _universe = mapBuilder.Map;
 
 
     public IReadOnlyList<StarSystem> Systems => _universe.Systems;

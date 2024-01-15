@@ -1,17 +1,28 @@
-﻿using IonShard.Configuration.Database;
+﻿using IonShard.Contracts.DTO.Map;
 using MongoDB.Driver;
 
 namespace IonShard.Persistence.Database;
 
 public class ShardDatabaseContext: IShardDatabaseContext
 {
+    const string environmentVariableName = "mongo_connection";
     private readonly IMongoDatabase _database;
 
-    public ShardDatabaseContext(IDatabaseConfigurationService configurationService)
+    public ShardDatabaseContext()
     {
-        var client = new MongoClient(configurationService.Database.ConnectionString);
-        _database = client.GetDatabase(configurationService.Database.DatabaseName);
+        var connectionString = Environment.GetEnvironmentVariable(environmentVariableName);
+
+        var client = new MongoClient(connectionString);
+        _database = client.GetDatabase("sharddb");
     }
 
-    public IMongoCollection<Object> Objects => _database.GetCollection<Object>("Objects");
+    public IMongoCollection<PlanetDTO> Objects => _database.GetCollection<PlanetDTO>("Objects");
+
+    public async Task Test()
+    {
+        var collection = _database.GetCollection<PlanetDTO>("Objects");
+        var entries = await collection.Find(_ => true).ToListAsync();
+
+        entries.ToList().ForEach(entry => Console.WriteLine(entry));
+    }
 }

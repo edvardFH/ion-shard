@@ -1,16 +1,17 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
+using MongoDB.Driver;
 using Shard.Shared.Core;
 
 namespace IonShard.Application;
 
-public class MapBuilder
+public class MapFactory
 {
     private readonly IResourceFactory _resourceFactory;
 
     public Universe Map { get; }
 
-    public MapBuilder(MapGenerator mapGenerator, IResourceFactory resourceFactory)
+    public MapFactory(MapGenerator mapGenerator, IResourceFactory resourceFactory)
     {
         _resourceFactory = resourceFactory;
         IReadOnlyList<StarSystem> systems = mapGenerator
