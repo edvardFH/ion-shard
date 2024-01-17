@@ -9,6 +9,7 @@ using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Persistence;
 using IonShard.Persistence.Database;
+using IonShard.Persistence.Loaders;
 using IonShard.Persistence.Repositories;
 using IonShard.Swagger;
 using Microsoft.AspNetCore.Authentication;
@@ -43,14 +44,16 @@ builder.Services.Configure<MapGeneratorOptions>(
     builder.Configuration.GetSection("MapGeneratorOptions"));
 
 builder.Services.AddSingleton<MapMapper>();
-builder.Services.AddSingleton<IMapCreationService, MapCreationService>();
+builder.Services.AddSingleton<MapLoaderService>();
 builder.Services.AddSingleton<MapRepository>();
 
 builder.Services.AddSingleton<IUnitFactory, UnitFactory>();
 builder.Services.AddSingleton<IBuildingFactory, BuildingFactory>();
 
+builder.Services.AddSingleton<UserLoaderService>();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<IUserFactory, UserFactory>();
+builder.Services.AddSingleton<UserMapper>();
 
 
 builder.Services.AddSingleton<IClock, SystemClock>();

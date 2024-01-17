@@ -10,9 +10,9 @@ public class StarSystemPOCO
     [BsonId]
     [BsonIgnoreIfDefault]
     [BsonRepresentation(BsonType.ObjectId)]
-    public ObjectId InternalId { get; set; }
+    public ObjectId InternalId { get; init; }
 
-    public string Name { get; set; }
-    public List<PlanetPOCO> Planets { get; set; }
+    public string Name { get; init; }
+    public IReadOnlyList<PlanetPOCO> Planets { get; init; }
 }
 

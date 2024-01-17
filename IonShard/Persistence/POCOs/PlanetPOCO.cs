@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class PlanetPOCO
 {
-    public string Name { get; set; }
-    public int Size { get; set; }
-    public Dictionary<string, int> ResourcesQuantity { get; set; }
+    public string Name { get; init; }
+    public int Size { get; init; }
+    public IReadOnlyDictionary<string, int> ResourcesQuantity { get; init; }
 }

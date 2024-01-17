@@ -10,14 +10,22 @@ public class DataBackupService: IDataBackupService
     private const int DueTime = 50;
 
     private readonly MapRepository _mapRepository;
+    private readonly UserRepository _userRepository;
     private readonly IShardDatabaseService _database;
 
     private readonly ITimer _timer;
 
 
-    public DataBackupService(MapRepository mapRepository, IShardDatabaseService database, IClock clock)
+    public DataBackupService
+        (
+            MapRepository mapRepository,
+            UserRepository userRepository,
+            IShardDatabaseService database,
+            IClock clock
+        )
     {
         _mapRepository = mapRepository;
+        _userRepository = userRepository;
         _database = database;
 
         var period = TimeSpan.FromSeconds(BackupPeriod);
@@ -34,6 +42,10 @@ public class DataBackupService: IDataBackupService
     public void BackupData()
     {
         _database.UpdateMapAsync(_mapRepository.Systems);
+        _database.UpdateUsersAsync(_userRepository.Users
+            .ToList()
+            .Select(keyValuePair => keyValuePair.Value));
+
         Console.WriteLine("Backup done.");
     }
 }
