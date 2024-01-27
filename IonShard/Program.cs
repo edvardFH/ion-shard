@@ -29,12 +29,14 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.DocumentFilter<RequestBodiesDocumentFilter>();
     c.EnableAnnotations();
-    c.SwaggerDoc(configuration.GetValue<string>("AppSettings:Version"), new OpenApiInfo 
-    {
-        Version = configuration.GetValue<string>("AppSettings:Version"),
-        Title = configuration.GetValue<string>("AppSettings:Title"),
-        Description = configuration.GetValue<string>("AppSettings:Description")
-    });
+    c.SwaggerDoc(
+        configuration.GetValue<string>("AppSettings:Version"),
+        new OpenApiInfo
+        {
+            Version = configuration.GetValue<string>("AppSettings:Version"),
+            Title = configuration.GetValue<string>("AppSettings:Title"),
+            Description = configuration.GetValue<string>("AppSettings:Description")
+        });
 });
 
 var app = builder.Build();
@@ -44,7 +46,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint(
-            $"/swagger/{configuration.GetValue<string>("AppSettings:Version")}/swagger.json", 
+            $"/swagger/{configuration.GetValue<string>("AppSettings:Version")}/swagger.json",
             configuration.GetValue<string>("AppSettings:Title")));
 }
 

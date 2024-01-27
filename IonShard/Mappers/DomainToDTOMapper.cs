@@ -5,6 +5,7 @@ using IonShard.Contracts.DTO.Users;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 
@@ -13,15 +14,29 @@ namespace IonShard.Mappers;
 public static class DomainToDTOMapper
 {
     public static BuildingDTO ToDTO(this IBuilding building)
-        => new BuildingDTO(
+    {
+        ResourceCategory? resourceCategory = building switch
+        {
+            IMineBuilding mineBuilding => mineBuilding.ResourceCategory,
+            _ => null,
+        };
+
+        return new BuildingDTO(
             building.Id,
             building.Type,
             building.Location.System.Name,
-            building.Location.Planet?.Name);
+            building.Location.Planet?.Name,
+            building.IsBuilt,
+            building.EstimatedBuildTime,
+            resourceCategory);
+    }
 
 
     public static UserDTO ToDTO(this IUser user)
-        => new UserDTO(user.Id, user.Pseudo, user.DateOfCreation);
+        => new UserDTO(user.Id, user.Pseudo, user.DateOfCreation,
+            user.ResourcesQuantity.ToDictionary(
+                resource => resource.Key.Name.ToString().ToLower(),
+                resource => resource.Value));
 
 
     public static UnitDTO ToDTO(this IUnit unit)
@@ -48,12 +63,10 @@ public static class DomainToDTOMapper
         };
 
     private static UnitLocationDTO ToDTOWithoutDetails(this ILocation location)
-    {
-        return new UnitLocationDTO(
+        => new UnitLocationDTO(
             location.System.Name,
             location.Planet?.Name,
             null);
-    }
 
     public static UnitLocationDTO ToDTO(this ILocationWithDetails location)
         => new UnitLocationDTO(
@@ -61,7 +74,7 @@ public static class DomainToDTOMapper
             location.Planet?.Name,
             location.Planet?.ResourcesQuantity
                 .ToDictionary(
-                    resource => resource.Key.ToString().ToLower(),
+                    resource => resource.Key.Name.ToString().ToLower(),
                     resource => resource.Value));
 
 

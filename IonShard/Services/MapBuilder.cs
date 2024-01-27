@@ -1,4 +1,5 @@
 ﻿using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
 using Shard.Shared.Core;
 
 namespace IonShard.Services;
@@ -27,9 +28,9 @@ public class MapBuilder
             .ConvertAll(planet => new Planet(planet.Name, planet.Size, ResourceKindToResource(planet.ResourceQuantity))));
 
 
-
-    private IReadOnlyDictionary<Resource, int> ResourceKindToResource(IReadOnlyDictionary<ResourceKind, int> resourceQuantity)
+    private IReadOnlyDictionary<IResource, int> ResourceKindToResource(IReadOnlyDictionary<ResourceKind, int> resourceQuantity)
         => resourceQuantity
-            .ToDictionary(resource => (Resource)resource.Key, resource => resource.Value);
+            .ToDictionary(
+                resource => (IResource) new Resource((ResourceName)resource.Key),
+                resource => resource.Value);
 }
-

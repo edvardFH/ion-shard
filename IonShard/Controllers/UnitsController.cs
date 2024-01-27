@@ -16,18 +16,21 @@ namespace IonShard.Controllers;
 [Produces("application/json")]
 public class UnitsController : ControllerBase
 {
-    private readonly TimeSpan MaximumWaitingTimeBeforeResponse = new TimeSpan(0, 0, 2);
+    private readonly TimeSpan MaximumWaitingTimeBeforeResponse;
 
 
     private readonly UserRepository _usersRepository;
     private readonly MapRepository _mapRepository;
     private readonly IClock _clock;
 
-    public UnitsController(UserRepository usersRepository, MapRepository mapRepository, IClock clock)
+    public UnitsController(UserRepository usersRepository, MapRepository mapRepository, IClock clock, IConfiguration configuration)
     {
         _usersRepository = usersRepository;
         _mapRepository = mapRepository;
         _clock = clock;
+        MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(
+            configuration.GetValue<int>(
+                "Controllers:MaximumWaitingTimeBeforeResponse"));
     }
 
 

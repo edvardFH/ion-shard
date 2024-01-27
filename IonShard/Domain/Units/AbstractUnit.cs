@@ -13,7 +13,7 @@ public abstract class AbstractUnit : IUnit
     private const int EnterPlanetManeuverDuration = 15;
 
     public string Id { get; }
-    public abstract string Type { get; }
+    public string Type { get; }
     public IUser Owner { get; }
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
@@ -21,16 +21,17 @@ public abstract class AbstractUnit : IUnit
     private CancellationTokenSource? _cancellationTokenSource;
 
 
-    public AbstractUnit(IUser owner, StarSystem system, Planet? planet)
+    public AbstractUnit(IUser owner, StarSystem system, Planet? planet, string type)
     {
         Id = new Random().NextGuid().ToString();
         Owner = owner;
         Location = new Location(system, planet);
         TravelTask = Task.CompletedTask;
+        Type = type;
     }
 
 
-    public void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
+    public virtual void StartTravel(IClock clock, StarSystem destinationSystem, Planet? destinationPlanet)
     {
         var travelDuration = 0;
 
@@ -46,7 +47,7 @@ public abstract class AbstractUnit : IUnit
         Destination = new Destination(
             destinationSystem,
             destinationPlanet,
-            clock.Now.Add(new TimeSpan(0, 0, travelDuration)));
+            clock.Now.Add(TimeSpan.FromSeconds(travelDuration)));
 
 
         _cancellationTokenSource = new CancellationTokenSource();
@@ -93,6 +94,9 @@ public abstract class AbstractUnit : IUnit
             cancellationToken.ThrowIfCancellationRequested();
             Location = new Location(Destination.System, Destination.Planet);
         }
+
+        Destination = null;
+        _cancellationTokenSource = null;
     }
 
 

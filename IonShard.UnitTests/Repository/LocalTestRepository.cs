@@ -1,13 +1,11 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Persistence.Repositories;
-using System.Text.Json;
 using IonShard.Domain.Users;
 
 namespace IonShard.UnitTests.Repository;
 
 public class LocalTestRepository
 {
-    private const string JsonFilePathName = "../../../TestResources/TestRepoSystems.json";
     private static LocalTestRepository _instance;
     private readonly Universe _universe;
     public Universe Universe { get => _universe; }
@@ -27,9 +25,7 @@ public class LocalTestRepository
     {
         if (_instance is null)
         {
-            string jsonString = File.ReadAllText(JsonFilePathName);
-            List<StarSystem> systems = JsonSerializer.Deserialize<List<StarSystem>>(jsonString)!;
-            _instance = new LocalTestRepository(systems);
+            _instance = new LocalTestRepository(StarSystemTestProvider.ProvideSystems());
         }
 
         return _instance;

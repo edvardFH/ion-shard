@@ -1,6 +1,8 @@
-﻿namespace IonShard.Domain.Map.Locations;
+﻿using IonShard.Domain.Map.Resources;
+
+namespace IonShard.Domain.Map.Locations;
 
 public interface ILocationWithDetails : ILocation
 {
-    public IReadOnlyDictionary<Resource, int>? ResourcesQuantity { get; }
+    public IReadOnlyDictionary<IResource, int>? ResourcesQuantity { get; }
 }

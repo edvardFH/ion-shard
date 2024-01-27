@@ -7,6 +7,10 @@ public interface IBuilding
 {
     public string Id { get; }
     public string Type { get; }
-    public IUnit Builder { get; }
+    public IBuilderUnit Builder { get; }
     public ILocation Location { get; }
+    public DateTime? EstimatedBuildTime { get; }
+    public bool IsBuilt { get; }
+
+    public void FinishBuild();
 }
