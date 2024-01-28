@@ -1,0 +1,102 @@
+﻿using IonShard.Configuration.Gamerules;
+using IonShard.Configuration.Gamerules.Users;
+using IonShard.Domain.Buildings;
+using IonShard.Domain.Map;
+using IonShard.Domain.Map.Resources;
+using IonShard.Domain.Units;
+using IonShard.Domain.Users;
+using IonShard.Persistence.Repositories;
+
+namespace IonShard.Application;
+
+
+public class UserFactory : IUserFactory
+{
+    private readonly Random _random = new Random();
+    private readonly MapRepository _map;
+    private readonly IUnitFactory _unitFactory;
+    private readonly IBuildingFactory _buildingFactory;
+    private readonly IGameRulesService _gameRulesService;
+    private readonly IResourceFactory _resourceFactory;
+
+    public UserFactory
+        (
+            MapRepository map,
+            IUnitFactory unitFactory,
+            IBuildingFactory buildingFactory,
+            IGameRulesService gameRuleService,
+            IResourceFactory resourceFactory
+        )
+    {
+        _map = map;
+        _unitFactory = unitFactory;
+        _buildingFactory = buildingFactory;
+        _gameRulesService = gameRuleService;
+        _resourceFactory = resourceFactory;
+    }
+
+    public IUser CreateNewUser(string id, string pseudo)
+    {
+        var resourcesQuantity = _resourceFactory.TryParseToResourceQuantity(_gameRulesService.User.StartingResources);
+
+        IUser newUser = new User
+            (
+                id,
+                pseudo,
+                DateTime.Now,
+                resourcesQuantity.AsReadOnly(),
+                _gameRulesService,
+                _resourceFactory
+            );
+        AddDefaultUnitsToUser(newUser);
+
+        return newUser;
+    }
+
+    public IUser CreateUser
+        (
+            string id,
+            string pseudo,
+            DateTime dateOfCreation,
+            IReadOnlyDictionary<IResource, int> resourcesQuantity
+        )
+    {
+        var completeResourcesQuantity = _resourceFactory.CompleteWithMissingResources(resourcesQuantity);
+
+        return new User
+            (
+                id,
+                pseudo,
+                dateOfCreation,
+                completeResourcesQuantity.AsReadOnly(),
+                _gameRulesService,
+                _resourceFactory
+            );
+    }
+
+
+    private void AddDefaultUnitsToUser(IUser owner)
+    {
+        StarSystem starSystem = GetRandomStarSystem();
+        Planet? planet = GetRandomPlanet(starSystem);
+
+        _unitFactory.CreateNewUnit(owner, starSystem, planet, "Scout", null);
+        _unitFactory.CreateNewUnit(owner, starSystem, planet, "Builder", _buildingFactory);
+    }
+
+    private StarSystem GetRandomStarSystem() => _map.Systems[_random.Next(_map.Systems.Count)];
+
+    private Planet? GetRandomPlanet(StarSystem starSystem)
+    {
+        Planet? randomPlanet = null;
+        var returnANotNullPlanet = _random.Next(1) == 1;
+
+        if (returnANotNullPlanet)
+        {
+            var starSystemSize = starSystem.Planets.Count();
+            randomPlanet = starSystem.Planets[_random.Next(starSystemSize)];
+        }
+
+        return randomPlanet;
+    }
+}

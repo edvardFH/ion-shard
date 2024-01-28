@@ -2,7 +2,7 @@
 using IonShard.Domain.Units;
 using System.ComponentModel.DataAnnotations;
 using IonShard.Domain.Map.Resources;
-using IonShard.Configuration;
+using IonShard.Configuration.Gamerules;
 
 namespace IonShard.Domain.Users;
 
@@ -15,17 +15,18 @@ public class User : IUser
 
     private readonly IDictionary<string, IUnit> _units;
     public IReadOnlyDictionary<string, IUnit> Units
-        => (IReadOnlyDictionary<string, IUnit>)_units;
+        => _units.AsReadOnly();
 
     private readonly IDictionary<string, IBuilding> _buildings;
     public IReadOnlyDictionary<string, IBuilding> Buildings
-        => (IReadOnlyDictionary<string, IBuilding>)_buildings;
+        => _buildings.AsReadOnly();
 
     private readonly IDictionary<IResource, int> _resourcesQuantity;
     public IReadOnlyDictionary<IResource, int> ResourcesQuantity
-        => (IReadOnlyDictionary<IResource, int>)_resourcesQuantity;
+        => _resourcesQuantity.AsReadOnly();
 
     private readonly IGameRulesService _gameRulesService;
+    private readonly IResourceFactory _resourceFactory;
 
 
     public User
@@ -33,7 +34,9 @@ public class User : IUser
             string id,
             string pseudo,
             DateTime dateOfCreation,
-            IGameRulesService gameRulesService
+            IReadOnlyDictionary<IResource, int> resourcesQuantity,
+            IGameRulesService gameRulesService,
+            IResourceFactory resourceFactory
         )
     {
         Id = id;
@@ -41,18 +44,31 @@ public class User : IUser
         DateOfCreation = dateOfCreation;
         _units = new Dictionary<string, IUnit>();
         _buildings = new Dictionary<string, IBuilding>();
-        _resourcesQuantity = new Dictionary<IResource, int>
-        {
-            { new Resource(ResourceName.Carbon), 20 },
-            { new Resource(ResourceName.Iron), 10 },
-            { new Resource(ResourceName.Oxygen), 50 },
-            { new Resource(ResourceName.Water), 50 },
-            { new Resource(ResourceName.Aluminium), 0 },
-            { new Resource(ResourceName.Gold), 0 },
-            { new Resource(ResourceName.Titanium), 0 }
-        };
+        _resourcesQuantity = new Dictionary<IResource, int>(resourcesQuantity);
+
         _gameRulesService = gameRulesService;
+        _resourceFactory = resourceFactory;
     }
+
+
+    public User
+        (
+            string id,
+            string pseudo,
+            DateTime dateOfCreation,
+            IGameRulesService gameRulesService,
+            IResourceFactory resourceFactory
+        )
+        : this
+        (
+            id,
+            pseudo,
+            dateOfCreation,
+            new Dictionary<IResource, int>(),
+            gameRulesService,
+            resourceFactory
+        )
+    { }
 
 
     public void AddUnit(IUnit unit) => _units.Add(unit.Id, unit);
@@ -61,12 +77,12 @@ public class User : IUser
     public void AddBuilding(IBuilding building) => _buildings.Add(building.Id, building);
     public bool RemoveBuilding(IBuilding buildingId) => _buildings.Remove(buildingId.Id);
 
-    public void AddOneResource(IResource resource)
+    public void AddResource(IResource resource, int quantity)
     {
         if (_resourcesQuantity.ContainsKey(resource))
-            _resourcesQuantity[resource]++;
+            _resourcesQuantity[resource] += quantity;
         else
-            _resourcesQuantity.Add(resource, 1);
+            _resourcesQuantity.Add(resource, quantity);
     }
 
 
@@ -77,12 +93,10 @@ public class User : IUser
         if (!units.ContainsKey(unitType))
             throw new ArgumentException($"{unitType} is not a valid unit type");
 
-        
 
         foreach (var resourceCost in units[unitType].ResourceCost)
         {
-            Enum.TryParse(resourceCost.Key, out ResourceName resourceName);
-            var resource = new Resource(resourceName);
+            var resource = _resourceFactory.GetResource(resourceCost.Key);
 
             if (!_resourcesQuantity.ContainsKey(resource)
                 || resourceCost.Value > _resourcesQuantity[resource])

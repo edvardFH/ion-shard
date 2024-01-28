@@ -1,4 +1,5 @@
-﻿using IonShard.Contracts.DTO.Buildings;
+﻿using IonShard.Configuration.Gamerules;
+using IonShard.Contracts.DTO.Buildings;
 using IonShard.Contracts.DTO.Map;
 using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.DTO.Users;
@@ -14,12 +15,12 @@ using Shard.Shared.Core;
 using Shard.Shared.Web.IntegrationTests.Clock;
 using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Buildings.Mine;
+using Moq;
 
 namespace IonShard.UnitTests.Mappers;
 
 public class DomainToDtoMapperTests
 {
-    private readonly LocalTestRepository _repository;
     private readonly StarSystem _sol;
     private readonly Planet _earth;
     private readonly IUser _userJohn;
@@ -27,10 +28,11 @@ public class DomainToDtoMapperTests
 
     public DomainToDtoMapperTests()
     {
-        _repository = LocalTestRepository.GetInstance();
-        _sol = _repository["sol"]!;
-        _earth = _sol["earth"]!;
-        _userJohn = _repository.UserRepository.Users["1"];
+        var mockResourceFactory = new Mock<IResourceFactory>();
+        var mockGameRulesService = new Mock<IGameRulesService>();
+        _earth = new Planet("earth", 12742, ResourcesTestProvider.GetResources());
+        _sol = new StarSystem("sol", new [] { _earth });
+        _userJohn = new User("1", "john.doe", DateTime.Now, mockGameRulesService.Object, mockResourceFactory.Object);
         _clock = new FakeClock();
     }
 
@@ -82,7 +84,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void User_ToDTO()
     {
-        IUser user = new User("1", "john_doe", DateTime.Now, null);
+        IUser user = new User("1", "john_doe", DateTime.Now, null, null);
         UserDTO userDTO = user.ToDTO();
 
         Assert.NotNull(userDTO);
@@ -93,7 +95,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void Building_ToDTO()
     {
-        IBuilderUnit builderUnit = new BuilderUnit("id2", null, _userJohn, _sol, _earth, null, _clock);
+        IBuilderUnit builderUnit = new BuilderUnit("id2", null, _userJohn, _sol, _earth, null, 100, _clock);
         IBuilding building = new MineBuilding(builderUnit, _sol, _earth, ResourceCategory.Solid, _clock);
         BuildingDTO buildingDTO = building.ToDTO();
 
@@ -107,7 +109,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void Unit_ToDTO()
     {
-        IUnit builderUnit = new BuilderUnit("id3", null, _userJohn, _sol, _earth, null, _clock);
+        IUnit builderUnit = new BuilderUnit("id3", null, _userJohn, _sol, _earth, null, 100, _clock);
         UnitDTO builderUnitDTO = builderUnit.ToDTO();
 
         Assert.NotNull(builderUnitDTO);

@@ -1,0 +1,164 @@
+{
+  "Resources": {
+    "Oxygen": {
+      "Category": "Gaseous",
+      "Rarity": 10
+    },
+    "Water": {
+      "Category": "Liquid",
+      "Rarity": 10
+    },
+    "Carbon": {
+      "Category": "Solid",
+      "Rarity": 10
+    },
+    "Iron": {
+      "Category": "Solid",
+      "Rarity": 20
+    },
+    "Aluminium": {
+      "Category": "Solid",
+      "Rarity": 30
+    },
+    "Gold": {
+      "Category": "Solid",
+      "Rarity": 40
+    },
+    "Titanium": {
+      "Category": "Solid",
+      "Rarity": 50
+    }
+  },
+
+
+  "Users": {
+    "StartingResources": {
+      "Carbon": 20,
+      "Iron": 10,
+      "Oxygen": 50,
+      "Water": 50
+    }
+  },
+
+
+  "Buildings": {
+    "Mine": {
+      "BuildingDuration": 300,
+      "ExtractionPeriode": 60
+    },
+    "Starport": {
+      "BuildingDuration": 300,
+      "ExtractionPeriode": 0
+    }
+  },
+
+
+  "TravelDurations": {
+    "LeavePlanet": 0,
+    "ChangeSystem": 60,
+    "EnterPlanet": 15
+  },
+
+
+  "Weapons": {
+    "Canon": {
+      "Damage": 10,
+      "Cooldown": 6
+    },
+    "BombBay": {
+      "Damage": 400,
+      "Cooldown": 60
+    }
+  },
+
+
+  "Units": {
+    "PeacefulUnit": {
+      "Scout": {
+        "ResourceCost": {
+          "Carbon": 5,
+          "Iron": 5
+        },
+        "BuildingDuration": 0,
+        "HealthPoints": 100
+      },
+
+      "Builder": {
+        "ResourceCost": {
+          "Carbon": 5,
+          "Iron": 10
+        },
+        "BuildingDuration": 0,
+        "HealthPoints": 100
+      },
+
+      "Cargo": {
+        "ResourceCost": {
+          "Carbon": 10,
+          "Iron": 10,
+          "Gold": 5
+        },
+        "BuildingDuration": 0,
+        "HealthPoints": 100
+      }
+    },
+
+    "CombatUnit": {
+      "Fighter": {
+        "ResourceCost": {
+          "Iron": 20,
+          "Aluminium": 10
+        },
+        "BuildingDuration": 0,
+        "HealthPoints": 80,
+        "Weapons": {
+          "Canon": 1
+        },
+        "CombatPriorities": [
+          "Bomber",
+          "Fighter",
+          "Cruiser"
+        ],
+        "DamageReductionMultipliers": {}
+      },
+
+      "Cruiser": {
+        "ResourceCost": {
+          "Iron": 60,
+          "Gold": 20
+        },
+        "BuildingDuration": 0,
+        "HealthPoints": 400,
+        "Weapons": {
+          "Canon": 4
+        },
+        "CombatPriorities": [
+          "Fighter",
+          "Cruiser",
+          "Bomber"
+        ],
+        "DamageReductionMultipliers": {}
+      },
+
+      "Bomber": {
+        "ResourceCost": {
+          "Iron": 30,
+          "Titanium": 10
+        },
+        "BuildingDuration": 0,
+        "HealthPoints": 50,
+        "Weapons": {
+          "BombBay": 1
+        },
+        "CombatPriorities": [
+          "Cruiser",
+          "Bomber",
+          "Fighter"
+        ],
+        "DamageReductionMultipliers": {
+          "Cruiser": 0.1
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,0 @@
-﻿namespace IonShard.Configuration.Units;
-
-public interface IUnitConfiguration
-{
-    public IReadOnlyDictionary<string, int> ResourceCost { get; }
-    public int BuildingDuration { get; }
-}

@@ -1,4 +1,5 @@
-﻿using IonShard.Domain.Map.Resources;
+﻿using IonShard.Domain.Buildings;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
 
 namespace IonShard.Domain.Map;
@@ -9,16 +10,18 @@ public class Planet
     public int Size { get; }
     private readonly IDictionary<IResource, int> _resourceQuantity;
     public IReadOnlyDictionary<IResource, int> ResourcesQuantity
-        => (IReadOnlyDictionary<IResource, int>)_resourceQuantity;
+        => _resourceQuantity.AsReadOnly();
 
     public IList<IUnit> Units { get; }
+    public IList<IBuilding> Buildings { get; }
 
     public Planet(string name, int size, IReadOnlyDictionary<IResource, int> resourcesQuantity)
     {
         Name = name;
         Size = size;
-        _resourceQuantity = (IDictionary<IResource, int>) resourcesQuantity;
+        _resourceQuantity =  new Dictionary<IResource, int>(resourcesQuantity);
         Units = new List<IUnit>();
+        Buildings = new List<IBuilding>();
     }
 
     public bool TakeOneResource(IResource resource)

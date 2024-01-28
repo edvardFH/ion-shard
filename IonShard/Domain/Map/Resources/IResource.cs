@@ -2,6 +2,7 @@
 
 public interface IResource
 {
-    public ResourceName Name { get; }
+    public string Name { get; }
     public ResourceCategory Category { get; }
+    public int Rarity { get; }
 }

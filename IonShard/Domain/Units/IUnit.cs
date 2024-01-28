@@ -13,9 +13,12 @@ public interface IUnit
     public IUser Owner { get; }
     public ILocation Location { get; }
     public IDestination? Destination { get; }
-    public IReadOnlyDictionary<Resource, int> ResourceCost { get; }
+    public IReadOnlyDictionary<IResource, int> ResourceCost { get; }
+    public int HealthPoints { get; }
 
     public Task TravelTask { get; }
     public void StartTravel(IClock clock, StarSystem starSystem, Planet? planet);
     public bool TryRequestTravelStop();
+
+    public void Destroy();
 }

@@ -15,10 +15,11 @@ public class ScoutUnit : Unit, IScoutUnit
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
+            int healthPoints,
             IClock clock
         )
-        : base(id, owner, starSystem, planet, "Scout", resourceCost, clock) { }
+        : base(id, owner, starSystem, planet, "Scout", resourceCost, healthPoints, clock) { }
 
     public override ILocationWithDetails Location
         => new LocationWithDetails(base.Location.System, base.Location.Planet);

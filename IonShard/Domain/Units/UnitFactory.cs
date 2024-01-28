@@ -1,9 +1,11 @@
 ﻿using IonShard.Configuration;
-using IonShard.Configuration.Units;
+using IonShard.Configuration.Gamerules;
+using IonShard.Configuration.Gamerules.Units;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units.Builder;
+using IonShard.Domain.Units.Cargo;
 using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Units.Scout;
 using IonShard.Domain.Users;
@@ -17,13 +19,15 @@ public class UnitFactory : IUnitFactory
     private readonly IReadOnlyDictionary<string, WeaponConfiguration> _weapons;
     private readonly IReadOnlyDictionary<string, IUnitConfiguration> _units;
     private readonly IClock _clock;
+    private readonly IResourceFactory _resourceFactory;
 
 
-    public UnitFactory(IGameRulesService gameRulesService, IClock clock)
+    public UnitFactory(IGameRulesService gameRulesService, IClock clock, IResourceFactory resourceFactory)
     {
-        _weapons = gameRulesService.GetWeapons();
+        _weapons = gameRulesService.Weapons;
         _units = gameRulesService.Units;
         _clock = clock;
+        _resourceFactory = resourceFactory;
     }
 
 
@@ -34,16 +38,14 @@ public class UnitFactory : IUnitFactory
             StarSystem system,
             Planet? planet,
             string type,
-            IBuildingFactory? buildingFactory
+            IBuildingFactory? buildingFactory,
+            int healthPoints = -1,
+            IReadOnlyDictionary<IResource, int>? loadedResources = null
         )
     {
-        var formattedType = type.UppercaseFirstWord();
+        var unitConfig = GetUnitConfiguration(type);
 
-        if (!DoesTypeExist(formattedType))
-            throw new ArgumentException(
-                $"Incorrect unit type : {formattedType} is not contained in game rules.");
-
-        var unitConfig = _units[formattedType];
+        var unitHealthPoints = healthPoints >= 0 ? healthPoints : unitConfig.HealthPoints;
 
         var newUnit = unitConfig switch
         {
@@ -55,10 +57,11 @@ public class UnitFactory : IUnitFactory
                     system,
                     planet,
                     CreateResourceCost(unitConfig),
-                    formattedType,
-                    combatUnitStats.HealthPoints,
+                    type.UppercaseFirstWord(),
+                    unitHealthPoints,
                     CreateWeapons(_weapons, combatUnitStats.Weapons),
                     combatUnitStats.CombatPriorities,
+                    combatUnitStats.DamageReductionMultipliers,
                     _clock
                 ),
             _ =>
@@ -69,22 +72,17 @@ public class UnitFactory : IUnitFactory
                     system,
                     planet,
                     CreateResourceCost(unitConfig),
-                    formattedType,
-                    buildingFactory
+                    type.UppercaseFirstWord(),
+                    unitHealthPoints,
+                    buildingFactory,
+                    loadedResources
                 )
         };
-
-        owner.AddUnit(newUnit);
-
-        if (planet is null)
-            system.Units.Add(newUnit);
-        else
-            planet.Units.Add(newUnit);
 
         return newUnit;
     }
 
-    public IUnit CreateUnit
+    public IUnit CreateNewUnit
         (
             IUser owner,
             StarSystem system,
@@ -93,6 +91,8 @@ public class UnitFactory : IUnitFactory
             IBuildingFactory? buildingFactory
         )
     {
+        var unitConfig = GetUnitConfiguration(type);
+
         return CreateUnitWithId
             (
                 new Random().NextGuid().ToString(),
@@ -109,17 +109,27 @@ public class UnitFactory : IUnitFactory
     _units.ContainsKey(type.UppercaseFirstWord());
 
 
-    private IReadOnlyDictionary<Resource, int> CreateResourceCost(IUnitConfiguration unitConfiguration)
+    private IReadOnlyDictionary<IResource, int> CreateResourceCost(IUnitConfiguration unitConfiguration)
     {
         return unitConfiguration.ResourceCost
             .Select(resourceCost =>
-            {
-                if (!Enum.TryParse(resourceCost.Key, out ResourceName resource))
-                    throw new ConfigurationFormatException(resourceCost.Key);
-
-                return (Resource: new Resource(resource), Cost: resourceCost.Value);
-            })
+            (
+                Resource: _resourceFactory.GetResource(resourceCost.Key),
+                Cost: resourceCost.Value)
+            )
             .ToDictionary(resourceCost => resourceCost.Resource, resourceCost => resourceCost.Cost);
+    }
+
+
+    private IUnitConfiguration GetUnitConfiguration(string type)
+    {
+        var formattedType = type.UppercaseFirstWord();
+
+        if (!DoesTypeExist(formattedType))
+            throw new ArgumentException(
+                $"Incorrect unit type : {formattedType} is not contained in game rules.");
+
+        return _units[formattedType];
     }
 
 
@@ -155,20 +165,24 @@ public class UnitFactory : IUnitFactory
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
             string type,
-            IBuildingFactory? buildingFactory
+            int healthPoints,
+            IBuildingFactory? buildingFactory,
+            IReadOnlyDictionary<IResource, int>? loadedResources
         )
     {
-        var unitStats = _units[type];
+        var completeResources = _resourceFactory.CompleteWithMissingResources(loadedResources ?? new Dictionary<IResource, int>());
         return type switch
         {
             "Scout" =>
-                new ScoutUnit(id, owner, starSystem, planet, resourceCost, _clock),
+                new ScoutUnit(id, owner, starSystem, planet, resourceCost, healthPoints, _clock),
             "Builder" when (buildingFactory is null) =>
                 throw new ArgumentException("Builder unit require a BuildingFactory to be built."),
             "Builder" =>
-                new BuilderUnit(id, buildingFactory, owner, starSystem, planet, resourceCost, _clock),
+                new BuilderUnit(id, buildingFactory, owner, starSystem, planet, resourceCost, healthPoints, _clock),
+            "Cargo" =>
+                new CargoUnit(id, owner, starSystem, planet, type, resourceCost, healthPoints, completeResources.AsReadOnly(), _clock),
             _ =>
                 throw new ArgumentException($"Incorrect unit type : {type} is unknown.")
         };

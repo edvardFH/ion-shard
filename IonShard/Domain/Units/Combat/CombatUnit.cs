@@ -7,9 +7,9 @@ namespace IonShard.Domain.Units.Combat;
 
 public class CombatUnit : Unit, ICombatUnit
 {
-    public int HealthPoints { get; private set; }
     public IReadOnlyList<IWeapon> Weapons { get; }
     public IReadOnlyList<string> CombatPriorities { get; }
+    public IReadOnlyDictionary<string, float> DamageReductionMultipliers { get; }
     public bool IsFighting { get; private set; }
     private ITimer _timer;
 
@@ -19,18 +19,19 @@ public class CombatUnit : Unit, ICombatUnit
             IUser owner,
             StarSystem system,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
             string type,
-            int healthPoint,
+            int healthPoints,
             IEnumerable<IWeapon> weapons,
             IEnumerable<string> combatPriorities,
+            IReadOnlyDictionary<string, float> damageReductionMultipliers,
             IClock clock
         )
-        : base(id, owner, system, planet, type, resourceCost, clock)
+        : base(id, owner, system, planet, type, resourceCost, healthPoints, clock)
     {
-        HealthPoints = healthPoint;
         Weapons = new List<IWeapon>(weapons);
         CombatPriorities = new List<string>(combatPriorities);
+        DamageReductionMultipliers = damageReductionMultipliers;
         IsFighting = false;
 
         _timer = CreateTimer(TimeSpan.FromSeconds(UnitBuildDuration + 1));
@@ -38,15 +39,12 @@ public class CombatUnit : Unit, ICombatUnit
 
     public int ApplyDamage(ICombatUnit damageSource, int damage)
     {
-        var damageReceived = damage;
-
-        if (Type == "Bomber" && damageSource.Type == "Cruiser")
-            damageReceived /= 10;
+        var damageReceived = (int) (DamageReductionMultipliers[damageSource.Type] * damage);
 
         if (HealthPoints > damageReceived)
             return (HealthPoints -= damageReceived);
 
-        Destroy();
+        DestroyDuringCombat();
 
         return (HealthPoints = 0);
     }
@@ -86,7 +84,7 @@ public class CombatUnit : Unit, ICombatUnit
         choosenTarget.ApplyDamage(this, totalDamage);
     }
 
-    private void Destroy()
+    private void DestroyDuringCombat()
     {
         Owner.RemoveUnit(this);
 

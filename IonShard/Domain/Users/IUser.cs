@@ -21,7 +21,7 @@ public interface IUser
     public void AddBuilding(IBuilding building);
     public bool RemoveBuilding(IBuilding building);
 
-    public void AddOneResource(IResource resource);
+    public void AddResource(IResource resource, int quantity);
     public bool HasResourcesFor(string unitType);
     public void UseResource(IResource resource, int quantity);
     public void UpdateResources(IReadOnlyDictionary<IResource, int> resources);

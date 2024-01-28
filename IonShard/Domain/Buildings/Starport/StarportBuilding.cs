@@ -54,7 +54,7 @@ public class StarportBuilding : Building, IStarportBuilding
 
 
 
-        var newUnit = _unitFactory.CreateUnit(
+        var newUnit = _unitFactory.CreateNewUnit(
             Builder.Owner,
             Location.System,
             Location.Planet,

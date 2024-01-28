@@ -27,10 +27,11 @@ public class BuilderUnit : Unit, IBuilderUnit
             IUser owner,
             StarSystem starSystem,
             Planet? planet,
-            IReadOnlyDictionary<Resource, int> resourceCost,
+            IReadOnlyDictionary<IResource, int> resourceCost,
+            int healthPoints,
             IClock clock
         )
-        : base(id, owner, starSystem, planet, "builder", resourceCost, clock)
+        : base(id, owner, starSystem, planet, "builder", resourceCost, healthPoints, clock)
     {
         _buildingFactory = buildingFactory;
         BuildTask = Task.CompletedTask;

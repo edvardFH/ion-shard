@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonShard", "IonShard\IonSha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonShard.IntegrationTests", "IonShard.IntegrationTests\IonShard.IntegrationTests.csproj", "{850A8C16-BB65-4E75-919F-E739831A062F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IonShard.UnitTests", "IonShard.UnitTests\IonShard.UnitTests.csproj", "{C09BC892-D9FB-4903-92B4-D5316FA0C87C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonShard.UnitTests", "IonShard.UnitTests\IonShard.UnitTests.csproj", "{C09BC892-D9FB-4903-92B4-D5316FA0C87C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

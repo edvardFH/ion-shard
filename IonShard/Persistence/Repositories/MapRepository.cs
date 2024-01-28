@@ -1,5 +1,5 @@
-﻿using IonShard.Domain.Map;
-using IonShard.Services;
+﻿using IonShard.Application;
+using IonShard.Domain.Map;
 
 namespace IonShard.Persistence.Repositories;
 
