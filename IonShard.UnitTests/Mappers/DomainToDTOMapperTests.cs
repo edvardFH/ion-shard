@@ -12,6 +12,8 @@ using IonShard.Mappers;
 using IonShard.Domain.Map.Resources;
 using Shard.Shared.Core;
 using Shard.Shared.Web.IntegrationTests.Clock;
+using IonShard.Domain.Units.Builder;
+using IonShard.Domain.Buildings.Mine;
 
 namespace IonShard.UnitTests.Mappers;
 
@@ -80,7 +82,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void User_ToDTO()
     {
-        IUser user = new User("1", "john_doe", DateTime.Now);
+        IUser user = new User("1", "john_doe", DateTime.Now, null);
         UserDTO userDTO = user.ToDTO();
 
         Assert.NotNull(userDTO);
@@ -91,7 +93,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void Building_ToDTO()
     {
-        IBuilderUnit builderUnit = new BuilderUnit(_userJohn, _sol, _earth);
+        IBuilderUnit builderUnit = new BuilderUnit("id2", null, _userJohn, _sol, _earth, null, _clock);
         IBuilding building = new MineBuilding(builderUnit, _sol, _earth, ResourceCategory.Solid, _clock);
         BuildingDTO buildingDTO = building.ToDTO();
 
@@ -105,7 +107,7 @@ public class DomainToDtoMapperTests
     [Fact]
     public void Unit_ToDTO()
     {
-        IUnit builderUnit = new BuilderUnit(_userJohn, _sol, _earth);
+        IUnit builderUnit = new BuilderUnit("id3", null, _userJohn, _sol, _earth, null, _clock);
         UnitDTO builderUnitDTO = builderUnit.ToDTO();
 
         Assert.NotNull(builderUnitDTO);

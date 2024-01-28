@@ -16,7 +16,7 @@ public class LocalTestRepository
     {
         _universe = new Universe(systems);
         _userRepository = new UserRepository();
-        _userRepository.Users.Add("1", new User("1", "johndoe", DateTime.Now));
+        _userRepository.Users.Add("1", new User("1", "johndoe", DateTime.Now, null));
     }
 
     public StarSystem? this[string systemName] => _universe[systemName];

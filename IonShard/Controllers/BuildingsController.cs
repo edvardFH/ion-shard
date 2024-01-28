@@ -1,8 +1,12 @@
-﻿using IonShard.Contracts.DTO.Buildings;
+﻿using System.Reflection.Metadata.Ecma335;
+using IonShard.Contracts.DTO.Buildings;
+using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.RequestBodies;
 using IonShard.Domain.Buildings;
+using IonShard.Domain.Buildings.Starport;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
 using IonShard.Persistence.Repositories;
@@ -22,18 +26,22 @@ public class BuildingsController : ControllerBase
 
     private readonly UserRepository _usersRepository;
     private readonly IClock _clock;
+    private readonly IUnitFactory _unitFactory;
 
 
     public BuildingsController(
         UserRepository usersRepository,
         IClock clock,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IUnitFactory unitFactory
+        )
     {
         _usersRepository = usersRepository;
         _clock = clock;
         MaximumWaitingTimeBeforeResponse = TimeSpan.FromSeconds(
             configuration.GetValue<int>(
                 "Controllers:MaximumWaitingTimeBeforeResponse"));
+        _unitFactory = unitFactory;
     }
 
 
@@ -49,27 +57,33 @@ public class BuildingsController : ControllerBase
         if (user is null)
             return NotFound();
 
-        if (body is null || body.BuilderId is null || body.Type != "mine" || body.ResourceCategory is null)
+        if (body is null || body.BuilderId is null || body.Type is null)
             return BadRequest();
 
 
-        if (!Enum.TryParse(
-                body.ResourceCategory.UppercaseFirstWord(),
-                out ResourceCategory category))
-            return BadRequest("Invalid resource category");
+        if (body.Type is "mine" && body.ResourceCategory is null)
+            return BadRequest();
 
+        if (!Enum.TryParse(
+                body.ResourceCategory?.UppercaseFirstWord(),
+                out ResourceCategory category) && body.Type is "mine")
+            return BadRequest("Invalid resource category");
+        
         IUnit? unit = user.Units.ContainsKey(body.BuilderId)
             ? user.Units[body.BuilderId]
             : null;
 
-        if (unit is null || unit is not IBuilderUnit || unit.Location.Planet is null)
+        if (unit is not IBuilderUnit builder || unit.Location.Planet is null)
             return BadRequest();
 
-
-        IBuilderUnit builder = (IBuilderUnit)unit;
-        IBuilding building = builder.StartBuild(_clock, body.Type, category);
-
-        return building.ToDTO();
+        try
+        {
+            return builder.StartBuild(_clock, body.Type, category).ToDTO();
+        }
+        catch
+        {
+            return BadRequest();
+        }
     }
 
 
@@ -81,12 +95,12 @@ public class BuildingsController : ControllerBase
     {
         IUser? user = _usersRepository[userId];
 
-        return user is not null
-            ? user.Buildings
+        return user is null
+            ? NotFound()
+            : user.Buildings
                 .Values
                 .ToList()
-                .ConvertAll(building => building.ToDTO())
-            : NotFound();
+                .ConvertAll(building => building.ToDTO());
     }
 
 
@@ -127,5 +141,45 @@ public class BuildingsController : ControllerBase
         {
             return NotFound();
         }
+    }
+
+    [HttpPost("{userId}/buildings/{starportId}/queue")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerOperation(Summary = "Add a unit to the build queue of the starport. Currently immediatly returns the unit.")]
+    public ActionResult<UnitDTO> PostToQueue(string userId, string starportId, [FromBody] UnitBlueprintDTO unitBlueprint)
+    {
+        IUser? user = _usersRepository[userId];
+
+        if (user is null)
+            return NotFound("No user with such id");
+
+
+        IBuilding? building = user.Buildings.ContainsKey(starportId)
+            ? user.Buildings[starportId]
+            : null;
+
+        if (building is null)
+            return NotFound("User does not have a building with such id");
+
+        if (building is not IStarportBuilding starport)
+            return BadRequest("Unit must be a starport");
+
+        if (!starport.IsBuilt)
+            return BadRequest("Starport is not built.");
+
+        if (unitBlueprint?.Type is not string unitType)
+            return BadRequest("Body should contains a unit type.");
+
+        var formattedType = unitType.UppercaseFirstWord();
+
+        if (!_unitFactory.DoesTypeExist(formattedType))
+            return BadRequest($"{formattedType} does not exists.");
+
+        if (!user.HasResourcesFor(formattedType))
+            return BadRequest($"User does not have enough resources to create {formattedType}.");
+
+        return starport.AddToQueue(formattedType).ToDTO();
     }
 }

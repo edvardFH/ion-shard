@@ -2,6 +2,7 @@
 using IonShard.Domain.Units;
 using System.ComponentModel.DataAnnotations;
 using IonShard.Domain.Map.Resources;
+using IonShard.Configuration;
 
 namespace IonShard.Domain.Users;
 
@@ -24,8 +25,16 @@ public class User : IUser
     public IReadOnlyDictionary<IResource, int> ResourcesQuantity
         => (IReadOnlyDictionary<IResource, int>)_resourcesQuantity;
 
+    private readonly IGameRulesService _gameRulesService;
 
-    public User(string id, string pseudo, DateTime dateOfCreation)
+
+    public User
+        (
+            string id,
+            string pseudo,
+            DateTime dateOfCreation,
+            IGameRulesService gameRulesService
+        )
     {
         Id = id;
         Pseudo = pseudo;
@@ -42,13 +51,15 @@ public class User : IUser
             { new Resource(ResourceName.Gold), 0 },
             { new Resource(ResourceName.Titanium), 0 }
         };
+        _gameRulesService = gameRulesService;
     }
 
 
     public void AddUnit(IUnit unit) => _units.Add(unit.Id, unit);
+    public bool RemoveUnit(IUnit unit) => _units.Remove(unit.Id);
 
     public void AddBuilding(IBuilding building) => _buildings.Add(building.Id, building);
-    public void RemoveBuilding(string buildingId) => _buildings.Remove(buildingId);
+    public bool RemoveBuilding(IBuilding buildingId) => _buildings.Remove(buildingId.Id);
 
     public void AddOneResource(IResource resource)
     {
@@ -56,5 +67,43 @@ public class User : IUser
             _resourcesQuantity[resource]++;
         else
             _resourcesQuantity.Add(resource, 1);
+    }
+
+
+    public bool HasResourcesFor(string unitType)
+    {
+        var units = _gameRulesService.Units;
+
+        if (!units.ContainsKey(unitType))
+            throw new ArgumentException($"{unitType} is not a valid unit type");
+
+        
+
+        foreach (var resourceCost in units[unitType].ResourceCost)
+        {
+            Enum.TryParse(resourceCost.Key, out ResourceName resourceName);
+            var resource = new Resource(resourceName);
+
+            if (!_resourcesQuantity.ContainsKey(resource)
+                || resourceCost.Value > _resourcesQuantity[resource])
+                return false;
+        }
+
+        return true;
+    }
+
+
+    public void UseResource(IResource resource, int quantity)
+    {
+        if (_resourcesQuantity[resource] < quantity)
+            throw new ArgumentException("User cannot use more resources that he has.");
+
+        _resourcesQuantity[resource] -= quantity;
+    }
+
+    public void UpdateResources(IReadOnlyDictionary<IResource, int> resources)
+    {
+        foreach (var keyValuePair in resources)
+            _resourcesQuantity[keyValuePair.Key] = keyValuePair.Value;
     }
 }

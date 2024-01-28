@@ -1,5 +1,5 @@
 ﻿using IonShard.Domain.Map.Locations;
-using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 
 namespace IonShard.Domain.Buildings;
 

@@ -7,4 +7,5 @@ public record UnitDTO(
     string? Planet,
     string? DestinationSystem,
     string? DestinationPlanet,
-    string? EstimatedTimeOfArrival);
+    string? EstimatedTimeOfArrival,
+    int Health);

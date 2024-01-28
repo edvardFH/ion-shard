@@ -1,33 +1,50 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
+using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Users;
 using IonShard.Utils;
 using Shard.Shared.Core;
 
 namespace IonShard.Domain.Units;
 
-public abstract class AbstractUnit : IUnit
+public abstract class Unit : IUnit
 {
     private const int LeavePlanetManeuverDuration = 0;
     private const int ChangeSystemManeuverDuration = 60;
     private const int EnterPlanetManeuverDuration = 15;
+
+    protected const int UnitBuildDuration = 0;
 
     public string Id { get; }
     public string Type { get; }
     public IUser Owner { get; }
     public virtual ILocation Location { get; private set; }
     public IDestination? Destination { get; private set; }
+    public IReadOnlyDictionary<Resource, int> ResourceCost {  get; }
     public Task TravelTask { get; private set; }
+
     private CancellationTokenSource? _cancellationTokenSource;
+    protected readonly IClock _clock;
 
-
-    public AbstractUnit(IUser owner, StarSystem system, Planet? planet, string type)
+    
+    public Unit
+        (
+            string id,
+            IUser owner,
+            StarSystem system,
+            Planet? planet,
+            string type,
+            IReadOnlyDictionary<Resource, int> resourceCost,
+            IClock clock
+        )
     {
-        Id = new Random().NextGuid().ToString();
+        Id = id;
         Owner = owner;
         Location = new Location(system, planet);
         TravelTask = Task.CompletedTask;
         Type = type;
+        ResourceCost = resourceCost;
+        _clock = clock;
     }
 
 
@@ -71,7 +88,10 @@ public abstract class AbstractUnit : IUnit
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            Location.Planet?.Units.Remove(this);
             Location = new Location(Location.System, null);
+            Location.System.Units.Add(this);
         }
 
 
@@ -82,7 +102,10 @@ public abstract class AbstractUnit : IUnit
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            Location.System.Units.Remove(this);
             Location = new Location(Destination.System, null);
+            Location.System.Units.Add(this);
         }
 
         if (Location.IsPlanetEntered(Destination.Planet))
@@ -92,7 +115,10 @@ public abstract class AbstractUnit : IUnit
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            Location.System.Units.Remove(this);
             Location = new Location(Destination.System, Destination.Planet);
+            Location.Planet?.Units.Add(this);
         }
 
         Destination = null;

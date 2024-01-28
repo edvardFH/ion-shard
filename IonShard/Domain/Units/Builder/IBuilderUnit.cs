@@ -2,7 +2,7 @@
 using IonShard.Domain.Map.Resources;
 using Shard.Shared.Core;
 
-namespace IonShard.Domain.Units;
+namespace IonShard.Domain.Units.Builder;
 
 public interface IBuilderUnit : IUnit
 {
@@ -10,4 +10,7 @@ public interface IBuilderUnit : IUnit
     public Task BuildTask { get; }
     public bool IsBuilding { get; }
     public DateTime? EstimatedBuildTime { get; }
+
+    public bool TryRequestBuildStop();
+    public bool DoesBuildingTypeExists(string buildingType);
 }

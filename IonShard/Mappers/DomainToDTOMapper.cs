@@ -3,10 +3,12 @@ using IonShard.Contracts.DTO.Map;
 using IonShard.Contracts.DTO.Units;
 using IonShard.Contracts.DTO.Users;
 using IonShard.Domain.Buildings;
+using IonShard.Domain.Buildings.Mine;
 using IonShard.Domain.Map;
 using IonShard.Domain.Map.Locations;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Combat;
 using IonShard.Domain.Users;
 
 namespace IonShard.Mappers;
@@ -23,7 +25,7 @@ public static class DomainToDTOMapper
 
         return new BuildingDTO(
             building.Id,
-            building.Type,
+            building.Type.ToLower(),
             building.Location.System.Name,
             building.Location.Planet?.Name,
             building.IsBuilt,
@@ -46,12 +48,13 @@ public static class DomainToDTOMapper
 
         return new UnitDTO(
             unit.Id,
-            unit.Type,
+            unit.Type.ToLower(),
             unitSystem,
             unitPlanet,
             unit.Destination?.System.Name ?? unitSystem,
             unit.Destination?.Planet?.Name ?? unitPlanet,
-            unit.Destination?.EstimatedTimeOfArrival.ToString());
+            unit.Destination?.EstimatedTimeOfArrival.ToString(),
+            unit is ICombatUnit combatUnit ? combatUnit.HealthPoints : 0);
     }
 
 

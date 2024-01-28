@@ -1,5 +1,6 @@
 ﻿using IonShard.Domain.Map;
 using IonShard.Domain.Units;
+using IonShard.Domain.Units.Builder;
 using IonShard.Domain.Users;
 using IonShard.UnitTests.Repository;
 using Shard.Shared.Core;
@@ -14,6 +15,7 @@ public class BuilderUnitTests
     private readonly Planet _earth;
     private readonly FakeClock _clock;
     private readonly IUnit _builderUnit;
+    private readonly IUnitFactory _unitFactory;
 
     public BuilderUnitTests()
     {
@@ -21,9 +23,9 @@ public class BuilderUnitTests
         _sol = _repository["sol"]!;
         _earth = _sol["earth"]!;
         _clock = new FakeClock();
-        
+
         IUser userJohn = _repository.UserRepository.Users["1"];
-        _builderUnit = new BuilderUnit(userJohn, _sol, _earth);
+        _builderUnit = new BuilderUnit("id1", null, userJohn, _sol, _earth, null, _clock);
     }
 
     [Fact]

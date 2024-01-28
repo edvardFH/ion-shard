@@ -1,27 +1,46 @@
+using IonShard.Configuration;
+using IonShard.Domain.Buildings;
+using IonShard.Domain.Units;
 using IonShard.Persistence.Repositories;
 using IonShard.Services;
+using IonShard.Services.Auth;
 using IonShard.Swagger;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
 using Shard.Shared.Core;
+using SystemClock = Shard.Shared.Core.SystemClock;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration configuration = new ConfigurationBuilder()
+builder.Configuration
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .Build();
+            .AddJsonFile("Configuration/gamerules.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("Configuration/users.json", optional: false, reloadOnChange: true);
 
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<IAuthService, AuthService>();
+builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
+
+builder.Services
+    .AddAuthentication("Basic")
+    .AddScheme<AuthenticationSchemeOptions, ShardAuthenticationHandler>("Basic", null);
+
 builder.Services.AddSingleton<MapGenerator>();
-builder.Services.Configure<MapGeneratorOptions>(configuration.GetSection("MapGeneratorOptions"));
+builder.Services.Configure<MapGeneratorOptions>(
+    builder.Configuration.GetSection("MapGeneratorOptions"));
 
 builder.Services.AddSingleton<MapBuilder>();
 builder.Services.AddSingleton<MapRepository>();
 
-builder.Services.AddSingleton<UserRepository>();
-builder.Services.AddSingleton<UserFactory>();
+builder.Services.AddSingleton<IUnitFactory, UnitFactory>();
+builder.Services.AddSingleton<IBuildingFactory, BuildingFactory>();
 
-builder.Services.AddSingleton<SystemClock>();
+builder.Services.AddSingleton<UserRepository>();
+builder.Services.AddSingleton<IUserFactory, UserFactory>();
+
+
+builder.Services.AddSingleton<IClock, SystemClock>();
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -30,12 +49,12 @@ builder.Services.AddSwaggerGen(c =>
     c.DocumentFilter<RequestBodiesDocumentFilter>();
     c.EnableAnnotations();
     c.SwaggerDoc(
-        configuration.GetValue<string>("AppSettings:Version"),
+        builder.Configuration.GetValue<string>("AppSettings:Version"),
         new OpenApiInfo
         {
-            Version = configuration.GetValue<string>("AppSettings:Version"),
-            Title = configuration.GetValue<string>("AppSettings:Title"),
-            Description = configuration.GetValue<string>("AppSettings:Description")
+            Version = builder.Configuration.GetValue<string>("AppSettings:Version"),
+            Title = builder.Configuration.GetValue<string>("AppSettings:Title"),
+            Description = builder.Configuration.GetValue<string>("AppSettings:Description")
         });
 });
 
@@ -46,10 +65,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint(
-            $"/swagger/{configuration.GetValue<string>("AppSettings:Version")}/swagger.json",
-            configuration.GetValue<string>("AppSettings:Title")));
+            $"/swagger/{builder.Configuration.GetValue<string>("AppSettings:Version")}/swagger.json",
+            builder.Configuration
+                .GetValue<string>("AppSettings:Title")));
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

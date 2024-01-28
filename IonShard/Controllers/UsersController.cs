@@ -18,9 +18,13 @@ public class UsersController : ControllerBase
 {
 
     private readonly UserRepository _usersRepository;
-    private readonly UserFactory _userFactory;
+    private readonly IUserFactory _userFactory;
 
-    public UsersController(UserRepository usersRepository, UserFactory userFactory)
+    public UsersController
+        (
+            UserRepository usersRepository,
+            IUserFactory userFactory
+        )
     {
         _usersRepository = usersRepository;
         _userFactory = userFactory;
@@ -33,15 +37,25 @@ public class UsersController : ControllerBase
     [SwaggerOperation(Summary = "Create a new user")]
     public ActionResult<UserDTO?> CreateNewUser(string userId, [FromBody] CreateUserPutRequestBody body)
     {
-        if (body.Id is not null && body.Pseudo is not null && body.Id == userId
-            && Regex.IsMatch(userId, "^[a-zA-Z0-9_-]+$"))
-        {
-            IUser newUser = _userFactory.CreateNewUser(userId, body.Pseudo);
-            _usersRepository.Users.Add(newUser.Id, newUser);
-            return newUser.ToDTO();
-        }
-        else
+        if (body is not { Id: string, Pseudo: string }
+         || body.Id != userId
+         || !Regex.IsMatch(userId, "^[a-zA-Z0-9_-]+$"))
             return BadRequest();
+
+        if (_usersRepository.Users.ContainsKey(userId))
+        {
+            var user = _usersRepository[userId];
+            if (HttpContext.User.IsInRole("Admin") && body.ResourcesQuantity is not null)
+            {
+                user?.UpdateResources(body.GetParsedResources()!);
+            }
+            return user?.ToDTO();
+        }
+
+        IUser newUser = _userFactory.CreateUser(userId, body.Pseudo);
+        _usersRepository.Users.Add(newUser.Id, newUser);
+
+        return newUser.ToDTO();
     }
 
 
