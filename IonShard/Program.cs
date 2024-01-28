@@ -97,6 +97,9 @@ app.MapControllers();
 var backupService = app.Services.GetRequiredService<IDataBackupService>();
 app.Lifetime.ApplicationStopping.Register(backupService.BackupData);
 
+app.Services.GetRequiredService<MapLoaderService>();
+app.Services.GetRequiredService<UserLoaderService>();
+
 app.Run();
 
 
