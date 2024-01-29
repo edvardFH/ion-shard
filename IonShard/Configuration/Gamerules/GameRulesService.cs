@@ -21,55 +21,25 @@ public class GameRulesService : IGameRulesService
     public GameRulesService(IConfiguration configuration)
     {
         _configuration = configuration;
-        Resources = InitResources();
+        Resources = Init<ResourceConfiguration>("Resources");
         Units = InitUnits();
-        Weapons = InitWeapons();
-        Buildings = InitBuildings();
+        Weapons = Init<WeaponConfiguration>("Weapons");
+        Buildings = Init<BuildingConfiguration>("Buildings");
         User = InitUser();
     }
 
 
-    private IReadOnlyDictionary<string, ResourceConfiguration> InitResources()
+
+    private IReadOnlyDictionary<string, TConfiguration> Init<TConfiguration>(string sectionKey)
     {
-        const string key = "Resources";
-        var resources = _configuration
-            .GetSection(key)
-            .Get<IReadOnlyDictionary<string, ResourceConfiguration>>();
+        var deserializedConfiguration = _configuration
+            .GetSection(sectionKey)
+            .Get<IReadOnlyDictionary<string, TConfiguration>>();
 
-        if (resources is null || resources.Count == 0)
-            throw new ConfigurationFormatException(key);
+        if (deserializedConfiguration is null || deserializedConfiguration.Count == 0)
+            throw new ConfigurationFormatException(sectionKey);
 
-        return resources;
-    }
-
-
-
-    private IReadOnlyDictionary<string, WeaponConfiguration> InitWeapons()
-    {
-        const string key = "Weapons";
-        var weapons = _configuration
-            .GetSection(key)
-            .Get<IReadOnlyDictionary<string, WeaponConfiguration>>();
-
-        if (weapons is null || weapons.Count == 0)
-            throw new ConfigurationFormatException(key);
-
-        return weapons;
-    }
-
-
-
-    private IReadOnlyDictionary<string, BuildingConfiguration> InitBuildings()
-    {
-        const string key = "Buildings";
-        var buildings = _configuration
-            .GetSection(key)
-            .Get<IReadOnlyDictionary<string, BuildingConfiguration>>();
-
-        if (buildings is null || buildings.Count == 0)
-            throw new ConfigurationFormatException(key);
-
-        return buildings;
+        return deserializedConfiguration;
     }
 
 
@@ -91,9 +61,9 @@ public class GameRulesService : IGameRulesService
                     unit.Key,
                     Value: new UnitConfiguration
                     (
-                        unit.GetSectionAsIntDictionnary("ResourceCost"),
-                        unit.GetSectionAsInt("BuildingDuration"),
-                        unit.GetSectionAsInt("HealthPoints")
+                        unit.GetDictionnary<int>("ResourceCost"),
+                        unit.GetInt("BuildingDuration"),
+                        unit.GetInt("HealthPoints")
                     )
                 )
             ).ToDictionary(
@@ -135,11 +105,11 @@ public class GameRulesService : IGameRulesService
                      unit.Key,
                      Value: (IUnitConfiguration)new CombatUnitConfiguration
                      (
-                         unit.GetSectionAsIntDictionnary("ResourceCost"),
-                         unit.GetSectionAsInt("BuildingDuration"),
-                         unit.GetSectionAsInt("HealthPoints"),
-                         unit.GetSectionAsIntDictionnary("Weapons"),
-                         unit.GetSectionAsStringList("CombatPriorities"),
+                         unit.GetDictionnary<int>("ResourceCost"),
+                         unit.GetInt("BuildingDuration"),
+                         unit.GetInt("HealthPoints"),
+                         unit.GetDictionnary<int>("Weapons"),
+                         unit.GetList<string>("CombatPriorities"),
                          GetDamageReductionMultipliers(combatUnitTypes, unit)
                      )
                  );
@@ -163,7 +133,7 @@ public class GameRulesService : IGameRulesService
     {
         var damageReductionMutipliers = new Dictionary<string, float>
             (
-                unit.GetSectionAsFloatDictionnary("DamageReductionMultipliers")
+                unit.GetDictionnary<float>("DamageReductionMultipliers")
             );
 
         combatUnitTypes.ToList().ForEach(type =>
@@ -185,7 +155,7 @@ public class GameRulesService : IGameRulesService
         if (userSection is null)
             throw new ConfigurationFormatException(key);
 
-        var startingResources = new Dictionary<string, int>(userSection.GetSectionAsIntDictionnary("StartingResources"));
+        var startingResources = new Dictionary<string, int>(userSection.GetDictionnary<int>("StartingResources"));
 
         if (startingResources.Count == 0)
             throw new ConfigurationFormatException("StartingResources");

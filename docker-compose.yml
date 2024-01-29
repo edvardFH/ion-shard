@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  ionshard:
+    image: ${DOCKER_REGISTRY-}ionshard
+    build:
+      context: .
+      dockerfile: IonShard/Dockerfile
+    depends_on:
+      - sharddb
+    environment:
+      - "mongo_connection=mongodb://sharddb:27017"
+
+  sharddb:
+    image: mongo
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongodb_data:

@@ -4,23 +4,19 @@ using IonShard.Contracts.DTO.Users;
 using IonShard.Domain.Units;
 using IonShard.Domain.Users;
 using IonShard.Mappers;
-using Microsoft.Net.Http.Headers;
 using System.Net.Http.Headers;
 using System.Text;
 
 namespace IonShard.Adapters.Client;
 
-public class ShardService : IShardService
+public class ShardGateway : IShardGateway
 {
     private readonly HttpClient _httpClient;
-    private readonly IWormholesConfigService _wormholesConfigService;
 
     
-    public ShardService(HttpClient httpClient, IWormholesConfigService wormholesConfigService)
+    public ShardGateway(HttpClient httpClient)
     {
         _httpClient = httpClient;
-
-        _wormholesConfigService = wormholesConfigService;
     }
 
     public async Task<Uri> PutUnitAsync(WormholeConfig wormhole, IUnit unit)

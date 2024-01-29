@@ -1,13 +1,12 @@
-﻿using IonShard.Application;
-using IonShard.Domain.Map;
+﻿using IonShard.Domain.Map;
 
 namespace IonShard.Persistence.Repositories;
 
 public class MapRepository
 {
-    private readonly Universe _universe;
+    private Universe _universe;
 
-    public MapRepository(MapBuilder mapBuilder) => _universe = mapBuilder.Map;
+    public MapRepository() => _universe = new Universe(new List<StarSystem>());
 
 
     public IReadOnlyList<StarSystem> Systems => _universe.Systems;
@@ -16,4 +15,12 @@ public class MapRepository
 
     public Planet? this[string systemName, string planetName]
         => _universe[systemName]?[planetName];
+
+    public void InitUniverse(Universe universe)
+    {
+        if (_universe.Systems.Count > 0)
+            throw new InvalidOperationException("Universe already initilized, it should not be changed !");
+
+        _universe = universe;
+    }
 }

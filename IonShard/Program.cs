@@ -1,4 +1,5 @@
 using IonShard.Adapters.Client;
+using IonShard.Adapters.Mappers;
 using IonShard.Application;
 using IonShard.Application.Authentication;
 using IonShard.Configuration.Gamerules;
@@ -6,6 +7,9 @@ using IonShard.Configuration.Wormholes;
 using IonShard.Domain.Buildings;
 using IonShard.Domain.Map.Resources;
 using IonShard.Domain.Units;
+using IonShard.Persistence;
+using IonShard.Persistence.Database;
+using IonShard.Persistence.Loaders;
 using IonShard.Persistence.Repositories;
 using IonShard.Swagger;
 using Microsoft.AspNetCore.Authentication;
@@ -25,8 +29,10 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IWormholesConfigService, WormholesConfigService>();
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSingleton<IGameRulesService, GameRulesService>();
-builder.Services.AddHttpClient<IShardService, ShardService>();
 
+builder.Services.AddSingleton<IShardDatabaseService, ShardDatabaseService>();
+
+builder.Services.AddHttpClient<IShardGateway, ShardGateway>();
 builder.Services
     .AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, ShardAuthenticationHandler>("Basic", null);
@@ -37,17 +43,22 @@ builder.Services.AddSingleton<MapGenerator>();
 builder.Services.Configure<MapGeneratorOptions>(
     builder.Configuration.GetSection("MapGeneratorOptions"));
 
-builder.Services.AddSingleton<MapBuilder>();
+builder.Services.AddSingleton<MapMapper>();
+builder.Services.AddSingleton<MapLoaderService>();
 builder.Services.AddSingleton<MapRepository>();
 
 builder.Services.AddSingleton<IUnitFactory, UnitFactory>();
 builder.Services.AddSingleton<IBuildingFactory, BuildingFactory>();
 
+builder.Services.AddSingleton<UserLoaderService>();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<IUserFactory, UserFactory>();
+builder.Services.AddSingleton<UserMapper>();
 
 
 builder.Services.AddSingleton<IClock, SystemClock>();
+
+builder.Services.AddSingleton<IDataBackupService, DataBackupService>();
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -77,12 +88,20 @@ if (app.Environment.IsDevelopment())
                 .GetValue<string>("AppSettings:Title")));
 }
 
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
+var backupService = app.Services.GetRequiredService<IDataBackupService>();
+app.Lifetime.ApplicationStopping.Register(backupService.BackupData);
+
+app.Services.GetRequiredService<MapLoaderService>();
+app.Services.GetRequiredService<UserLoaderService>();
+
 app.Run();
+
 
 namespace Shard.IonShard
 {

@@ -6,7 +6,6 @@ public class StarSystem
 {
     private readonly IReadOnlyDictionary<string, Planet> _planets;
 
-
     public string Name { get; }
 
     public IReadOnlyList<Planet> Planets => _planets.Values.ToList();

@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonShard.IntegrationTests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonShard.UnitTests", "IonShard.UnitTests\IonShard.UnitTests.csproj", "{C09BC892-D9FB-4903-92B4-D5316FA0C87C}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FFE5B8D8-ABCA-4B71-905F-8F3EA222F1CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{C09BC892-D9FB-4903-92B4-D5316FA0C87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C09BC892-D9FB-4903-92B4-D5316FA0C87C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C09BC892-D9FB-4903-92B4-D5316FA0C87C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFE5B8D8-ABCA-4B71-905F-8F3EA222F1CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFE5B8D8-ABCA-4B71-905F-8F3EA222F1CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFE5B8D8-ABCA-4B71-905F-8F3EA222F1CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFE5B8D8-ABCA-4B71-905F-8F3EA222F1CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
